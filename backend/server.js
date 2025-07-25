@@ -31,6 +31,15 @@ app.get('/api/health', (req, res) => {
   res.json({ message: 'Server is running!', timestamp: new Date().toISOString() });
 });
 
+// Root endpoint for testing
+app.get('/', (req, res) => {
+  res.json({ 
+    message: 'Tutor File Sharing API is running!', 
+    version: '1.0.0',
+    environment: process.env.NODE_ENV || 'development'
+  });
+});
+
 // Serve React app in production
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static(path.join(__dirname, '../frontend/build')));
@@ -49,7 +58,13 @@ app.use((error, req, res, next) => {
   }
   
   console.error('Server error:', error);
-  res.status(500).json({ message: 'Internal server error' });
+  console.error('Error stack:', error.stack);
+  console.error('Request URL:', req.url);
+  console.error('Request method:', req.method);
+  res.status(500).json({ 
+    message: 'Internal server error',
+    error: process.env.NODE_ENV === 'development' ? error.message : undefined
+  });
 });
 
 // 404 handler

@@ -1,7 +1,16 @@
 const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
 
-const db = new sqlite3.Database('./database.db');
+// Use environment-specific database path
+const getDatabasePath = () => {
+  if (process.env.NODE_ENV === 'production') {
+    // For Railway, use /tmp directory or memory
+    return process.env.DATABASE_PATH || '/tmp/database.db';
+  }
+  return './database.db';
+};
+
+const db = new sqlite3.Database(getDatabasePath());
 
 // Initialize database tables
 const initDB = () => {
