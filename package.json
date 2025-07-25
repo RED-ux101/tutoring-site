@@ -8,15 +8,10 @@
     "server": "cd backend && npm run dev",
     "client": "cd frontend && npm start",
     "install-all": "npm install && cd backend && npm install && cd ../frontend && npm install",
-    "start": "cd backend && npm start"
+    "start": "cd backend && npm start",
+    "postinstall": "cd frontend && npm install && npm run build"
   },
-  "keywords": [
-    "tutor",
-    "file-sharing",
-    "education",
-    "react",
-    "express"
-  ],
+  "keywords": ["tutor", "file-sharing", "education", "react", "express"],
   "author": "",
   "license": "MIT",
   "devDependencies": {
