@@ -11,7 +11,7 @@ const LandingPage = () => {
   return (
     <div className="min-h-screen">
       {/* Hero Section with gradient background */}
-      <section className="relative bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 pt-16 pb-20">
+      <section className="relative bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-800 pt-16 pb-20">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center">
             <div className="mb-6">
@@ -21,7 +21,7 @@ const LandingPage = () => {
               </div>
             </div>
             
-            <h1 className="text-5xl md:text-6xl font-bold tracking-tight text-gray-900 mb-6">
+            <h1 className="text-5xl md:text-6xl font-bold tracking-tight text-foreground mb-6">
               Your Gateway to 
               <span className="text-primary block mt-2">
                 Academic Excellence
@@ -73,10 +73,10 @@ const LandingPage = () => {
       </section>
 
       {/* Features Section */}
-      <section className="py-24 bg-white dark:bg-gray-800">
+      <section className="py-24 bg-white dark:bg-slate-900">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
               Everything you need for academic success
             </h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
@@ -135,10 +135,10 @@ const LandingPage = () => {
       </section>
 
       {/* How it Works */}
-              <section className="py-24 bg-gray-50 dark:bg-gray-900">
+              <section className="py-24 bg-gray-50 dark:bg-slate-800">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
               Simple. Effective. Collaborative.
             </h2>
             <p className="text-xl text-muted-foreground">
