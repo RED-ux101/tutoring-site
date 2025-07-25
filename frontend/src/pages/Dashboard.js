@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useAuth } from '../context/AuthContext';
 import { filesAPI } from '../services/api';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { Button } from '../components/ui/button';
