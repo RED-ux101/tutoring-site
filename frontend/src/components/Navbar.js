@@ -1,11 +1,13 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
 import { Button } from './ui/button';
-import { GraduationCap, BookOpen, Upload, LogOut, Settings } from 'lucide-react';
+import { GraduationCap, BookOpen, Upload, LogOut, Settings, Moon, Sun } from 'lucide-react';
 
 const Navbar = () => {
   const { isAuthenticated, tutor, logout } = useAuth();
+  const { isDarkMode, toggleTheme } = useTheme();
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -38,6 +40,15 @@ const Navbar = () => {
           </div>
 
           <div className="flex items-center space-x-4">
+            {/* Dark mode toggle */}
+            <Button variant="outline" size="sm" onClick={toggleTheme}>
+              {isDarkMode ? (
+                <Sun className="h-4 w-4" />
+              ) : (
+                <Moon className="h-4 w-4" />
+              )}
+            </Button>
+
             {isAuthenticated() ? (
               <div className="flex items-center space-x-4">
                 <Link to="/dashboard">

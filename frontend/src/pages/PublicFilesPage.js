@@ -79,14 +79,14 @@ const PublicFilesPage = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
         <LoadingSpinner size="large" text="Loading files..." />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <div className="container mx-auto px-4 py-12">
         {/* Header */}
         <div className="text-center mb-12">
@@ -174,15 +174,25 @@ const PublicFilesPage = () => {
             {files.length === 0 ? (
               <div className="text-center py-16">
                 <Search className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">No files available</h3>
+                <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">No files available</h3>
                 <p className="text-muted-foreground mb-6">
-                  There are no study materials shared yet. Check back later for new resources!
+                  {error ? 
+                    "Unable to load files at the moment. Please try again later." :
+                    "There are no study materials shared yet. Check back later for new resources!"
+                  }
                 </p>
-                <Button asChild>
-                  <a href="/submit">
-                    Contribute the first resource
-                  </a>
-                </Button>
+                {!error && (
+                  <Button asChild>
+                    <a href="/submit">
+                      Contribute the first resource
+                    </a>
+                  </Button>
+                )}
+                {error && (
+                  <Button onClick={loadFiles}>
+                    Try Again
+                  </Button>
+                )}
               </div>
             ) : (
               <Table>
