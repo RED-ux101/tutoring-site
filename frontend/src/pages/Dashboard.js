@@ -12,7 +12,6 @@ import {
   Download, 
   Trash2, 
   Clock, 
-  Users, 
   CheckCircle, 
   XCircle,
   AlertCircle,
@@ -21,7 +20,6 @@ import {
 } from 'lucide-react';
 
 const Dashboard = () => {
-  const { tutor } = useAuth();
   const [files, setFiles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
