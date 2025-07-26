@@ -56,6 +56,16 @@ const LoginPage = () => {
       { url: `${BACKEND_URL}/api/auth/verify?key=${encodeURIComponent(adminKey)}`, method: 'GET', body: null }
     ];
 
+    // If all endpoints fail, try direct browser navigation (bypasses CORS)
+    const tryDirectNavigation = () => {
+      console.log('🔄 Trying direct browser navigation to backend...');
+      const directUrl = `${BACKEND_URL}/api/auth/verify?key=${encodeURIComponent(adminKey)}`;
+      window.open(directUrl, '_blank');
+      
+      // Show instructions to user
+      setError('Backend verification opened in new tab. Please copy the token and paste it here, or check the new tab for login success.');
+    };
+
     for (let i = 0; i < endpoints.length; i++) {
       const endpoint = endpoints[i];
       
@@ -125,6 +135,9 @@ const LoginPage = () => {
         if (i === endpoints.length - 1) {
           setAttempts(prev => prev + 1);
           setError(`Login failed: ${error.message}`);
+          
+          // Try direct navigation as last resort
+          tryDirectNavigation();
           
           // Add slight delay for security
           setTimeout(() => {
