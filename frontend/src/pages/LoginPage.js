@@ -46,11 +46,14 @@ const LoginPage = () => {
     setLoading(true);
     setError('');
 
+    // Backend URL - replace with your actual Railway backend URL
+    const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'https://YOUR-BACKEND-URL.railway.app';
+    
     // Try multiple endpoints in case Railway blocks admin-related routes
     const endpoints = [
-      { url: '/api/auth/admin-login', method: 'POST', body: { adminKey } },
-      { url: '/api/auth/secure-access', method: 'POST', body: { accessKey: adminKey } },
-      { url: `/api/auth/verify?key=${encodeURIComponent(adminKey)}`, method: 'GET', body: null }
+      { url: `${BACKEND_URL}/api/auth/admin-login`, method: 'POST', body: { adminKey } },
+      { url: `${BACKEND_URL}/api/auth/secure-access`, method: 'POST', body: { accessKey: adminKey } },
+      { url: `${BACKEND_URL}/api/auth/verify?key=${encodeURIComponent(adminKey)}`, method: 'GET', body: null }
     ];
 
     for (let i = 0; i < endpoints.length; i++) {
