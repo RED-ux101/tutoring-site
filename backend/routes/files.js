@@ -60,12 +60,13 @@ router.post('/upload', auth, upload.single('file'), (req, res) => {
     }
 
     const { filename, originalname, size, mimetype } = req.file;
+    const { category } = req.body;
     const filePath = path.join('uploads', filename);
 
     // Save file info to database
     db.run(
-      'INSERT INTO files (tutor_id, filename, original_name, file_path, file_size, mime_type) VALUES (?, ?, ?, ?, ?, ?)',
-      [req.tutor.id, filename, originalname, filePath, size, mimetype],
+      'INSERT INTO files (tutor_id, filename, original_name, file_path, file_size, mime_type, category) VALUES (?, ?, ?, ?, ?, ?, ?)',
+      [req.tutor.id, filename, originalname, filePath, size, mimetype, category || null],
       function (err) {
         if (err) {
           console.error('Database error:', err);
@@ -80,6 +81,7 @@ router.post('/upload', auth, upload.single('file'), (req, res) => {
             originalName: originalname,
             size,
             mimeType: mimetype,
+            category: category || null,
             uploadedAt: new Date().toISOString()
           }
         });
@@ -107,6 +109,7 @@ router.get('/my-files', auth, (req, res) => {
         originalName: file.original_name,
         size: file.file_size,
         mimeType: file.mime_type,
+        category: file.category,
         uploadedAt: file.uploaded_at
       }));
 
@@ -134,6 +137,7 @@ router.get('/public', (req, res) => {
         originalName: file.original_name,
         size: file.file_size,
         mimeType: file.mime_type,
+        category: file.category,
         uploadedAt: file.uploaded_at,
         tutorName: file.tutor_name || 'Admin'
       }));

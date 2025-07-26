@@ -16,7 +16,10 @@ import {
   Grid,
   List,
   Star,
-  Clock
+  Clock,
+  Calculator,
+  Book,
+  GraduationCap
 } from 'lucide-react';
 
 const PublicFilesPage = () => {
@@ -27,11 +30,30 @@ const PublicFilesPage = () => {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [sortBy, setSortBy] = useState('newest');
   const [viewMode, setViewMode] = useState('table'); // 'table' or 'grid'
+  const [selectedMathTab, setSelectedMathTab] = useState('year7'); // Default to Year 7
   const [stats, setStats] = useState({
     totalFiles: 0,
     totalDownloads: 0,
     categories: []
   });
+
+  // Math subject tabs configuration
+  const mathTabs = [
+    { id: 'year7', label: 'Year 7 Math', icon: Calculator, color: 'blue' },
+    { id: 'year8', label: 'Year 8 Math', icon: Calculator, color: 'blue' },
+    { id: 'year9', label: 'Year 9 Math', icon: Calculator, color: 'blue' },
+    { id: 'year10', label: 'Year 10 Math', icon: Calculator, color: 'blue' },
+    { id: 'year11', label: 'Year 11 Math', icon: Calculator, color: 'blue' },
+    { id: 'as-pure', label: 'AS Pure Math', icon: Book, color: 'green' },
+    { id: 'as-applied', label: 'AS Applied Math', icon: Book, color: 'green' },
+    { id: 'as-stats', label: 'AS Statistics', icon: Book, color: 'green', parent: 'as-applied' },
+    { id: 'as-mechanics', label: 'AS Mechanics', icon: Calculator, color: 'green', parent: 'as-applied' },
+    { id: 'a2-pure', label: 'A2 Pure Math', icon: GraduationCap, color: 'purple' },
+    { id: 'a2-applied', label: 'A2 Applied Math', icon: GraduationCap, color: 'purple' },
+    { id: 'a2-stats', label: 'A2 Statistics', icon: Book, color: 'purple', parent: 'a2-applied' },
+    { id: 'a2-mechanics', label: 'A2 Mechanics', icon: Calculator, color: 'purple', parent: 'a2-applied' },
+    { id: 'further', label: 'Further Math', icon: Star, color: 'orange' }
+  ];
 
   const loadFiles = useCallback(async () => {
     try {
@@ -70,7 +92,55 @@ const PublicFilesPage = () => {
     .filter(file => {
       const matchesSearch = file.originalName.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesCategory = selectedCategory === 'all' || getFileTypeLabel(file.mimeType).toLowerCase() === selectedCategory.toLowerCase();
-      return matchesSearch && matchesCategory;
+      
+      // Math subject filtering
+      let matchesMathSubject = true; // Default to true if no math filtering
+      
+      if (selectedMathTab && selectedMathTab !== 'all') {
+        const fileCategory = file.category ? file.category.toLowerCase() : '';
+        const fileName = file.originalName.toLowerCase();
+        
+        // Check if file matches the selected math tab
+        if (selectedMathTab.includes('year')) {
+          // Year 7-11 filtering
+          matchesMathSubject = fileCategory.includes(selectedMathTab) || fileName.includes(selectedMathTab);
+        } else if (selectedMathTab.includes('as-')) {
+          // AS Level filtering
+          if (selectedMathTab === 'as-pure') {
+            matchesMathSubject = (fileCategory.includes('as') && fileCategory.includes('pure')) || 
+                               (fileName.includes('as') && fileName.includes('pure'));
+          } else if (selectedMathTab === 'as-applied') {
+            matchesMathSubject = (fileCategory.includes('as') && fileCategory.includes('applied')) || 
+                               (fileName.includes('as') && fileName.includes('applied'));
+          } else if (selectedMathTab === 'as-stats') {
+            matchesMathSubject = (fileCategory.includes('as') && fileCategory.includes('stat')) || 
+                               (fileName.includes('as') && fileName.includes('stat'));
+          } else if (selectedMathTab === 'as-mechanics') {
+            matchesMathSubject = (fileCategory.includes('as') && fileCategory.includes('mechanic')) || 
+                               (fileName.includes('as') && fileName.includes('mechanic'));
+          }
+        } else if (selectedMathTab.includes('a2-')) {
+          // A2 Level filtering
+          if (selectedMathTab === 'a2-pure') {
+            matchesMathSubject = (fileCategory.includes('a2') && fileCategory.includes('pure')) || 
+                               (fileName.includes('a2') && fileName.includes('pure'));
+          } else if (selectedMathTab === 'a2-applied') {
+            matchesMathSubject = (fileCategory.includes('a2') && fileCategory.includes('applied')) || 
+                               (fileName.includes('a2') && fileName.includes('applied'));
+          } else if (selectedMathTab === 'a2-stats') {
+            matchesMathSubject = (fileCategory.includes('a2') && fileCategory.includes('stat')) || 
+                               (fileName.includes('a2') && fileName.includes('stat'));
+          } else if (selectedMathTab === 'a2-mechanics') {
+            matchesMathSubject = (fileCategory.includes('a2') && fileCategory.includes('mechanic')) || 
+                               (fileName.includes('a2') && fileName.includes('mechanic'));
+          }
+        } else if (selectedMathTab === 'further') {
+          // Further Math filtering
+          matchesMathSubject = fileCategory.includes('further') || fileName.includes('further');
+        }
+      }
+      
+      return matchesSearch && matchesCategory && matchesMathSubject;
     })
     .sort((a, b) => {
       switch (sortBy) {
@@ -264,24 +334,105 @@ const PublicFilesPage = () => {
               </div>
             </div>
             
-            {(searchTerm || selectedCategory !== 'all') && (
+            {(searchTerm || selectedCategory !== 'all' || selectedMathTab !== 'all') && (
               <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
                 <p className="text-sm text-blue-700 dark:text-blue-300">
                   Showing {filteredAndSortedFiles.length} of {files ? files.length : 0} files
                   {searchTerm && ` matching "${searchTerm}"`}
                   {selectedCategory !== 'all' && ` in ${selectedCategory} category`}
+                  {selectedMathTab !== 'all' && ` in ${mathTabs.find(tab => tab.id === selectedMathTab)?.label || selectedMathTab} subject`}
                   <Button
                     variant="link"
                     size="sm"
                     onClick={() => {
                       setSearchTerm('');
                       setSelectedCategory('all');
+                      setSelectedMathTab('all');
                     }}
                     className="ml-2 p-0 h-auto text-blue-600"
                   >
                     Clear filters
                   </Button>
                 </p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Math Subject Tabs */}
+        <Card className="mb-8 shadow-lg animate-slideUp" style={{animationDelay: '0.7s'}}>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Calculator className="w-5 h-5" />
+              Math Subjects
+            </CardTitle>
+            <CardDescription>
+              Browse resources by specific math topics and levels
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-wrap gap-2">
+              <Button
+                variant={selectedMathTab === 'all' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setSelectedMathTab('all')}
+                className="flex items-center gap-2"
+              >
+                <BookOpen className="w-4 h-4" />
+                Show All
+              </Button>
+              {mathTabs.map((tab) => {
+                const IconComponent = tab.icon;
+                const isActive = selectedMathTab === tab.id;
+                const colorClasses = {
+                  blue: 'border-blue-500 text-blue-600 bg-blue-50 hover:bg-blue-100',
+                  green: 'border-green-500 text-green-600 bg-green-50 hover:bg-green-100',
+                  purple: 'border-purple-500 text-purple-600 bg-purple-50 hover:bg-purple-100',
+                  orange: 'border-orange-500 text-orange-600 bg-orange-50 hover:bg-orange-100'
+                };
+                
+                return (
+                  <Button
+                    key={tab.id}
+                    variant={isActive ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setSelectedMathTab(tab.id)}
+                    className={`flex items-center gap-2 transition-all duration-200 ${
+                      isActive 
+                        ? colorClasses[tab.color] 
+                        : 'hover:border-gray-300'
+                    }`}
+                  >
+                    <IconComponent className="w-4 h-4" />
+                    {tab.label}
+                  </Button>
+                );
+              })}
+            </div>
+            
+            {/* Applied Math Sub-tabs */}
+            {(selectedMathTab === 'as-applied' || selectedMathTab === 'a2-applied') && (
+              <div className="mt-4 pt-4 border-t border-gray-200">
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setSelectedMathTab(selectedMathTab === 'as-applied' ? 'as-stats' : 'a2-stats')}
+                    className="flex items-center gap-2"
+                  >
+                    <Book className="w-4 h-4" />
+                    Statistics
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setSelectedMathTab(selectedMathTab === 'as-applied' ? 'as-mechanics' : 'a2-mechanics')}
+                    className="flex items-center gap-2"
+                  >
+                    <Calculator className="w-4 h-4" />
+                    Mechanics
+                  </Button>
+                </div>
               </div>
             )}
           </CardContent>

@@ -58,6 +58,7 @@ const Dashboard = () => {
   const [newFileName, setNewFileName] = useState('');
   const [showRenameModal, setShowRenameModal] = useState(false);
   const fileInputRef = useRef(null);
+  const [selectedCategory, setSelectedCategory] = useState('');
 
   // Set greeting based on time of day
   useEffect(() => {
@@ -215,7 +216,7 @@ const Dashboard = () => {
     setSuccess('');
 
     try {
-      await filesAPI.uploadFile(file);
+      await filesAPI.uploadFile(file, selectedCategory);
       setSuccess(`${file.name} uploaded successfully!`);
       addNotification(`File "${file.name}" uploaded successfully!`, 'success');
       loadFiles();
@@ -781,6 +782,37 @@ const Dashboard = () => {
                   />
                 </>
               )}
+            </div>
+            
+            {/* Category Selector */}
+            <div className="mt-6">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Category (Optional)
+              </label>
+              <select
+                className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                onChange={(e) => setSelectedCategory(e.target.value)}
+                value={selectedCategory}
+              >
+                <option value="">No Category</option>
+                <option value="year7">Year 7 Math</option>
+                <option value="year8">Year 8 Math</option>
+                <option value="year9">Year 9 Math</option>
+                <option value="year10">Year 10 Math</option>
+                <option value="year11">Year 11 Math</option>
+                <option value="as-pure">AS Pure Math</option>
+                <option value="as-applied">AS Applied Math</option>
+                <option value="as-stats">AS Statistics</option>
+                <option value="as-mechanics">AS Mechanics</option>
+                <option value="a2-pure">A2 Pure Math</option>
+                <option value="a2-applied">A2 Applied Math</option>
+                <option value="a2-stats">A2 Statistics</option>
+                <option value="a2-mechanics">A2 Mechanics</option>
+                <option value="further">Further Math</option>
+              </select>
+              <p className="text-xs text-gray-500 mt-1">
+                Categorizing files helps students find specific topics more easily
+              </p>
             </div>
           </CardContent>
         </Card>

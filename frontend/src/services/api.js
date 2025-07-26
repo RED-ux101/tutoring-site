@@ -84,9 +84,12 @@ export const authAPI = {
 
 // Files API
 export const filesAPI = {
-  uploadFile: async (file) => {
+  uploadFile: async (file, category = '') => {
     const formData = new FormData();
     formData.append('file', file);
+    if (category) {
+      formData.append('category', category);
+    }
     
     const response = await api.post('/files/upload', formData, {
       headers: {
