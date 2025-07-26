@@ -29,8 +29,7 @@ import {
   Zap,
   Sparkles,
   Edit3,
-  Save,
-  FileEdit
+  Save
 } from 'lucide-react';
 
 const Dashboard = () => {
