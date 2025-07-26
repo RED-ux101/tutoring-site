@@ -99,7 +99,7 @@ const Dashboard = () => {
 
   const loadPendingSubmissions = useCallback(async () => {
     try {
-      const response = await fetch('/api/submissions/pending', {
+      const response = await fetch('https://tutoring-site-production-30eb.up.railway.app/api/submissions/pending', {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('tutorToken')}`
         }
@@ -129,10 +129,10 @@ const Dashboard = () => {
     try {
       // Load comprehensive stats
       const [filesRes, submissionsRes] = await Promise.all([
-        fetch('/api/files/my-files', {
+        fetch('https://tutoring-site-production-30eb.up.railway.app/api/files/my-files', {
           headers: { 'Authorization': `Bearer ${localStorage.getItem('tutorToken')}` }
         }),
-        fetch('/api/submissions/all', {
+        fetch('https://tutoring-site-production-30eb.up.railway.app/api/submissions/all', {
           headers: { 'Authorization': `Bearer ${localStorage.getItem('tutorToken')}` }
         })
       ]);
@@ -288,7 +288,7 @@ const Dashboard = () => {
     }
 
     try {
-      const response = await fetch(`/api/submissions/approve/${submissionId}`, {
+      const response = await fetch(`https://tutoring-site-production-30eb.up.railway.app/api/submissions/approve/${submissionId}`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('tutorToken')}`
@@ -317,7 +317,7 @@ const Dashboard = () => {
     if (reason === null) return;
 
     try {
-      const response = await fetch(`/api/submissions/reject/${submissionId}`, {
+      const response = await fetch(`https://tutoring-site-production-30eb.up.railway.app/api/submissions/reject/${submissionId}`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('tutorToken')}`,
@@ -407,7 +407,7 @@ const Dashboard = () => {
     try {
       await Promise.all(
         selectedSubmissions.map(id =>
-          fetch(`/api/submissions/approve/${id}`, {
+          fetch(`https://tutoring-site-production-30eb.up.railway.app/api/submissions/approve/${id}`, {
             method: 'POST',
             headers: { 'Authorization': `Bearer ${localStorage.getItem('tutorToken')}` }
           })
@@ -432,7 +432,7 @@ const Dashboard = () => {
     try {
       await Promise.all(
         selectedSubmissions.map(id =>
-          fetch(`/api/submissions/reject/${id}`, {
+          fetch(`https://tutoring-site-production-30eb.up.railway.app/api/submissions/reject/${id}`, {
             method: 'POST',
             headers: { 
               'Authorization': `Bearer ${localStorage.getItem('tutorToken')}`,
