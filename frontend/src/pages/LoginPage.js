@@ -61,8 +61,15 @@ const LoginPage = () => {
     // If all endpoints fail, try direct browser navigation (bypasses CORS)
     const tryDirectNavigation = () => {
       console.log('🔄 Trying direct browser navigation to backend...');
+      console.log('🔗 BACKEND_URL:', BACKEND_URL);
       const directUrl = `${BACKEND_URL}/api/auth/verify?key=${encodeURIComponent(adminKey)}`;
-      window.open(directUrl, '_blank');
+      console.log('🔗 Opening URL:', directUrl);
+      
+      // Hardcoded fallback to ensure correct backend URL
+      const fallbackUrl = `https://tutoring-site-production-30eb.up.railway.app/api/auth/verify?key=${encodeURIComponent(adminKey)}`;
+      console.log('🔗 Fallback URL:', fallbackUrl);
+      
+      window.open(fallbackUrl, '_blank');
       
       // Show instructions to user
       setError('Backend verification opened in new tab. Please copy the token and paste it here, or check the new tab for login success.');
