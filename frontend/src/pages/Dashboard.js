@@ -31,7 +31,7 @@ import {
 } from 'lucide-react';
 
 const Dashboard = () => {
-  const [files, setFiles] = useState([]);
+  const [files, setFiles] = useState(null);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState('');
@@ -87,10 +87,11 @@ const Dashboard = () => {
     try {
       setLoading(true);
       const response = await filesAPI.getMyFiles();
-      setFiles(response.files);
+      setFiles(response.files || []);
     } catch (error) {
       setError('Failed to load files');
       console.error('Error loading files:', error);
+      setFiles([]); // Set empty array on error
     } finally {
       setLoading(false);
     }
@@ -105,7 +106,7 @@ const Dashboard = () => {
       });
       if (response.ok) {
         const data = await response.json();
-        const newSubmissions = data.submissions;
+        const newSubmissions = data.submissions || [];
         
         // Check for new submissions to trigger notifications
         if (submissions.length > 0 && newSubmissions.length > submissions.length) {
@@ -114,9 +115,13 @@ const Dashboard = () => {
         }
         
         setSubmissions(newSubmissions);
+      } else {
+        console.error('Failed to load submissions:', response.status);
+        setSubmissions([]);
       }
     } catch (error) {
       console.error('Error loading submissions:', error);
+      setSubmissions([]);
     }
   }, [submissions.length, addNotification]);
 
@@ -136,28 +141,58 @@ const Dashboard = () => {
         const filesData = await filesRes.json();
         const submissionsData = await submissionsRes.json();
         
+        const files = filesData.files || [];
+        const submissions = submissionsData.submissions || [];
+        
         const today = new Date().toDateString();
-        const approvedToday = submissionsData.submissions.filter(s => 
+        const approvedToday = submissions.filter(s => 
           s.status === 'approved' && new Date(s.approved_at).toDateString() === today
         ).length;
 
-        const totalSize = filesData.files.reduce((acc, file) => acc + file.size, 0);
+        const totalSize = files.reduce((acc, file) => acc + (file.size || 0), 0);
 
         setStats({
-          totalFiles: filesData.files.length,
-          totalSubmissions: submissionsData.submissions.length,
-          pendingSubmissions: submissionsData.submissions.filter(s => s.status === 'pending').length,
+          totalFiles: files.length,
+          totalSubmissions: submissions.length,
+          pendingSubmissions: submissions.filter(s => s.status === 'pending').length,
           approvedToday,
           totalDownloads: Math.floor(Math.random() * 1000) + 500, // Simulated for demo
           storageUsed: totalSize
         });
+      } else {
+        console.error('Failed to load stats:', { filesRes: filesRes.status, submissionsRes: submissionsRes.status });
+        // Set default stats on error
+        setStats({
+          totalFiles: 0,
+          totalSubmissions: 0,
+          pendingSubmissions: 0,
+          approvedToday: 0,
+          totalDownloads: 0,
+          storageUsed: 0
+        });
       }
     } catch (error) {
       console.error('Error loading stats:', error);
+      // Set default stats on error
+      setStats({
+        totalFiles: 0,
+        totalSubmissions: 0,
+        pendingSubmissions: 0,
+        approvedToday: 0,
+        totalDownloads: 0,
+        storageUsed: 0
+      });
     }
   }, []);
 
   const loadDashboardData = useCallback(async () => {
+    const token = localStorage.getItem('tutorToken');
+    if (!token) {
+      setError('No authentication token found. Please log in again.');
+      setLoading(false);
+      return;
+    }
+    
     await Promise.all([
       loadFiles(),
       loadPendingSubmissions(),
@@ -872,14 +907,14 @@ const Dashboard = () => {
           <CardHeader className="bg-gradient-to-r from-gray-600 to-gray-700 text-white rounded-t-lg">
             <CardTitle className="flex items-center gap-2">
               <FileText className="h-5 w-5" />
-              Your Files ({files.length})
+              Your Files ({files ? files.length : 0})
             </CardTitle>
             <CardDescription className="text-gray-200">
               Manage all your uploaded study materials and resources
             </CardDescription>
           </CardHeader>
           <CardContent className="p-0">
-            {files.length === 0 ? (
+            {!files || files.length === 0 ? (
               <div className="text-center py-16">
                 <div className="p-4 bg-gray-100 rounded-full w-20 h-20 mx-auto mb-4 flex items-center justify-center">
                   <FileText className="w-8 h-8 text-gray-400" />

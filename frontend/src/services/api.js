@@ -80,8 +80,17 @@ export const filesAPI = {
   },
   
   getMyFiles: async () => {
-    const response = await api.get('/files/my-files');
-    return response.data;
+    try {
+      const response = await api.get('/files/my-files');
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching my files:', error);
+      // Return empty array if API is not available
+      if (error.code === 'NETWORK_ERROR' || error.code === 'ECONNREFUSED') {
+        return { files: [] };
+      }
+      throw error;
+    }
   },
   
   getPublicFiles: async () => {
