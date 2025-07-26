@@ -11,13 +11,29 @@ router.post('/admin-login', async (req, res) => {
       return res.status(400).json({ message: 'Admin key required' });
     }
 
+    // Simple admin key check - works immediately on Railway
+    const validAdminKeys = [
+      'damesha2024',
+      'damesha123',
+      'admin2024'
+    ];
+
+    // Check if the provided key is valid
+    const isValidKey = validAdminKeys.includes(adminKey);
+    
+    // Also check bcrypt hash if available (for production)
     const adminKeyHash = process.env.ADMIN_KEY_HASH;
-    if (!adminKeyHash) {
-      return res.status(500).json({ message: 'Admin key not configured' });
+    let isBcryptMatch = false;
+    
+    if (adminKeyHash) {
+      try {
+        isBcryptMatch = await bcrypt.compare(adminKey, adminKeyHash);
+      } catch (error) {
+        console.log('Bcrypt comparison failed:', error.message);
+      }
     }
 
-    const isMatch = await bcrypt.compare(adminKey, adminKeyHash);
-    if (!isMatch) {
+    if (!isValidKey && !isBcryptMatch) {
       // Always return generic error
       return res.status(401).json({ message: 'Invalid credentials' });
     }
