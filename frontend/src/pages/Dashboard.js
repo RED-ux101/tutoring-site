@@ -25,9 +25,6 @@ import {
   ArrowUpRight,
   CheckCheck,
   X,
-  Users,
-  BookOpen,
-  Star,
   Activity,
   Zap,
   Sparkles
@@ -53,7 +50,7 @@ const Dashboard = () => {
   });
   const [showNotifications, setShowNotifications] = useState(false);
   const [notifications, setNotifications] = useState([]);
-  const [userName, setUserName] = useState('Damesha');
+  const [userName] = useState('Damesha');
   const [greeting, setGreeting] = useState('');
   const fileInputRef = useRef(null);
 
