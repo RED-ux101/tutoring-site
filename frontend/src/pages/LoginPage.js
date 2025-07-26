@@ -46,42 +46,66 @@ const LoginPage = () => {
     setLoading(true);
     setError('');
 
-    try {
-      console.log('🔐 Attempting login with key:', adminKey);
-      console.log('🌐 API URL:', '/api/auth/admin-login');
+    // Try both endpoints in case Railway blocks admin-related routes
+    const endpoints = [
+      '/api/auth/admin-login',
+      '/api/auth/secure-access'
+    ];
+
+    for (let i = 0; i < endpoints.length; i++) {
+      const endpoint = endpoints[i];
       
-      const response = await fetch('/api/auth/admin-login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ adminKey })
-      });
-      
-      console.log('📡 Response status:', response.status);
-      console.log('📡 Response ok:', response.ok);
-      
-      if (!response.ok) {
-        const errorData = await response.text();
-        console.error('❌ Backend error:', errorData);
-        throw new Error(`HTTP ${response.status}: ${errorData}`);
+      try {
+        console.log(`🔐 Attempting login ${i + 1}/2 with key:`, adminKey);
+        console.log(`🌐 API URL:`, endpoint);
+        
+        const requestBody = endpoint.includes('secure-access') 
+          ? { accessKey: adminKey }  // Use accessKey for alternative endpoint
+          : { adminKey };            // Use adminKey for original endpoint
+        
+        const response = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(requestBody)
+        });
+        
+        console.log(`📡 Response status (${endpoint}):`, response.status);
+        console.log(`📡 Response ok (${endpoint}):`, response.ok);
+        
+        if (response.ok) {
+          const data = await response.json();
+          console.log('✅ Login successful:', data);
+          login(data.tutor, data.token);
+          navigate('/dashboard');
+          setLoading(false);
+          return; // Success! Exit the function
+        } else {
+          const errorData = await response.text();
+          console.error(`❌ Endpoint ${endpoint} failed:`, errorData);
+          
+          // If this is the last endpoint, throw error
+          if (i === endpoints.length - 1) {
+            throw new Error(`All endpoints failed. Last error: HTTP ${response.status}: ${errorData}`);
+          }
+          // Otherwise, continue to next endpoint
+        }
+      } catch (error) {
+        console.error(`🚨 Error with ${endpoint}:`, error);
+        
+        // If this is the last endpoint, show error
+        if (i === endpoints.length - 1) {
+          setAttempts(prev => prev + 1);
+          setError(`Login failed: ${error.message}`);
+          
+          // Add slight delay for security
+          setTimeout(() => {
+            setLoading(false);
+          }, 1000 + (attempts * 500));
+          return;
+        }
+        // Otherwise, continue to next endpoint
       }
-      
-      const data = await response.json();
-      console.log('✅ Login successful:', data);
-      login(data.tutor, data.token);
-      navigate('/dashboard');
-    } catch (error) {
-      console.error('🚨 Login error:', error);
-      setAttempts(prev => prev + 1);
-      setError(`Login failed: ${error.message}`);
-      
-      // Add slight delay for security
-      setTimeout(() => {
-        setLoading(false);
-      }, 1000 + (attempts * 500));
-      return;
     }
-    
-    setLoading(false);
   };
 
   return (
