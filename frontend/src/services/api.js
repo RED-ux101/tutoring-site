@@ -24,9 +24,19 @@ const api = axios.create({
 // Add auth token to requests
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('tutorToken');
+  console.log('🔐 Token from localStorage:', token ? 'EXISTS' : 'MISSING');
+  console.log('🔐 Token value:', token);
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
+    console.log('🔐 Authorization header set:', `Bearer ${token.substring(0, 20)}...`);
+  } else {
+    console.log('❌ No token found in localStorage');
   }
+  console.log('🔐 Request config:', {
+    url: config.url,
+    method: config.method,
+    headers: config.headers
+  });
   return config;
 });
 
