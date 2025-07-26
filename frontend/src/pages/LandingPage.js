@@ -19,95 +19,52 @@ import {
 
 const LandingPage = () => {
   const { isAuthenticated } = useAuth();
-  const [stats, setStats] = useState({
-    totalFiles: 0,
-    totalDownloads: 0,
-    activeUsers: 0,
-    avgRating: 4.8
-  });
-  const [animatedStats, setAnimatedStats] = useState({
-    totalFiles: 0,
-    totalDownloads: 0,
-    activeUsers: 0
-  });
+  // Simple state for features
+  const [isLoaded, setIsLoaded] = useState(false);
 
-  // Simulate loading stats from API
+  // Simulate loading
   useEffect(() => {
-    // Simulate API call
     setTimeout(() => {
-      setStats({
-        totalFiles: 156,
-        totalDownloads: 2847,
-        activeUsers: 324,
-        avgRating: 4.8
-      });
+      setIsLoaded(true);
     }, 500);
   }, []);
-
-  // Animate numbers counting up
-  useEffect(() => {
-    const animateNumber = (target, current, key, speed = 50) => {
-      if (current < target) {
-        const increment = Math.ceil((target - current) / 20);
-        setTimeout(() => {
-          const newValue = Math.min(current + increment, target);
-          setAnimatedStats(prev => ({ ...prev, [key]: newValue }));
-          if (newValue < target) {
-            animateNumber(target, newValue, key, speed);
-          }
-        }, speed);
-      }
-    };
-
-    if (stats.totalFiles > 0) {
-      animateNumber(stats.totalFiles, animatedStats.totalFiles, 'totalFiles', 30);
-      animateNumber(stats.totalDownloads, animatedStats.totalDownloads, 'totalDownloads', 20);
-      animateNumber(stats.activeUsers, animatedStats.activeUsers, 'activeUsers', 40);
-    }
-  }, [stats, animatedStats.totalFiles, animatedStats.totalDownloads, animatedStats.activeUsers]);
 
   const features = [
     {
       icon: BookOpen,
-      title: "Rich Study Library",
-      description: "Access comprehensive study guides, lecture notes, practice problems, and reference materials across multiple subjects.",
-      color: "blue",
-      stats: `${animatedStats.totalFiles}+ Resources`
+      title: "Study Resources",
+      description: "Access a collection of educational materials including study guides, notes, and reference documents across various subjects.",
+      color: "blue"
     },
     {
       icon: Users,
-      title: "Community Driven",
-      description: "Join a collaborative learning environment where students and educators share knowledge and grow together.",
-      color: "green", 
-      stats: `${animatedStats.activeUsers}+ Active Users`
+      title: "Community Sharing",
+      description: "A platform where students and educators can share knowledge and contribute to a collaborative learning environment.",
+      color: "green"
     },
     {
       icon: Shield,
-      title: "Quality Assured",
-      description: "All resources are carefully reviewed and approved by experienced educators to ensure accuracy and relevance.",
-      color: "purple",
-      stats: `${stats.avgRating}★ Average Rating`
+      title: "Quality Content",
+      description: "Resources are reviewed to ensure they meet educational standards and provide value to the learning community.",
+      color: "purple"
     }
   ];
 
-  const testimonials = [
+  const benefits = [
     {
-      name: "Sarah M.",
-      role: "Computer Science Student",
-      content: "This platform has been a game-changer for my studies. The quality of resources is outstanding!",
-      rating: 5
+      icon: BookOpen,
+      title: "Easy Access",
+      description: "Browse and download educational materials with a simple, intuitive interface designed for students."
     },
     {
-      name: "Alex K.",
-      role: "Engineering Student", 
-      content: "I love how easy it is to find exactly what I need. The search and organization are perfect.",
-      rating: 5
+      icon: Upload,
+      title: "Simple Sharing",
+      description: "Contribute your own study materials to help others in their learning journey."
     },
     {
-      name: "Maria L.",
-      role: "Mathematics Student",
-      content: "Contributing my own resources and helping others has made learning so much more engaging.",
-      rating: 5
+      icon: Shield,
+      title: "Reliable Platform",
+      description: "A secure and stable platform for sharing and accessing educational resources."
     }
   ];
 
@@ -147,19 +104,19 @@ const LandingPage = () => {
               dedicated to collaborative learning and academic growth.
             </p>
 
-            {/* Animated Stats */}
+            {/* Platform Info */}
             <div className="grid grid-cols-3 gap-6 max-w-lg mx-auto mb-8 animate-slideUp" style={{animationDelay: '0.4s'}}>
               <div className="text-center">
-                <div className="text-2xl font-bold text-primary">{animatedStats.totalFiles}+</div>
-                <div className="text-sm text-muted-foreground">Resources</div>
+                <div className="text-2xl font-bold text-primary">Free</div>
+                <div className="text-sm text-muted-foreground">Access</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-primary">{animatedStats.totalDownloads}+</div>
-                <div className="text-sm text-muted-foreground">Downloads</div>
+                <div className="text-2xl font-bold text-primary">Simple</div>
+                <div className="text-sm text-muted-foreground">Interface</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-primary">{animatedStats.activeUsers}+</div>
-                <div className="text-sm text-muted-foreground">Students</div>
+                <div className="text-2xl font-bold text-primary">Secure</div>
+                <div className="text-sm text-muted-foreground">Platform</div>
               </div>
             </div>
             
@@ -235,7 +192,7 @@ const LandingPage = () => {
                       {feature.title}
                     </CardTitle>
                     <Badge variant="secondary" className="text-xs">
-                      {feature.stats}
+                      Available
                     </Badge>
                   </CardHeader>
                   <CardContent className="text-center">
@@ -260,52 +217,43 @@ const LandingPage = () => {
         </div>
       </section>
 
-      {/* Testimonials Section */}
+      {/* Benefits Section */}
       <section className="py-24 bg-gradient-to-br from-gray-50 to-blue-50 dark:from-slate-800 dark:to-slate-900">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <Badge variant="outline" className="mb-4">
               <Heart className="w-4 h-4 mr-1 text-red-500" />
-              Student Love
+              Why Choose Us
             </Badge>
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-              What our community says
+              Simple, effective learning platform
             </h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Join thousands of satisfied students who have transformed their learning experience.
+              A straightforward approach to sharing and accessing educational resources.
             </p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-            {testimonials.map((testimonial, index) => (
-              <Card 
-                key={testimonial.name}
-                className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
-                style={{ animationDelay: `${index * 0.1}s` }}
-              >
-                <CardContent className="p-6">
-                  <div className="flex mb-4">
-                    {[...Array(testimonial.rating)].map((_, i) => (
-                      <Star key={i} className="w-4 h-4 text-yellow-500 fill-current" />
-                    ))}
-                  </div>
-                  <blockquote className="text-muted-foreground mb-4 italic">
-                    "{testimonial.content}"
-                  </blockquote>
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
-                      <span className="text-sm font-semibold text-primary">
-                        {testimonial.name.charAt(0)}
-                      </span>
+            {benefits.map((benefit, index) => {
+              const Icon = benefit.icon;
+              return (
+                <Card 
+                  key={benefit.title}
+                  className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+                  style={{ animationDelay: `${index * 0.1}s` }}
+                >
+                  <CardContent className="p-6 text-center">
+                    <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mx-auto mb-4">
+                      <Icon className="w-6 h-6 text-primary" />
                     </div>
-                    <div>
-                      <div className="font-semibold text-sm">{testimonial.name}</div>
-                      <div className="text-xs text-muted-foreground">{testimonial.role}</div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+                    <h3 className="text-lg font-semibold mb-2">{benefit.title}</h3>
+                    <p className="text-muted-foreground">
+                      {benefit.description}
+                    </p>
+                  </CardContent>
+                </Card>
+              );
+            })}
           </div>
         </div>
       </section>
@@ -319,7 +267,7 @@ const LandingPage = () => {
               Ready to elevate your learning?
             </h2>
             <p className="text-xl mb-8 opacity-90">
-              Join our community today and discover the power of collaborative education.
+              Start exploring educational resources and contribute to the learning community.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button asChild size="lg" variant="secondary" className="text-lg px-8 py-6 group">
