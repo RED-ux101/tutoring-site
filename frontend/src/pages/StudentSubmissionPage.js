@@ -110,8 +110,8 @@ const StudentSubmissionPage = () => {
       submissionData.append('description', formData.description);
       submissionData.append('category', formData.category);
 
-      // Submit to backend
-      const response = await fetch('/api/submissions/submit', {
+      // Submit to backend using the correct API URL
+      const response = await fetch('https://tutoring-site-production-30eb.up.railway.app/api/submissions/submit', {
         method: 'POST',
         body: submissionData
       });

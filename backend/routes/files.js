@@ -118,12 +118,13 @@ router.get('/my-files', auth, (req, res) => {
 // Get all public files (no auth required)
 router.get('/public', (req, res) => {
   db.all(
-    `SELECT files.*, tutors.name as tutor_name 
+    `SELECT files.*, COALESCE(tutors.name, 'Admin') as tutor_name 
      FROM files 
-     JOIN tutors ON files.tutor_id = tutors.id 
+     LEFT JOIN tutors ON files.tutor_id = tutors.id 
      ORDER BY files.uploaded_at DESC`,
     (err, rows) => {
       if (err) {
+        console.error('Database error:', err);
         return res.status(500).json({ message: 'Database error' });
       }
 
@@ -134,9 +135,10 @@ router.get('/public', (req, res) => {
         size: file.file_size,
         mimeType: file.mime_type,
         uploadedAt: file.uploaded_at,
-        tutorName: file.tutor_name
+        tutorName: file.tutor_name || 'Admin'
       }));
 
+      console.log(`Found ${files.length} public files`);
       res.json({ files });
     }
   );
