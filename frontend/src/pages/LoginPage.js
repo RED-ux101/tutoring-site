@@ -47,22 +47,32 @@ const LoginPage = () => {
     setError('');
 
     try {
+      console.log('🔐 Attempting login with key:', adminKey);
+      console.log('🌐 API URL:', '/api/auth/admin-login');
+      
       const response = await fetch('/api/auth/admin-login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ adminKey })
       });
       
+      console.log('📡 Response status:', response.status);
+      console.log('📡 Response ok:', response.ok);
+      
       if (!response.ok) {
-        throw new Error('Invalid credentials');
+        const errorData = await response.text();
+        console.error('❌ Backend error:', errorData);
+        throw new Error(`HTTP ${response.status}: ${errorData}`);
       }
       
       const data = await response.json();
+      console.log('✅ Login successful:', data);
       login(data.tutor, data.token);
       navigate('/dashboard');
     } catch (error) {
+      console.error('🚨 Login error:', error);
       setAttempts(prev => prev + 1);
-      setError('Invalid access key');
+      setError(`Login failed: ${error.message}`);
       
       // Add slight delay for security
       setTimeout(() => {
