@@ -19,14 +19,9 @@ import {
 
 const LandingPage = () => {
   const { isAuthenticated } = useAuth();
-  // Simple state for features
-  const [isLoaded, setIsLoaded] = useState(false);
-
-  // Simulate loading
+  // Component is ready
   useEffect(() => {
-    setTimeout(() => {
-      setIsLoaded(true);
-    }, 500);
+    // Component mounted successfully
   }, []);
 
   const features = [
