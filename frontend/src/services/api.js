@@ -37,9 +37,11 @@ api.interceptors.response.use(
     console.error('API Error:', error);
     
     if (error.response?.status === 401) {
-      localStorage.removeItem('tutorToken');
-      localStorage.removeItem('tutorData');
-      window.location.href = '/login';
+      console.error('401 Unauthorized - Token might be invalid');
+      // Don't automatically logout, let the component handle it
+      // localStorage.removeItem('tutorToken');
+      // localStorage.removeItem('tutorData');
+      // window.location.href = '/admin';
     } else if (error.code === 'NETWORK_ERROR' || error.code === 'ECONNREFUSED') {
       console.error('Network error - backend may not be available');
     }
