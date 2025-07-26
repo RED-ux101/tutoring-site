@@ -117,7 +117,9 @@ const StudentSubmissionPage = () => {
       });
 
       if (!response.ok) {
-        throw new Error('Submission failed');
+        const errorText = await response.text();
+        console.error('Submission failed:', response.status, errorText);
+        throw new Error(`Submission failed: ${response.status} - ${errorText || 'Server error'}`);
       }
 
       setSuccess('Thank you! Your resource has been submitted for review. Damesha will review it and add it to the collection if appropriate.');
@@ -134,7 +136,12 @@ const StudentSubmissionPage = () => {
       // Clear success message after 5 seconds
       setTimeout(() => setSuccess(''), 5000);
     } catch (error) {
-      setError('Failed to submit resource. Please try again.');
+      console.error('Submission error:', error);
+      if (error.message.includes('fetch')) {
+        setError('Unable to connect to the server. Please check your internet connection and try again.');
+      } else {
+        setError(`Submission failed: ${error.message}`);
+      }
     } finally {
       setLoading(false);
     }
@@ -171,19 +178,19 @@ const StudentSubmissionPage = () => {
             Have a helpful study guide, notes, or educational material? Share it with the learning community and help others succeed!
           </p>
           
-          {/* Stats */}
+          {/* Platform Info */}
           <div className="flex justify-center gap-8 mt-8 animate-slideUp" style={{animationDelay: '0.4s'}}>
             <div className="text-center">
-              <div className="text-2xl font-bold text-primary">324+</div>
-              <div className="text-sm text-muted-foreground">Contributors</div>
+              <div className="text-2xl font-bold text-primary">Free</div>
+              <div className="text-sm text-muted-foreground">Submission</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-primary">1,847</div>
-              <div className="text-sm text-muted-foreground">Resources Shared</div>
+              <div className="text-2xl font-bold text-primary">Simple</div>
+              <div className="text-sm text-muted-foreground">Process</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-primary">4.9★</div>
-              <div className="text-sm text-muted-foreground">Avg Rating</div>
+              <div className="text-2xl font-bold text-primary">Secure</div>
+              <div className="text-sm text-muted-foreground">Platform</div>
             </div>
           </div>
         </div>
@@ -449,16 +456,16 @@ const StudentSubmissionPage = () => {
                 </p>
                 <div className="flex justify-center gap-6">
                   <div className="text-center">
-                    <div className="text-xl font-bold text-primary">98%</div>
-                    <div className="text-xs text-muted-foreground">Approval Rate</div>
+                    <div className="text-xl font-bold text-primary">Quality</div>
+                    <div className="text-xs text-muted-foreground">Reviewed Content</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-xl font-bold text-primary">2.3k+</div>
-                    <div className="text-xs text-muted-foreground">Happy Students</div>
+                    <div className="text-xl font-bold text-primary">Community</div>
+                    <div className="text-xs text-muted-foreground">Driven Learning</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-xl font-bold text-primary">4.9★</div>
-                    <div className="text-xs text-muted-foreground">Avg Rating</div>
+                    <div className="text-xl font-bold text-primary">Support</div>
+                    <div className="text-xs text-muted-foreground">Always Available</div>
                   </div>
                 </div>
               </div>
