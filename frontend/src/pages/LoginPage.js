@@ -76,19 +76,42 @@ const LoginPage = () => {
         console.log(`📡 Response ok (${endpoint.url}):`, response.ok);
         
         if (response.ok) {
-          const data = await response.json();
-          console.log('✅ Login successful:', data);
-          login(data.tutor, data.token);
-          navigate('/dashboard');
-          setLoading(false);
-          return; // Success! Exit the function
+          const contentType = response.headers.get('content-type');
+          console.log('📄 Content-Type:', contentType);
+          
+          if (contentType && contentType.includes('application/json')) {
+            const data = await response.json();
+            console.log('✅ Login successful:', data);
+            login(data.tutor, data.token);
+            navigate('/dashboard');
+            setLoading(false);
+            return; // Success! Exit the function
+          } else {
+            const textData = await response.text();
+            console.log('⚠️ Non-JSON response:', textData);
+            throw new Error(`Server returned non-JSON response: ${textData.substring(0, 200)}...`);
+          }
         } else {
-          const errorData = await response.text();
+          const contentType = response.headers.get('content-type');
+          console.log('📄 Error Content-Type:', contentType);
+          
+          let errorData;
+          if (contentType && contentType.includes('application/json')) {
+            try {
+              errorData = await response.json();
+              errorData = JSON.stringify(errorData);
+            } catch (e) {
+              errorData = await response.text();
+            }
+          } else {
+            errorData = await response.text();
+          }
+          
           console.error(`❌ Endpoint ${endpoint.url} failed:`, errorData);
           
           // If this is the last endpoint, throw error
           if (i === endpoints.length - 1) {
-            throw new Error(`All endpoints failed. Last error: HTTP ${response.status}: ${errorData}`);
+            throw new Error(`All endpoints failed. Last error: HTTP ${response.status}: ${errorData.substring(0, 200)}...`);
           }
           // Otherwise, continue to next endpoint
         }
