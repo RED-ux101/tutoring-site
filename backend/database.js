@@ -37,6 +37,7 @@ const initDB = () => {
           file_path TEXT NOT NULL,
           file_size INTEGER NOT NULL,
           mime_type TEXT NOT NULL,
+          category TEXT,
           uploaded_at DATETIME DEFAULT CURRENT_TIMESTAMP,
           FOREIGN KEY (tutor_id) REFERENCES tutors (id)
         )
@@ -65,8 +66,15 @@ const initDB = () => {
         if (err) {
           reject(err);
         } else {
-          console.log('Database initialized successfully');
-          resolve();
+          // Add category column to files table if it doesn't exist (migration)
+          db.run(`ALTER TABLE files ADD COLUMN category TEXT`, (err) => {
+            if (err && !err.message.includes('duplicate column name')) {
+              console.error('Migration error:', err);
+            } else {
+              console.log('Database initialized successfully');
+              resolve();
+            }
+          });
         }
       });
     });
