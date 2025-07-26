@@ -1,18 +1,13 @@
 import axios from 'axios';
 
-// More robust API base URL detection
+// Force the correct backend URL
 const getApiBaseUrl = () => {
-  // Always use the backend URL environment variable if available
-  if (process.env.REACT_APP_BACKEND_URL) {
-    return `${process.env.REACT_APP_BACKEND_URL}/api`;
-  }
-  
   if (process.env.NODE_ENV === 'production') {
-    // Use the backend Railway URL
+    // Force the correct backend Railway URL
     return 'https://tutoring-site-production-30eb.up.railway.app/api';
   } else {
     // In development, use localhost backend
-    return process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+    return 'http://localhost:5000/api';
   }
 };
 
