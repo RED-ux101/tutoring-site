@@ -8,8 +8,8 @@ const getApiBaseUrl = () => {
   }
   
   if (process.env.NODE_ENV === 'production') {
-    // Use the same domain as the frontend
-    return 'https://tutoring-site-production.up.railway.app/api';
+    // Use the backend Railway URL
+    return 'https://tutoring-site-production-30eb.up.railway.app/api';
   } else {
     // In development, use localhost backend
     return process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
