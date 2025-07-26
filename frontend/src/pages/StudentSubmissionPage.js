@@ -137,8 +137,8 @@ const StudentSubmissionPage = () => {
       setTimeout(() => setSuccess(''), 5000);
     } catch (error) {
       console.error('Submission error:', error);
-      if (error.message.includes('fetch')) {
-        setError('Unable to connect to the server. Please check your internet connection and try again.');
+      if (error.message.includes('fetch') || error.message.includes('405')) {
+        setError('The submission service is currently unavailable. Please try again later or contact support.');
       } else {
         setError(`Submission failed: ${error.message}`);
       }
