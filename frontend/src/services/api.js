@@ -42,12 +42,22 @@ api.interceptors.request.use((config) => {
 
 // Handle auth errors and network issues
 api.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    console.log('✅ API Response received:', {
+      status: response.status,
+      url: response.config.url,
+      data: response.data
+    });
+    return response;
+  },
   (error) => {
-    console.error('API Error:', error);
+    console.error('❌ API Error:', error);
+    console.error('❌ Error response:', error.response);
+    console.error('❌ Error config:', error.config);
     
     if (error.response?.status === 401) {
       console.error('401 Unauthorized - Token might be invalid');
+      console.error('401 Response data:', error.response.data);
       // Don't automatically logout, let the component handle it
       // localStorage.removeItem('tutorToken');
       // localStorage.removeItem('tutorData');
@@ -125,6 +135,36 @@ export const filesAPI = {
   getDownloadUrl: (fileId) => {
     return `${API_BASE_URL}/files/download/${fileId}`;
   },
+};
+
+// Test function to compare axios vs fetch
+export const testAPI = async () => {
+  const token = localStorage.getItem('tutorToken');
+  console.log('🧪 Testing API with token:', token ? 'EXISTS' : 'MISSING');
+  
+  // Test with axios
+  try {
+    console.log('🧪 Testing with axios...');
+    const axiosResponse = await api.get('/files/my-files');
+    console.log('✅ Axios response:', axiosResponse.data);
+  } catch (axiosError) {
+    console.log('❌ Axios error:', axiosError.response?.status, axiosError.response?.data);
+  }
+  
+  // Test with fetch
+  try {
+    console.log('🧪 Testing with fetch...');
+    const fetchResponse = await fetch('https://tutoring-site-production-30eb.up.railway.app/api/files/my-files', {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    });
+    const fetchData = await fetchResponse.text();
+    console.log('✅ Fetch response:', fetchResponse.status, fetchData);
+  } catch (fetchError) {
+    console.log('❌ Fetch error:', fetchError);
+  }
 };
 
 export default api; 

@@ -7,6 +7,7 @@ const auth = (req, res, next) => {
   const token = authHeader?.replace('Bearer ', '');
   console.log('🔐 Auth middleware - Extracted token:', token ? 'EXISTS' : 'MISSING');
   console.log('🔐 Auth middleware - Token value:', token);
+  console.log('🔐 Auth middleware - JWT_SECRET:', process.env.JWT_SECRET || 'your-secret-key');
 
   if (!token) {
     console.log('❌ Auth middleware - No token provided');
@@ -21,6 +22,7 @@ const auth = (req, res, next) => {
     next();
   } catch (error) {
     console.log('❌ Auth middleware - Token verification failed:', error.message);
+    console.log('❌ Auth middleware - Error details:', error);
     res.status(401).json({ message: 'Token is not valid' });
   }
 };
