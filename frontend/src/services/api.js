@@ -133,7 +133,9 @@ export const filesAPI = {
   },
   
   renameFile: async (fileId, newName) => {
+    console.log('🔧 API: Renaming file', fileId, 'to', newName);
     const response = await api.put(`/files/${fileId}/rename`, { newName });
+    console.log('🔧 API: File rename response', response);
     return response.data;
   },
   
@@ -186,7 +188,9 @@ export const submissionsAPI = {
   },
   
   renameSubmission: async (submissionId, newName) => {
+    console.log('🔧 API: Renaming submission', submissionId, 'to', newName);
     const response = await api.put(`/submissions/${submissionId}/rename`, { newName });
+    console.log('🔧 API: Submission rename response', response);
     return response.data;
   }
 };

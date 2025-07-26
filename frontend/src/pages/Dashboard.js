@@ -279,28 +279,42 @@ const Dashboard = () => {
   };
 
   const handleSaveRename = async () => {
+    console.log('🔧 Starting rename process...');
+    console.log('🔧 Renaming file:', renamingFile);
+    console.log('🔧 New name:', newFileName);
+    
     if (!newFileName.trim()) {
+      console.log('❌ Name is empty');
       addNotification('Name cannot be empty', 'error');
       return;
     }
 
     try {
+      console.log('🔧 Checking file type:', renamingFile.type);
+      
       if (renamingFile.type === 'submission') {
+        console.log('🔧 Renaming submission...');
         // Rename submission
-        await filesAPI.renameSubmission(renamingFile.id, newFileName.trim());
+        await submissionsAPI.renameSubmission(renamingFile.id, newFileName.trim());
+        console.log('✅ Submission renamed successfully');
         addNotification(`Submission renamed to "${newFileName.trim()}" successfully`, 'success');
         loadPendingSubmissions();
       } else {
+        console.log('🔧 Renaming file...');
         // Rename file
         await filesAPI.renameFile(renamingFile.id, newFileName.trim());
+        console.log('✅ File renamed successfully');
         addNotification(`File renamed to "${newFileName.trim()}" successfully`, 'success');
         loadFiles();
       }
+      
+      console.log('🔧 Closing modal...');
       setShowRenameModal(false);
       setRenamingFile(null);
       setNewFileName('');
+      console.log('✅ Rename process completed');
     } catch (error) {
-      console.error('Error renaming:', error);
+      console.error('❌ Error during rename:', error);
       addNotification('Failed to rename', 'error');
     }
   };
