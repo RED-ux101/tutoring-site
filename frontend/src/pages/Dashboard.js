@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { filesAPI } from '../services/api';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { Button } from '../components/ui/button';
@@ -18,16 +18,11 @@ import {
   Plus,
   Eye,
   Search,
-  Filter,
   BarChart3,
-  Users,
   TrendingUp,
   RefreshCw,
-  Settings,
   Bell,
-  Calendar,
   ArrowUpRight,
-  ArrowDownRight,
   CheckCheck,
   X
 } from 'lucide-react';
@@ -54,27 +49,24 @@ const Dashboard = () => {
   const [notifications, setNotifications] = useState([]);
   const fileInputRef = useRef(null);
 
-  useEffect(() => {
-    loadDashboardData();
-    
-    // Set up periodic refresh for real-time updates
-    const interval = setInterval(() => {
-      loadPendingSubmissions();
-      updateNotifications();
-    }, 30000); // Check every 30 seconds
-
-    return () => clearInterval(interval);
+  const addNotification = useCallback((message, type = 'info') => {
+    const notification = {
+      id: Date.now(),
+      message,
+      type,
+      timestamp: new Date()
+    };
+    setNotifications(prev => [notification, ...prev.slice(0, 4)]); // Keep last 5
   }, []);
 
-  const loadDashboardData = async () => {
-    await Promise.all([
-      loadFiles(),
-      loadPendingSubmissions(),
-      loadStats()
-    ]);
-  };
+  const updateNotifications = useCallback(() => {
+    // Clean up old notifications (older than 5 minutes)
+    setNotifications(prev => prev.filter(n => 
+      Date.now() - n.timestamp.getTime() < 5 * 60 * 1000
+    ));
+  }, []);
 
-  const loadFiles = async () => {
+  const loadFiles = useCallback(async () => {
     try {
       setLoading(true);
       const response = await filesAPI.getMyFiles();
@@ -85,9 +77,9 @@ const Dashboard = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const loadPendingSubmissions = async () => {
+  const loadPendingSubmissions = useCallback(async () => {
     try {
       const response = await fetch('/api/submissions/pending', {
         headers: {
@@ -109,9 +101,9 @@ const Dashboard = () => {
     } catch (error) {
       console.error('Error loading submissions:', error);
     }
-  };
+  }, [submissions.length, addNotification]);
 
-  const loadStats = async () => {
+  const loadStats = useCallback(async () => {
     try {
       // Load comprehensive stats
       const [filesRes, submissionsRes] = await Promise.all([
@@ -146,24 +138,27 @@ const Dashboard = () => {
     } catch (error) {
       console.error('Error loading stats:', error);
     }
-  };
+  }, []);
 
-  const addNotification = (message, type = 'info') => {
-    const notification = {
-      id: Date.now(),
-      message,
-      type,
-      timestamp: new Date()
-    };
-    setNotifications(prev => [notification, ...prev.slice(0, 4)]); // Keep last 5
-  };
+  const loadDashboardData = useCallback(async () => {
+    await Promise.all([
+      loadFiles(),
+      loadPendingSubmissions(),
+      loadStats()
+    ]);
+  }, [loadFiles, loadPendingSubmissions, loadStats]);
 
-  const updateNotifications = () => {
-    // Clean up old notifications (older than 5 minutes)
-    setNotifications(prev => prev.filter(n => 
-      Date.now() - n.timestamp.getTime() < 5 * 60 * 1000
-    ));
-  };
+  useEffect(() => {
+    loadDashboardData();
+    
+    // Set up periodic refresh for real-time updates
+    const interval = setInterval(() => {
+      loadPendingSubmissions();
+      updateNotifications();
+    }, 30000); // Check every 30 seconds
+
+    return () => clearInterval(interval);
+  }, [loadDashboardData, loadPendingSubmissions, updateNotifications]);
 
   const handleFileUpload = async (file) => {
     if (!file) return;

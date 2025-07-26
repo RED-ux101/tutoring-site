@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { filesAPI } from '../services/api';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { Button } from '../components/ui/button';
@@ -12,17 +12,11 @@ import {
   Search,
   BookOpen,
   AlertCircle,
-  Calendar,
   User,
-  HardDriveIcon,
-  Filter,
   Grid,
   List,
-  Eye,
   Star,
-  TrendingUp,
-  Clock,
-  ArrowUpDown
+  Clock
 } from 'lucide-react';
 
 const PublicFilesPage = () => {
@@ -39,11 +33,7 @@ const PublicFilesPage = () => {
     categories: []
   });
 
-  useEffect(() => {
-    loadFiles();
-  }, []);
-
-  const loadFiles = async () => {
+  const loadFiles = useCallback(async () => {
     try {
       setLoading(true);
       const response = await filesAPI.getPublicFiles();
@@ -62,7 +52,11 @@ const PublicFilesPage = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    loadFiles();
+  }, [loadFiles]);
 
   // Filter and sort files
   const filteredAndSortedFiles = files

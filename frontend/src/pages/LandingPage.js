@@ -8,14 +8,9 @@ import {
   BookOpen, 
   Upload, 
   Users, 
-  Download, 
   GraduationCap, 
-  FileText, 
   Star,
-  TrendingUp,
   Shield,
-  Clock,
-  CheckCircle,
   ArrowRight,
   Sparkles,
   Heart,
@@ -51,28 +46,25 @@ const LandingPage = () => {
 
   // Animate numbers counting up
   useEffect(() => {
-    const animateNumber = (target, current, setter, speed = 50) => {
+    const animateNumber = (target, current, key, speed = 50) => {
       if (current < target) {
         const increment = Math.ceil((target - current) / 20);
         setTimeout(() => {
           const newValue = Math.min(current + increment, target);
-          setter(prev => ({ ...prev, [setter.name]: newValue }));
+          setAnimatedStats(prev => ({ ...prev, [key]: newValue }));
           if (newValue < target) {
-            animateNumber(target, newValue, setter, speed);
+            animateNumber(target, newValue, key, speed);
           }
         }, speed);
       }
     };
 
     if (stats.totalFiles > 0) {
-      animateNumber(stats.totalFiles, animatedStats.totalFiles, 
-        { name: 'totalFiles', fn: setAnimatedStats }, 30);
-      animateNumber(stats.totalDownloads, animatedStats.totalDownloads, 
-        { name: 'totalDownloads', fn: setAnimatedStats }, 20);
-      animateNumber(stats.activeUsers, animatedStats.activeUsers, 
-        { name: 'activeUsers', fn: setAnimatedStats }, 40);
+      animateNumber(stats.totalFiles, animatedStats.totalFiles, 'totalFiles', 30);
+      animateNumber(stats.totalDownloads, animatedStats.totalDownloads, 'totalDownloads', 20);
+      animateNumber(stats.activeUsers, animatedStats.activeUsers, 'activeUsers', 40);
     }
-  }, [stats]);
+  }, [stats, animatedStats.totalFiles, animatedStats.totalDownloads, animatedStats.activeUsers]);
 
   const features = [
     {
