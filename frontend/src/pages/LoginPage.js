@@ -46,31 +46,34 @@ const LoginPage = () => {
     setLoading(true);
     setError('');
 
-    // Try both endpoints in case Railway blocks admin-related routes
+    // Try multiple endpoints in case Railway blocks admin-related routes
     const endpoints = [
-      '/api/auth/admin-login',
-      '/api/auth/secure-access'
+      { url: '/api/auth/admin-login', method: 'POST', body: { adminKey } },
+      { url: '/api/auth/secure-access', method: 'POST', body: { accessKey: adminKey } },
+      { url: `/api/auth/verify?key=${encodeURIComponent(adminKey)}`, method: 'GET', body: null }
     ];
 
     for (let i = 0; i < endpoints.length; i++) {
       const endpoint = endpoints[i];
       
       try {
-        console.log(`🔐 Attempting login ${i + 1}/2 with key:`, adminKey);
-        console.log(`🌐 API URL:`, endpoint);
+        console.log(`🔐 Attempting login ${i + 1}/${endpoints.length} with key:`, adminKey);
+        console.log(`🌐 API URL:`, endpoint.url);
+        console.log(`🔧 Method:`, endpoint.method);
         
-        const requestBody = endpoint.includes('secure-access') 
-          ? { accessKey: adminKey }  // Use accessKey for alternative endpoint
-          : { adminKey };            // Use adminKey for original endpoint
+        const fetchOptions = {
+          method: endpoint.method,
+          headers: endpoint.method === 'POST' ? { 'Content-Type': 'application/json' } : {}
+        };
         
-        const response = await fetch(endpoint, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(requestBody)
-        });
+        if (endpoint.body) {
+          fetchOptions.body = JSON.stringify(endpoint.body);
+        }
         
-        console.log(`📡 Response status (${endpoint}):`, response.status);
-        console.log(`📡 Response ok (${endpoint}):`, response.ok);
+        const response = await fetch(endpoint.url, fetchOptions);
+        
+        console.log(`📡 Response status (${endpoint.url}):`, response.status);
+        console.log(`📡 Response ok (${endpoint.url}):`, response.ok);
         
         if (response.ok) {
           const data = await response.json();
@@ -81,7 +84,7 @@ const LoginPage = () => {
           return; // Success! Exit the function
         } else {
           const errorData = await response.text();
-          console.error(`❌ Endpoint ${endpoint} failed:`, errorData);
+          console.error(`❌ Endpoint ${endpoint.url} failed:`, errorData);
           
           // If this is the last endpoint, throw error
           if (i === endpoints.length - 1) {
@@ -90,7 +93,7 @@ const LoginPage = () => {
           // Otherwise, continue to next endpoint
         }
       } catch (error) {
-        console.error(`🚨 Error with ${endpoint}:`, error);
+        console.error(`🚨 Error with ${endpoint.url}:`, error);
         
         // If this is the last endpoint, show error
         if (i === endpoints.length - 1) {
