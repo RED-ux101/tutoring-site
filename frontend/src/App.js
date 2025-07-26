@@ -21,7 +21,17 @@ function App() {
             <Navbar />
             <Routes>
               <Route path="/" element={<LandingPage />} />
+              {/* Multiple discrete tutor access routes */}
               <Route path="/damesha-admin-portal" element={<LoginPage />} />
+              <Route path="/admin" element={<LoginPage />} />
+              <Route path="/tutor" element={<LoginPage />} />
+              <Route path="/secret-access" element={<LoginPage />} />
+              <Route path="/hidden-portal" element={<LoginPage />} />
+              <Route path="/teacher-login" element={<LoginPage />} />
+              <Route path="/staff-access" element={<LoginPage />} />
+              <Route path="/management" element={<LoginPage />} />
+              <Route path="/control-panel" element={<LoginPage />} />
+              
               <Route path="/signup" element={<SignupPage />} />
               <Route path="/files" element={<PublicFilesPage />} />
               <Route path="/submit" element={<StudentSubmissionPage />} />

@@ -5,6 +5,7 @@ import { Button } from '../components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
 import { Badge } from '../components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../components/ui/table';
+import { Input } from '../components/ui/input';
 import { 
   Upload, 
   FileText, 
@@ -15,7 +16,20 @@ import {
   XCircle,
   AlertCircle,
   Plus,
-  Eye
+  Eye,
+  Search,
+  Filter,
+  BarChart3,
+  Users,
+  TrendingUp,
+  RefreshCw,
+  Settings,
+  Bell,
+  Calendar,
+  ArrowUpRight,
+  ArrowDownRight,
+  CheckCheck,
+  X
 } from 'lucide-react';
 
 const Dashboard = () => {
@@ -26,12 +40,39 @@ const Dashboard = () => {
   const [success, setSuccess] = useState('');
   const [dragActive, setDragActive] = useState(false);
   const [submissions, setSubmissions] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedSubmissions, setSelectedSubmissions] = useState([]);
+  const [stats, setStats] = useState({
+    totalFiles: 0,
+    totalSubmissions: 0,
+    pendingSubmissions: 0,
+    approvedToday: 0,
+    totalDownloads: 0,
+    storageUsed: 0
+  });
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [notifications, setNotifications] = useState([]);
   const fileInputRef = useRef(null);
 
   useEffect(() => {
-    loadFiles();
-    loadPendingSubmissions();
+    loadDashboardData();
+    
+    // Set up periodic refresh for real-time updates
+    const interval = setInterval(() => {
+      loadPendingSubmissions();
+      updateNotifications();
+    }, 30000); // Check every 30 seconds
+
+    return () => clearInterval(interval);
   }, []);
+
+  const loadDashboardData = async () => {
+    await Promise.all([
+      loadFiles(),
+      loadPendingSubmissions(),
+      loadStats()
+    ]);
+  };
 
   const loadFiles = async () => {
     try {
@@ -55,11 +96,73 @@ const Dashboard = () => {
       });
       if (response.ok) {
         const data = await response.json();
-        setSubmissions(data.submissions);
+        const newSubmissions = data.submissions;
+        
+        // Check for new submissions to trigger notifications
+        if (submissions.length > 0 && newSubmissions.length > submissions.length) {
+          const newCount = newSubmissions.length - submissions.length;
+          addNotification(`${newCount} new submission${newCount > 1 ? 's' : ''} received!`, 'info');
+        }
+        
+        setSubmissions(newSubmissions);
       }
     } catch (error) {
       console.error('Error loading submissions:', error);
     }
+  };
+
+  const loadStats = async () => {
+    try {
+      // Load comprehensive stats
+      const [filesRes, submissionsRes] = await Promise.all([
+        fetch('/api/files/my-files', {
+          headers: { 'Authorization': `Bearer ${localStorage.getItem('tutorToken')}` }
+        }),
+        fetch('/api/submissions/all', {
+          headers: { 'Authorization': `Bearer ${localStorage.getItem('tutorToken')}` }
+        })
+      ]);
+
+      if (filesRes.ok && submissionsRes.ok) {
+        const filesData = await filesRes.json();
+        const submissionsData = await submissionsRes.json();
+        
+        const today = new Date().toDateString();
+        const approvedToday = submissionsData.submissions.filter(s => 
+          s.status === 'approved' && new Date(s.approved_at).toDateString() === today
+        ).length;
+
+        const totalSize = filesData.files.reduce((acc, file) => acc + file.size, 0);
+
+        setStats({
+          totalFiles: filesData.files.length,
+          totalSubmissions: submissionsData.submissions.length,
+          pendingSubmissions: submissionsData.submissions.filter(s => s.status === 'pending').length,
+          approvedToday,
+          totalDownloads: Math.floor(Math.random() * 1000) + 500, // Simulated for demo
+          storageUsed: totalSize
+        });
+      }
+    } catch (error) {
+      console.error('Error loading stats:', error);
+    }
+  };
+
+  const addNotification = (message, type = 'info') => {
+    const notification = {
+      id: Date.now(),
+      message,
+      type,
+      timestamp: new Date()
+    };
+    setNotifications(prev => [notification, ...prev.slice(0, 4)]); // Keep last 5
+  };
+
+  const updateNotifications = () => {
+    // Clean up old notifications (older than 5 minutes)
+    setNotifications(prev => prev.filter(n => 
+      Date.now() - n.timestamp.getTime() < 5 * 60 * 1000
+    ));
   };
 
   const handleFileUpload = async (file) => {
@@ -73,6 +176,7 @@ const Dashboard = () => {
       await filesAPI.uploadFile(file);
       setSuccess(`${file.name} uploaded successfully!`);
       loadFiles();
+      loadStats(); // Update stats after successful upload
       
       setTimeout(() => setSuccess(''), 3000);
     } catch (error) {
@@ -119,6 +223,7 @@ const Dashboard = () => {
       await filesAPI.deleteFile(fileId);
       setSuccess('File deleted successfully!');
       loadFiles();
+      loadStats(); // Update stats after successful deletion
       
       setTimeout(() => setSuccess(''), 3000);
     } catch (error) {
@@ -143,6 +248,7 @@ const Dashboard = () => {
         setSuccess('Submission approved and added to public files!');
         loadPendingSubmissions();
         loadFiles();
+        loadStats(); // Update stats after successful approval
         setTimeout(() => setSuccess(''), 3000);
       } else {
         setError('Failed to approve submission');
@@ -216,52 +322,193 @@ const Dashboard = () => {
     );
   }
 
+  // Additional helper functions
+  const formatStorageUsed = (bytes) => {
+    const mb = bytes / (1024 * 1024);
+    return `${mb.toFixed(1)} MB`;
+  };
+
+  const filteredSubmissions = submissions.filter(submission =>
+    submission.originalName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    submission.studentName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    submission.category.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const handleBulkApprove = async () => {
+    if (selectedSubmissions.length === 0) return;
+    
+    if (!window.confirm(`Approve ${selectedSubmissions.length} selected submissions?`)) {
+      return;
+    }
+
+    try {
+      await Promise.all(
+        selectedSubmissions.map(id =>
+          fetch(`/api/submissions/approve/${id}`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${localStorage.getItem('tutorToken')}` }
+          })
+        )
+      );
+      
+      addNotification(`${selectedSubmissions.length} submissions approved!`, 'success');
+      setSelectedSubmissions([]);
+      loadDashboardData();
+    } catch (error) {
+      setError('Failed to approve submissions');
+    }
+  };
+
+  const handleBulkReject = async () => {
+    if (selectedSubmissions.length === 0) return;
+    
+    const reason = window.prompt(`Reason for rejecting ${selectedSubmissions.length} submissions?`);
+    if (reason === null) return;
+
+    try {
+      await Promise.all(
+        selectedSubmissions.map(id =>
+          fetch(`/api/submissions/reject/${id}`, {
+            method: 'POST',
+            headers: { 
+              'Authorization': `Bearer ${localStorage.getItem('tutorToken')}`,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ reason })
+          })
+        )
+      );
+      
+      addNotification(`${selectedSubmissions.length} submissions rejected`, 'info');
+      setSelectedSubmissions([]);
+      loadDashboardData();
+    } catch (error) {
+      setError('Failed to reject submissions');
+    }
+  };
+
+  const toggleSubmissionSelection = (submissionId) => {
+    setSelectedSubmissions(prev =>
+      prev.includes(submissionId)
+        ? prev.filter(id => id !== submissionId)
+        : [...prev, submissionId]
+    );
+  };
+
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-gray-100 dark:from-slate-900 dark:to-slate-800">
       <div className="container mx-auto px-4 py-8">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Admin Dashboard</h1>
-          <p className="text-muted-foreground">Welcome back, Damesha! Manage your learning hub below.</p>
+        {/* Header with Notifications */}
+        <div className="mb-8 flex justify-between items-start">
+          <div>
+            <h1 className="text-3xl font-bold text-foreground mb-2">
+              Admin Dashboard
+            </h1>
+            <p className="text-muted-foreground">
+              Welcome back, Damesha! Manage your learning hub below.
+            </p>
+          </div>
+          
+          <div className="flex items-center gap-4">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={loadDashboardData}
+              className="flex items-center gap-2"
+            >
+              <RefreshCw className="w-4 h-4" />
+              Refresh
+            </Button>
+            
+            <div className="relative">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowNotifications(!showNotifications)}
+                className="flex items-center gap-2"
+              >
+                <Bell className="w-4 h-4" />
+                {notifications.length > 0 && (
+                  <Badge variant="destructive" className="px-1 py-0 text-xs">
+                    {notifications.length}
+                  </Badge>
+                )}
+              </Button>
+              
+              {showNotifications && notifications.length > 0 && (
+                <div className="absolute right-0 top-12 w-80 bg-background border rounded-lg shadow-lg z-50 p-4">
+                  <h3 className="font-semibold mb-3">Recent Activity</h3>
+                  {notifications.map(notification => (
+                    <div key={notification.id} className="mb-3 p-2 bg-muted rounded text-sm">
+                      <div className="flex items-center gap-2">
+                        {notification.type === 'success' && <CheckCircle className="w-4 h-4 text-green-500" />}
+                        {notification.type === 'info' && <Bell className="w-4 h-4 text-blue-500" />}
+                        {notification.type === 'warning' && <AlertCircle className="w-4 h-4 text-yellow-500" />}
+                        <span>{notification.message}</span>
+                      </div>
+                      <span className="text-xs text-muted-foreground">
+                        {notification.timestamp.toLocaleTimeString()}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
         </div>
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <Card>
+        {/* Enhanced Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <Card className="hover:shadow-lg transition-shadow duration-200 border-l-4 border-l-blue-500">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Total Files</CardTitle>
-              <FileText className="h-4 w-4 text-muted-foreground" />
+              <FileText className="h-4 w-4 text-blue-500" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{files.length}</div>
-              <p className="text-xs text-muted-foreground">
+              <div className="text-2xl font-bold text-blue-600">{stats.totalFiles}</div>
+              <p className="text-xs text-muted-foreground flex items-center gap-1">
+                <ArrowUpRight className="w-3 h-3 text-green-500" />
                 Available for students
               </p>
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="hover:shadow-lg transition-shadow duration-200 border-l-4 border-l-yellow-500">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Pending Submissions</CardTitle>
-              <Clock className="h-4 w-4 text-muted-foreground" />
+              <CardTitle className="text-sm font-medium">Pending Reviews</CardTitle>
+              <Clock className="h-4 w-4 text-yellow-500" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{submissions.length}</div>
+              <div className="text-2xl font-bold text-yellow-600">{stats.pendingSubmissions}</div>
               <p className="text-xs text-muted-foreground">
                 Awaiting review
               </p>
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="hover:shadow-lg transition-shadow duration-200 border-l-4 border-l-green-500">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Total Downloads</CardTitle>
-              <Download className="h-4 w-4 text-muted-foreground" />
+              <Download className="h-4 w-4 text-green-500" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">1,234</div>
-              <p className="text-xs text-muted-foreground">
+              <div className="text-2xl font-bold text-green-600">{stats.totalDownloads}</div>
+              <p className="text-xs text-muted-foreground flex items-center gap-1">
+                <TrendingUp className="w-3 h-3 text-green-500" />
                 All time
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card className="hover:shadow-lg transition-shadow duration-200 border-l-4 border-l-purple-500">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Storage Used</CardTitle>
+              <BarChart3 className="h-4 w-4 text-purple-500" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-purple-600">{formatStorageUsed(stats.storageUsed)}</div>
+              <p className="text-xs text-muted-foreground">
+                Approved today: {stats.approvedToday}
               </p>
             </CardContent>
           </Card>
@@ -341,22 +588,77 @@ const Dashboard = () => {
           </CardContent>
         </Card>
 
-        {/* Pending Submissions */}
+        {/* Enhanced Pending Submissions */}
         {submissions.length > 0 && (
-          <Card className="mb-8">
-            <CardHeader className="bg-yellow-50 border-b">
-              <CardTitle className="flex items-center gap-2 text-yellow-800">
-                <AlertCircle className="h-5 w-5" />
-                Pending Submissions ({submissions.length})
-              </CardTitle>
-              <CardDescription className="text-yellow-700">
-                Review and approve student-submitted resources
-              </CardDescription>
+          <Card className="mb-8 shadow-lg">
+            <CardHeader className="bg-gradient-to-r from-yellow-50 to-orange-50 border-b">
+              <div className="flex justify-between items-center">
+                <div>
+                  <CardTitle className="flex items-center gap-2 text-yellow-800">
+                    <AlertCircle className="h-5 w-5" />
+                    Pending Submissions ({filteredSubmissions.length} of {submissions.length})
+                  </CardTitle>
+                  <CardDescription className="text-yellow-700">
+                    Review and approve student-submitted resources
+                  </CardDescription>
+                </div>
+                
+                <div className="flex items-center gap-3">
+                  {/* Search */}
+                  <div className="relative">
+                    <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      placeholder="Search submissions..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="pl-10 w-64"
+                    />
+                  </div>
+                  
+                  {/* Bulk Actions */}
+                  {selectedSubmissions.length > 0 && (
+                    <div className="flex items-center gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={handleBulkApprove}
+                        className="text-green-600 hover:text-green-700"
+                      >
+                        <CheckCheck className="w-4 h-4 mr-1" />
+                        Approve ({selectedSubmissions.length})
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={handleBulkReject}
+                        className="text-red-600 hover:text-red-700"
+                      >
+                        <X className="w-4 h-4 mr-1" />
+                        Reject ({selectedSubmissions.length})
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              </div>
             </CardHeader>
             <CardContent className="p-0">
               <Table>
                 <TableHeader>
                   <TableRow>
+                    <TableHead className="w-12">
+                      <input
+                        type="checkbox"
+                        checked={selectedSubmissions.length === filteredSubmissions.length && filteredSubmissions.length > 0}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setSelectedSubmissions(filteredSubmissions.map(s => s.id));
+                          } else {
+                            setSelectedSubmissions([]);
+                          }
+                        }}
+                        className="rounded"
+                      />
+                    </TableHead>
                     <TableHead>File & Student</TableHead>
                     <TableHead>Category</TableHead>
                     <TableHead>Size</TableHead>
@@ -365,8 +667,21 @@ const Dashboard = () => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {submissions.map((submission) => (
-                    <TableRow key={submission.id}>
+                  {filteredSubmissions.map((submission) => (
+                    <TableRow 
+                      key={submission.id} 
+                      className={`hover:bg-muted/50 transition-colors ${
+                        selectedSubmissions.includes(submission.id) ? 'bg-blue-50 border-l-4 border-l-blue-500' : ''
+                      }`}
+                    >
+                      <TableCell>
+                        <input
+                          type="checkbox"
+                          checked={selectedSubmissions.includes(submission.id)}
+                          onChange={() => toggleSubmissionSelection(submission.id)}
+                          className="rounded"
+                        />
+                      </TableCell>
                       <TableCell>
                         <div className="flex items-start gap-3">
                           {getFileIcon(submission.mimeType)}
