@@ -14,6 +14,8 @@ const LoginPage = () => {
   const [loading, setLoading] = useState(false);
   const [showKey, setShowKey] = useState(false);
   const [attempts, setAttempts] = useState(0);
+  const [showManualToken, setShowManualToken] = useState(false);
+  const [manualToken, setManualToken] = useState('');
   
   const { login } = useAuth();
   const navigate = useNavigate();
@@ -139,6 +141,9 @@ const LoginPage = () => {
           // Try direct navigation as last resort
           tryDirectNavigation();
           
+          // Show manual token option
+          setShowManualToken(true);
+          
           // Add slight delay for security
           setTimeout(() => {
             setLoading(false);
@@ -147,6 +152,28 @@ const LoginPage = () => {
         }
         // Otherwise, continue to next endpoint
       }
+    }
+  };
+
+  const handleManualTokenLogin = () => {
+    if (!manualToken.trim()) {
+      setError('Please enter the token from the backend response');
+      return;
+    }
+    
+    try {
+      // Decode the JWT token to get tutor info
+      const payload = JSON.parse(atob(manualToken.split('.')[1]));
+      const tutorData = {
+        id: payload.id,
+        name: payload.name,
+        email: 'admin@hidden.local'
+      };
+      
+      login(tutorData, manualToken);
+      navigate('/dashboard');
+    } catch (error) {
+      setError('Invalid token format. Please copy the full token from the backend response.');
     }
   };
 
@@ -212,6 +239,38 @@ const LoginPage = () => {
                     (Multiple attempts detected)
                   </span>
                 )}
+              </div>
+            )}
+
+            {showManualToken && (
+              <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                <div className="text-sm text-blue-700 dark:text-blue-400">
+                  <p className="font-medium mb-2">🔑 Manual Token Login</p>
+                  <p className="mb-3">
+                    1. Copy the token from the new tab that opened<br/>
+                    2. Paste it below to login manually
+                  </p>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="manualToken" className="text-sm font-medium">
+                    JWT Token
+                  </Label>
+                  <Input
+                    id="manualToken"
+                    type="text"
+                    value={manualToken}
+                    onChange={(e) => setManualToken(e.target.value)}
+                    placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                    className="font-mono text-xs"
+                  />
+                </div>
+                <Button
+                  type="button"
+                  onClick={handleManualTokenLogin}
+                  className="w-full"
+                >
+                  Login with Token
+                </Button>
               </div>
             )}
 
