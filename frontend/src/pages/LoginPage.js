@@ -47,7 +47,7 @@ const LoginPage = () => {
     setError('');
 
     // Backend URL - replace with your actual Railway backend URL
-    const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'https://YOUR-BACKEND-URL.railway.app';
+    const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'https://tutoring-site-production-30eb.up.railway.app';
     
     // Try multiple endpoints in case Railway blocks admin-related routes
     const endpoints = [
