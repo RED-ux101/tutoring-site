@@ -97,15 +97,15 @@ const PublicFilesPage = () => {
       let matchesMathSubject = true; // Default to true if no math filtering
       
       if (selectedMathTab && selectedMathTab !== 'all') {
-        const fileCategory = file.category ? file.category.toLowerCase() : '';
-        const fileName = file.originalName.toLowerCase();
-        
         // For now, show all files when a specific tab is selected
         // This allows us to see the tabs working while files don't have categories yet
         matchesMathSubject = true;
         
         // TODO: Uncomment this when files have proper categories
         /*
+        const fileCategory = file.category ? file.category.toLowerCase() : '';
+        const fileName = file.originalName.toLowerCase();
+        
         // Check if file matches the selected math tab
         if (selectedMathTab.includes('year')) {
           // Year 7-11 filtering
