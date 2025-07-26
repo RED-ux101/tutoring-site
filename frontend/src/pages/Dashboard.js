@@ -24,7 +24,13 @@ import {
   Bell,
   ArrowUpRight,
   CheckCheck,
-  X
+  X,
+  Users,
+  BookOpen,
+  Star,
+  Activity,
+  Zap,
+  Sparkles
 } from 'lucide-react';
 
 const Dashboard = () => {
@@ -47,7 +53,21 @@ const Dashboard = () => {
   });
   const [showNotifications, setShowNotifications] = useState(false);
   const [notifications, setNotifications] = useState([]);
+  const [userName, setUserName] = useState('Damesha');
+  const [greeting, setGreeting] = useState('');
   const fileInputRef = useRef(null);
+
+  // Set greeting based on time of day
+  useEffect(() => {
+    const hour = new Date().getHours();
+    if (hour < 12) {
+      setGreeting('Good morning');
+    } else if (hour < 17) {
+      setGreeting('Good afternoon');
+    } else {
+      setGreeting('Good evening');
+    }
+  }, []);
 
   const addNotification = useCallback((message, type = 'info') => {
     const notification = {
@@ -170,12 +190,14 @@ const Dashboard = () => {
     try {
       await filesAPI.uploadFile(file);
       setSuccess(`${file.name} uploaded successfully!`);
+      addNotification(`File "${file.name}" uploaded successfully!`, 'success');
       loadFiles();
       loadStats(); // Update stats after successful upload
       
       setTimeout(() => setSuccess(''), 3000);
     } catch (error) {
       setError(error.response?.data?.message || 'Failed to upload file');
+      addNotification('Failed to upload file', 'warning');
     } finally {
       setUploading(false);
     }
@@ -217,12 +239,14 @@ const Dashboard = () => {
     try {
       await filesAPI.deleteFile(fileId);
       setSuccess('File deleted successfully!');
+      addNotification(`File "${fileName}" deleted successfully!`, 'success');
       loadFiles();
       loadStats(); // Update stats after successful deletion
       
       setTimeout(() => setSuccess(''), 3000);
     } catch (error) {
       setError('Failed to delete file');
+      addNotification('Failed to delete file', 'warning');
     }
   };
 
@@ -241,15 +265,18 @@ const Dashboard = () => {
 
       if (response.ok) {
         setSuccess('Submission approved and added to public files!');
+        addNotification(`Submission "${fileName}" approved!`, 'success');
         loadPendingSubmissions();
         loadFiles();
         loadStats(); // Update stats after successful approval
         setTimeout(() => setSuccess(''), 3000);
       } else {
         setError('Failed to approve submission');
+        addNotification('Failed to approve submission', 'warning');
       }
     } catch (error) {
       setError('Failed to approve submission');
+      addNotification('Failed to approve submission', 'warning');
     }
   };
 
@@ -269,13 +296,16 @@ const Dashboard = () => {
 
       if (response.ok) {
         setSuccess('Submission rejected');
+        addNotification(`Submission "${fileName}" rejected`, 'info');
         loadPendingSubmissions();
         setTimeout(() => setSuccess(''), 3000);
       } else {
         setError('Failed to reject submission');
+        addNotification('Failed to reject submission', 'warning');
       }
     } catch (error) {
       setError('Failed to reject submission');
+      addNotification('Failed to reject submission', 'warning');
     }
   };
 
@@ -311,8 +341,14 @@ const Dashboard = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <LoadingSpinner size="large" text="Loading dashboard..." />
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-gray-100 dark:from-slate-900 dark:to-slate-800 flex items-center justify-center">
+        <div className="text-center">
+          <LoadingSpinner size="large" text="Loading your dashboard..." />
+          <div className="mt-4 text-sm text-muted-foreground">
+            <Sparkles className="w-4 h-4 inline mr-2 animate-pulse" />
+            Preparing your workspace...
+          </div>
+        </div>
       </div>
     );
   }
@@ -351,6 +387,7 @@ const Dashboard = () => {
       loadDashboardData();
     } catch (error) {
       setError('Failed to approve submissions');
+      addNotification('Failed to approve submissions', 'warning');
     }
   };
 
@@ -379,6 +416,7 @@ const Dashboard = () => {
       loadDashboardData();
     } catch (error) {
       setError('Failed to reject submissions');
+      addNotification('Failed to reject submissions', 'warning');
     }
   };
 
@@ -391,118 +429,189 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-gray-100 dark:from-slate-900 dark:to-slate-800">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
       <div className="container mx-auto px-4 py-8">
-        {/* Header with Notifications */}
-        <div className="mb-8 flex justify-between items-start">
-          <div>
-            <h1 className="text-3xl font-bold text-foreground mb-2">
-              Admin Dashboard
-            </h1>
-            <p className="text-muted-foreground">
-              Welcome back, Damesha! Manage your learning hub below.
-            </p>
-          </div>
-          
-          <div className="flex items-center gap-4">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={loadDashboardData}
-              className="flex items-center gap-2"
-            >
-              <RefreshCw className="w-4 h-4" />
-              Refresh
-            </Button>
+        {/* Enhanced Header with Welcome Message */}
+        <div className="mb-8">
+          <div className="flex justify-between items-start mb-6">
+            <div className="space-y-2">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg">
+                  <Sparkles className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                    {greeting}, {userName}!
+                  </h1>
+                  <p className="text-lg text-muted-foreground">
+                    Here's what's happening with your learning hub today
+                  </p>
+                </div>
+              </div>
+            </div>
             
-            <div className="relative">
+            <div className="flex items-center gap-4">
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => setShowNotifications(!showNotifications)}
-                className="flex items-center gap-2"
+                onClick={loadDashboardData}
+                className="flex items-center gap-2 hover:bg-blue-50 hover:border-blue-300 transition-all duration-200"
               >
-                <Bell className="w-4 h-4" />
-                {notifications.length > 0 && (
-                  <Badge variant="destructive" className="px-1 py-0 text-xs">
-                    {notifications.length}
-                  </Badge>
-                )}
+                <RefreshCw className="w-4 h-4" />
+                Refresh
               </Button>
               
-              {showNotifications && notifications.length > 0 && (
-                <div className="absolute right-0 top-12 w-80 bg-background border rounded-lg shadow-lg z-50 p-4">
-                  <h3 className="font-semibold mb-3">Recent Activity</h3>
-                  {notifications.map(notification => (
-                    <div key={notification.id} className="mb-3 p-2 bg-muted rounded text-sm">
-                      <div className="flex items-center gap-2">
-                        {notification.type === 'success' && <CheckCircle className="w-4 h-4 text-green-500" />}
-                        {notification.type === 'info' && <Bell className="w-4 h-4 text-blue-500" />}
-                        {notification.type === 'warning' && <AlertCircle className="w-4 h-4 text-yellow-500" />}
-                        <span>{notification.message}</span>
+              <div className="relative">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowNotifications(!showNotifications)}
+                  className="flex items-center gap-2 hover:bg-yellow-50 hover:border-yellow-300 transition-all duration-200"
+                >
+                  <Bell className="w-4 h-4" />
+                  {notifications.length > 0 && (
+                    <Badge variant="destructive" className="px-1 py-0 text-xs animate-pulse">
+                      {notifications.length}
+                    </Badge>
+                  )}
+                </Button>
+                
+                {showNotifications && notifications.length > 0 && (
+                  <div className="absolute right-0 top-12 w-80 bg-background border rounded-lg shadow-xl z-50 p-4 animate-in slide-in-from-top-2">
+                    <h3 className="font-semibold mb-3 flex items-center gap-2">
+                      <Activity className="w-4 h-4" />
+                      Recent Activity
+                    </h3>
+                    {notifications.map(notification => (
+                      <div key={notification.id} className="mb-3 p-3 bg-muted rounded-lg text-sm border-l-4 border-l-blue-500">
+                        <div className="flex items-center gap-2">
+                          {notification.type === 'success' && <CheckCircle className="w-4 h-4 text-green-500" />}
+                          {notification.type === 'info' && <Bell className="w-4 h-4 text-blue-500" />}
+                          {notification.type === 'warning' && <AlertCircle className="w-4 h-4 text-yellow-500" />}
+                          <span className="font-medium">{notification.message}</span>
+                        </div>
+                        <span className="text-xs text-muted-foreground mt-1 block">
+                          {notification.timestamp.toLocaleTimeString()}
+                        </span>
                       </div>
-                      <span className="text-xs text-muted-foreground">
-                        {notification.timestamp.toLocaleTimeString()}
-                      </span>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Quick Stats Overview */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+            <div className="bg-white/70 backdrop-blur-sm rounded-lg p-4 border border-white/20 shadow-sm">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600">Today's Activity</p>
+                  <p className="text-2xl font-bold text-gray-900">{stats.approvedToday}</p>
                 </div>
-              )}
+                <div className="p-2 bg-green-100 rounded-lg">
+                  <Zap className="w-5 h-5 text-green-600" />
+                </div>
+              </div>
+            </div>
+            
+            <div className="bg-white/70 backdrop-blur-sm rounded-lg p-4 border border-white/20 shadow-sm">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600">Pending Reviews</p>
+                  <p className="text-2xl font-bold text-gray-900">{stats.pendingSubmissions}</p>
+                </div>
+                <div className="p-2 bg-yellow-100 rounded-lg">
+                  <Clock className="w-5 h-5 text-yellow-600" />
+                </div>
+              </div>
+            </div>
+            
+            <div className="bg-white/70 backdrop-blur-sm rounded-lg p-4 border border-white/20 shadow-sm">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600">Total Files</p>
+                  <p className="text-2xl font-bold text-gray-900">{stats.totalFiles}</p>
+                </div>
+                <div className="p-2 bg-blue-100 rounded-lg">
+                  <FileText className="w-5 h-5 text-blue-600" />
+                </div>
+              </div>
+            </div>
+            
+            <div className="bg-white/70 backdrop-blur-sm rounded-lg p-4 border border-white/20 shadow-sm">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600">Storage Used</p>
+                  <p className="text-2xl font-bold text-gray-900">{formatStorageUsed(stats.storageUsed)}</p>
+                </div>
+                <div className="p-2 bg-purple-100 rounded-lg">
+                  <BarChart3 className="w-5 h-5 text-purple-600" />
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
         {/* Enhanced Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <Card className="hover:shadow-lg transition-shadow duration-200 border-l-4 border-l-blue-500">
+          <Card className="hover:shadow-xl transition-all duration-300 border-l-4 border-l-blue-500 bg-gradient-to-br from-blue-50 to-blue-100/50">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Files</CardTitle>
-              <FileText className="h-4 w-4 text-blue-500" />
+              <CardTitle className="text-sm font-medium text-blue-700">Total Files</CardTitle>
+              <div className="p-2 bg-blue-500 rounded-lg">
+                <FileText className="h-4 w-4 text-white" />
+              </div>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-blue-600">{stats.totalFiles}</div>
-              <p className="text-xs text-muted-foreground flex items-center gap-1">
-                <ArrowUpRight className="w-3 h-3 text-green-500" />
+              <div className="text-3xl font-bold text-blue-600">{stats.totalFiles}</div>
+              <p className="text-xs text-blue-600 flex items-center gap-1 mt-1">
+                <ArrowUpRight className="w-3 h-3" />
                 Available for students
               </p>
             </CardContent>
           </Card>
 
-          <Card className="hover:shadow-lg transition-shadow duration-200 border-l-4 border-l-yellow-500">
+          <Card className="hover:shadow-xl transition-all duration-300 border-l-4 border-l-yellow-500 bg-gradient-to-br from-yellow-50 to-yellow-100/50">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Pending Reviews</CardTitle>
-              <Clock className="h-4 w-4 text-yellow-500" />
+              <CardTitle className="text-sm font-medium text-yellow-700">Pending Reviews</CardTitle>
+              <div className="p-2 bg-yellow-500 rounded-lg">
+                <Clock className="h-4 w-4 text-white" />
+              </div>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-yellow-600">{stats.pendingSubmissions}</div>
-              <p className="text-xs text-muted-foreground">
+              <div className="text-3xl font-bold text-yellow-600">{stats.pendingSubmissions}</div>
+              <p className="text-xs text-yellow-600">
                 Awaiting review
               </p>
             </CardContent>
           </Card>
 
-          <Card className="hover:shadow-lg transition-shadow duration-200 border-l-4 border-l-green-500">
+          <Card className="hover:shadow-xl transition-all duration-300 border-l-4 border-l-green-500 bg-gradient-to-br from-green-50 to-green-100/50">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Downloads</CardTitle>
-              <Download className="h-4 w-4 text-green-500" />
+              <CardTitle className="text-sm font-medium text-green-700">Total Downloads</CardTitle>
+              <div className="p-2 bg-green-500 rounded-lg">
+                <Download className="h-4 w-4 text-white" />
+              </div>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-green-600">{stats.totalDownloads}</div>
-              <p className="text-xs text-muted-foreground flex items-center gap-1">
-                <TrendingUp className="w-3 h-3 text-green-500" />
+              <div className="text-3xl font-bold text-green-600">{stats.totalDownloads}</div>
+              <p className="text-xs text-green-600 flex items-center gap-1 mt-1">
+                <TrendingUp className="w-3 h-3" />
                 All time
               </p>
             </CardContent>
           </Card>
 
-          <Card className="hover:shadow-lg transition-shadow duration-200 border-l-4 border-l-purple-500">
+          <Card className="hover:shadow-xl transition-all duration-300 border-l-4 border-l-purple-500 bg-gradient-to-br from-purple-50 to-purple-100/50">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Storage Used</CardTitle>
-              <BarChart3 className="h-4 w-4 text-purple-500" />
+              <CardTitle className="text-sm font-medium text-purple-700">Storage Used</CardTitle>
+              <div className="p-2 bg-purple-500 rounded-lg">
+                <BarChart3 className="h-4 w-4 text-white" />
+              </div>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-purple-600">{formatStorageUsed(stats.storageUsed)}</div>
-              <p className="text-xs text-muted-foreground">
+              <div className="text-3xl font-bold text-purple-600">{formatStorageUsed(stats.storageUsed)}</div>
+              <p className="text-xs text-purple-600">
                 Approved today: {stats.approvedToday}
               </p>
             </CardContent>
@@ -511,7 +620,7 @@ const Dashboard = () => {
 
         {/* Messages */}
         {error && (
-          <Card className="mb-6 border-destructive">
+          <Card className="mb-6 border-destructive bg-red-50">
             <CardContent className="pt-6">
               <div className="flex items-center gap-2 text-destructive">
                 <AlertCircle className="h-4 w-4" />
@@ -522,7 +631,7 @@ const Dashboard = () => {
         )}
 
         {success && (
-          <Card className="mb-6 border-green-500">
+          <Card className="mb-6 border-green-500 bg-green-50">
             <CardContent className="pt-6">
               <div className="flex items-center gap-2 text-green-600">
                 <CheckCircle className="h-4 w-4" />
@@ -532,23 +641,23 @@ const Dashboard = () => {
           </Card>
         )}
 
-        {/* Upload Section */}
-        <Card className="mb-8">
-          <CardHeader>
+        {/* Enhanced Upload Section */}
+        <Card className="mb-8 shadow-lg border-0 bg-gradient-to-r from-white to-blue-50/30">
+          <CardHeader className="bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-t-lg">
             <CardTitle className="flex items-center gap-2">
               <Upload className="h-5 w-5" />
               Upload New Material
             </CardTitle>
-            <CardDescription>
+            <CardDescription className="text-blue-100">
               Add study materials, resources, or educational content for your students
             </CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-6">
             <div
-              className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors cursor-pointer ${
+              className={`border-2 border-dashed rounded-xl p-8 text-center transition-all duration-300 cursor-pointer ${
                 dragActive 
-                  ? 'border-primary bg-primary/10' 
-                  : 'border-border hover:border-primary/50 hover:bg-gray-50'
+                  ? 'border-blue-500 bg-blue-50 scale-105' 
+                  : 'border-gray-300 hover:border-blue-400 hover:bg-blue-50/50 hover:scale-[1.02]'
               }`}
               onDragEnter={handleDrag}
               onDragLeave={handleDrag}
@@ -557,19 +666,38 @@ const Dashboard = () => {
               onClick={() => fileInputRef.current?.click()}
             >
               {uploading ? (
-                <LoadingSpinner size="medium" text="Uploading file..." />
+                <div className="space-y-4">
+                  <LoadingSpinner size="medium" text="Uploading file..." />
+                  <div className="text-sm text-muted-foreground">
+                    <Zap className="w-4 h-4 inline mr-2 animate-pulse" />
+                    Processing your file...
+                  </div>
+                </div>
               ) : (
                 <>
-                  <Upload className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-                  <h3 className="text-lg font-medium mb-2">
+                  <div className="p-4 bg-blue-100 rounded-full w-20 h-20 mx-auto mb-4 flex items-center justify-center">
+                    <Upload className="w-8 h-8 text-blue-600" />
+                  </div>
+                  <h3 className="text-xl font-semibold mb-2 text-gray-800">
                     {dragActive ? 'Drop your file here' : 'Upload a file'}
                   </h3>
-                  <p className="text-sm text-muted-foreground mb-4">
+                  <p className="text-sm text-gray-600 mb-4">
                     Drag and drop or click to select • Max 10MB
                   </p>
-                  <p className="text-xs text-muted-foreground">
-                    Supports PDFs, Word docs, PowerPoint, Excel, images, and text files
-                  </p>
+                  <div className="flex items-center justify-center gap-4 text-xs text-gray-500">
+                    <span className="flex items-center gap-1">
+                      <FileText className="w-3 h-3" />
+                      PDFs
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <FileText className="w-3 h-3" />
+                      Word docs
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <FileText className="w-3 h-3" />
+                      Images
+                    </span>
+                  </div>
                   <input
                     ref={fileInputRef}
                     type="file"
@@ -585,15 +713,15 @@ const Dashboard = () => {
 
         {/* Enhanced Pending Submissions */}
         {submissions.length > 0 && (
-          <Card className="mb-8 shadow-lg">
-            <CardHeader className="bg-gradient-to-r from-yellow-50 to-orange-50 border-b">
+          <Card className="mb-8 shadow-xl border-0 bg-gradient-to-r from-white to-yellow-50/30">
+            <CardHeader className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white rounded-t-lg">
               <div className="flex justify-between items-center">
                 <div>
-                  <CardTitle className="flex items-center gap-2 text-yellow-800">
+                  <CardTitle className="flex items-center gap-2">
                     <AlertCircle className="h-5 w-5" />
                     Pending Submissions ({filteredSubmissions.length} of {submissions.length})
                   </CardTitle>
-                  <CardDescription className="text-yellow-700">
+                  <CardDescription className="text-yellow-100">
                     Review and approve student-submitted resources
                   </CardDescription>
                 </div>
@@ -601,12 +729,12 @@ const Dashboard = () => {
                 <div className="flex items-center gap-3">
                   {/* Search */}
                   <div className="relative">
-                    <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                    <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                     <Input
                       placeholder="Search submissions..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
-                      className="pl-10 w-64"
+                      className="pl-10 w-64 bg-white/90 border-white/50 text-gray-800 placeholder-gray-500"
                     />
                   </div>
                   
@@ -617,7 +745,7 @@ const Dashboard = () => {
                         variant="outline"
                         size="sm"
                         onClick={handleBulkApprove}
-                        className="text-green-600 hover:text-green-700"
+                        className="text-green-600 hover:text-green-700 bg-white/90 hover:bg-green-50 border-white/50"
                       >
                         <CheckCheck className="w-4 h-4 mr-1" />
                         Approve ({selectedSubmissions.length})
@@ -626,7 +754,7 @@ const Dashboard = () => {
                         variant="outline"
                         size="sm"
                         onClick={handleBulkReject}
-                        className="text-red-600 hover:text-red-700"
+                        className="text-red-600 hover:text-red-700 bg-white/90 hover:bg-red-50 border-white/50"
                       >
                         <X className="w-4 h-4 mr-1" />
                         Reject ({selectedSubmissions.length})
@@ -639,7 +767,7 @@ const Dashboard = () => {
             <CardContent className="p-0">
               <Table>
                 <TableHeader>
-                  <TableRow>
+                  <TableRow className="bg-yellow-50/50">
                     <TableHead className="w-12">
                       <input
                         type="checkbox"
@@ -665,7 +793,7 @@ const Dashboard = () => {
                   {filteredSubmissions.map((submission) => (
                     <TableRow 
                       key={submission.id} 
-                      className={`hover:bg-muted/50 transition-colors ${
+                      className={`hover:bg-yellow-50/30 transition-all duration-200 ${
                         selectedSubmissions.includes(submission.id) ? 'bg-blue-50 border-l-4 border-l-blue-500' : ''
                       }`}
                     >
@@ -694,7 +822,7 @@ const Dashboard = () => {
                         </div>
                       </TableCell>
                       <TableCell>
-                        <Badge variant="secondary" className="capitalize">
+                        <Badge variant="secondary" className="capitalize bg-yellow-100 text-yellow-800">
                           {submission.category.replace('-', ' ')}
                         </Badge>
                       </TableCell>
@@ -706,6 +834,7 @@ const Dashboard = () => {
                             variant="outline"
                             size="sm"
                             asChild
+                            className="hover:bg-blue-50"
                           >
                             <a
                               href={`/api/submissions/download/${submission.id}`}
@@ -719,7 +848,7 @@ const Dashboard = () => {
                             variant="outline"
                             size="sm"
                             onClick={() => handleApproveSubmission(submission.id, submission.originalName)}
-                            className="text-green-600 hover:text-green-700"
+                            className="text-green-600 hover:text-green-700 hover:bg-green-50"
                           >
                             <CheckCircle className="w-4 h-4" />
                           </Button>
@@ -727,7 +856,7 @@ const Dashboard = () => {
                             variant="outline"
                             size="sm"
                             onClick={() => handleRejectSubmission(submission.id, submission.originalName)}
-                            className="text-red-600 hover:text-red-700"
+                            className="text-red-600 hover:text-red-700 hover:bg-red-50"
                           >
                             <XCircle className="w-4 h-4" />
                           </Button>
@@ -741,34 +870,39 @@ const Dashboard = () => {
           </Card>
         )}
 
-        {/* Files List */}
-        <Card>
-          <CardHeader>
+        {/* Enhanced Files List */}
+        <Card className="shadow-xl border-0 bg-gradient-to-r from-white to-gray-50/30">
+          <CardHeader className="bg-gradient-to-r from-gray-600 to-gray-700 text-white rounded-t-lg">
             <CardTitle className="flex items-center gap-2">
               <FileText className="h-5 w-5" />
               Your Files ({files.length})
             </CardTitle>
-            <CardDescription>
+            <CardDescription className="text-gray-200">
               Manage all your uploaded study materials and resources
             </CardDescription>
           </CardHeader>
           <CardContent className="p-0">
             {files.length === 0 ? (
-              <div className="text-center py-12">
-                <FileText className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">No files uploaded yet</h3>
-                <p className="text-muted-foreground mb-4">
-                  Upload your first file using the upload area above to get started!
+              <div className="text-center py-16">
+                <div className="p-4 bg-gray-100 rounded-full w-20 h-20 mx-auto mb-4 flex items-center justify-center">
+                  <FileText className="w-8 h-8 text-gray-400" />
+                </div>
+                <h3 className="text-xl font-semibold text-gray-700 mb-2">No files uploaded yet</h3>
+                <p className="text-gray-500 mb-6 max-w-md mx-auto">
+                  Upload your first file using the upload area above to get started! Your files will appear here once uploaded.
                 </p>
-                <Button onClick={() => fileInputRef.current?.click()}>
+                <Button 
+                  onClick={() => fileInputRef.current?.click()}
+                  className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+                >
                   <Plus className="w-4 h-4 mr-2" />
-                  Upload File
+                  Upload Your First File
                 </Button>
               </div>
             ) : (
               <Table>
                 <TableHeader>
-                  <TableRow>
+                  <TableRow className="bg-gray-50/50">
                     <TableHead>File</TableHead>
                     <TableHead>Size</TableHead>
                     <TableHead>Uploaded</TableHead>
@@ -777,7 +911,7 @@ const Dashboard = () => {
                 </TableHeader>
                 <TableBody>
                   {files.map((file) => (
-                    <TableRow key={file.id}>
+                    <TableRow key={file.id} className="hover:bg-gray-50/30 transition-colors">
                       <TableCell>
                         <div className="flex items-center gap-3">
                           {getFileIcon(file.mimeType)}
@@ -797,6 +931,7 @@ const Dashboard = () => {
                             variant="outline"
                             size="sm"
                             asChild
+                            className="hover:bg-green-50"
                           >
                             <a
                               href={filesAPI.getDownloadUrl(file.id)}
@@ -809,7 +944,7 @@ const Dashboard = () => {
                             variant="outline"
                             size="sm"
                             onClick={() => handleDeleteFile(file.id, file.originalName)}
-                            className="text-red-600 hover:text-red-700"
+                            className="text-red-600 hover:text-red-700 hover:bg-red-50"
                           >
                             <Trash2 className="w-4 h-4" />
                           </Button>
