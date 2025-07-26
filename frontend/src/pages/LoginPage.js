@@ -48,117 +48,51 @@ const LoginPage = () => {
     setLoading(true);
     setError('');
 
-    // Backend URL - replace with your actual Railway backend URL
-    const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'https://tutoring-site-production-30eb.up.railway.app';
+    // Use the working GET method directly
+    const BACKEND_URL = 'https://tutoring-site-production-30eb.up.railway.app';
     
-    // Try multiple endpoints in case Railway blocks admin-related routes
-    const endpoints = [
-      { url: `${BACKEND_URL}/api/auth/admin-login`, method: 'POST', body: { adminKey } },
-      { url: `${BACKEND_URL}/api/auth/secure-access`, method: 'POST', body: { accessKey: adminKey } },
-      { url: `${BACKEND_URL}/api/auth/verify?key=${encodeURIComponent(adminKey)}`, method: 'GET', body: null }
-    ];
-
-    // If all endpoints fail, try direct browser navigation (bypasses CORS)
-    const tryDirectNavigation = () => {
-      console.log('🔄 Trying direct browser navigation to backend...');
-      console.log('🔗 BACKEND_URL:', BACKEND_URL);
-      const directUrl = `${BACKEND_URL}/api/auth/verify?key=${encodeURIComponent(adminKey)}`;
-      console.log('🔗 Opening URL:', directUrl);
+    try {
+      console.log('🔐 Attempting login with key:', adminKey);
+      console.log('🌐 API URL:', `${BACKEND_URL}/api/auth/verify?key=${encodeURIComponent(adminKey)}`);
       
-      // Hardcoded fallback to ensure correct backend URL
-      const fallbackUrl = `https://tutoring-site-production-30eb.up.railway.app/api/auth/verify?key=${encodeURIComponent(adminKey)}`;
-      console.log('🔗 Fallback URL:', fallbackUrl);
+      const response = await fetch(`${BACKEND_URL}/api/auth/verify?key=${encodeURIComponent(adminKey)}`);
       
-      window.open(fallbackUrl, '_blank');
+      console.log('📡 Response status:', response.status);
+      console.log('📡 Response ok:', response.ok);
       
-      // Show instructions to user
-      setError('Backend verification opened in new tab. Please copy the token and paste it here, or check the new tab for login success.');
-    };
-
-    for (let i = 0; i < endpoints.length; i++) {
-      const endpoint = endpoints[i];
-      
-      try {
-        console.log(`🔐 Attempting login ${i + 1}/${endpoints.length} with key:`, adminKey);
-        console.log(`🌐 API URL:`, endpoint.url);
-        console.log(`🔧 Method:`, endpoint.method);
+      if (response.ok) {
+        const contentType = response.headers.get('content-type');
+        console.log('📄 Content-Type:', contentType);
         
-        const fetchOptions = {
-          method: endpoint.method,
-          headers: endpoint.method === 'POST' ? { 'Content-Type': 'application/json' } : {}
-        };
-        
-        if (endpoint.body) {
-          fetchOptions.body = JSON.stringify(endpoint.body);
-        }
-        
-        const response = await fetch(endpoint.url, fetchOptions);
-        
-        console.log(`📡 Response status (${endpoint.url}):`, response.status);
-        console.log(`📡 Response ok (${endpoint.url}):`, response.ok);
-        
-        if (response.ok) {
-          const contentType = response.headers.get('content-type');
-          console.log('📄 Content-Type:', contentType);
-          
-          if (contentType && contentType.includes('application/json')) {
-            const data = await response.json();
-            console.log('✅ Login successful:', data);
-            login(data.tutor, data.token);
-            navigate('/dashboard');
-            setLoading(false);
-            return; // Success! Exit the function
-          } else {
-            const textData = await response.text();
-            console.log('⚠️ Non-JSON response:', textData);
-            throw new Error(`Server returned non-JSON response: ${textData.substring(0, 200)}...`);
-          }
-        } else {
-          const contentType = response.headers.get('content-type');
-          console.log('📄 Error Content-Type:', contentType);
-          
-          let errorData;
-          if (contentType && contentType.includes('application/json')) {
-            try {
-              errorData = await response.json();
-              errorData = JSON.stringify(errorData);
-            } catch (e) {
-              errorData = await response.text();
-            }
-          } else {
-            errorData = await response.text();
-          }
-          
-          console.error(`❌ Endpoint ${endpoint.url} failed:`, errorData);
-          
-          // If this is the last endpoint, throw error
-          if (i === endpoints.length - 1) {
-            throw new Error(`All endpoints failed. Last error: HTTP ${response.status}: ${errorData.substring(0, 200)}...`);
-          }
-          // Otherwise, continue to next endpoint
-        }
-      } catch (error) {
-        console.error(`🚨 Error with ${endpoint.url}:`, error);
-        
-        // If this is the last endpoint, show error
-        if (i === endpoints.length - 1) {
-          setAttempts(prev => prev + 1);
-          setError(`Login failed: ${error.message}`);
-          
-          // Try direct navigation as last resort
-          tryDirectNavigation();
-          
-          // Show manual token option
-          setShowManualToken(true);
-          
-          // Add slight delay for security
-          setTimeout(() => {
-            setLoading(false);
-          }, 1000 + (attempts * 500));
+        if (contentType && contentType.includes('application/json')) {
+          const data = await response.json();
+          console.log('✅ Login successful:', data);
+          login(data.tutor, data.token);
+          navigate('/dashboard');
+          setLoading(false);
           return;
+        } else {
+          const textData = await response.text();
+          console.log('⚠️ Non-JSON response:', textData);
+          throw new Error(`Server returned non-JSON response: ${textData.substring(0, 200)}...`);
         }
-        // Otherwise, continue to next endpoint
+      } else {
+        const errorData = await response.text();
+        console.error('❌ Login failed:', errorData);
+        throw new Error(`Login failed: HTTP ${response.status}: ${errorData.substring(0, 200)}...`);
       }
+    } catch (error) {
+      console.error('🚨 Login error:', error);
+      setAttempts(prev => prev + 1);
+      setError(`Login failed: ${error.message}`);
+      
+      // Show manual token option
+      setShowManualToken(true);
+      
+      // Add slight delay for security
+      setTimeout(() => {
+        setLoading(false);
+      }, 1000 + (attempts * 500));
     }
   };
 
