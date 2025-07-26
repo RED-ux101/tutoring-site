@@ -132,9 +132,63 @@ export const filesAPI = {
     return response.data;
   },
   
+  renameFile: async (fileId, newName) => {
+    const response = await api.put(`/files/${fileId}/rename`, { newName });
+    return response.data;
+  },
+  
   getDownloadUrl: (fileId) => {
     return `${API_BASE_URL}/files/download/${fileId}`;
+  }
+};
+
+// Submissions API
+export const submissionsAPI = {
+  submitFile: async (formData) => {
+    try {
+      const response = await axios.post(`${API_BASE_URL}/submissions/submit`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+        timeout: 30000
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Submission error:', error);
+      if (error.response?.status === 405) {
+        throw new Error('Submission method not allowed. Please try again.');
+      } else if (error.code === 'NETWORK_ERROR' || error.code === 'ECONNREFUSED') {
+        throw new Error('Network error. Please check your connection and try again.');
+      } else {
+        throw new Error('Failed to submit resource. Please try again.');
+      }
+    }
   },
+  
+  getPendingSubmissions: async () => {
+    const response = await api.get('/submissions/pending');
+    return response.data;
+  },
+  
+  getAllSubmissions: async () => {
+    const response = await api.get('/submissions/all');
+    return response.data;
+  },
+  
+  approveSubmission: async (submissionId) => {
+    const response = await api.post(`/submissions/approve/${submissionId}`);
+    return response.data;
+  },
+  
+  rejectSubmission: async (submissionId, reason) => {
+    const response = await api.post(`/submissions/reject/${submissionId}`, { reason });
+    return response.data;
+  },
+  
+  renameSubmission: async (submissionId, newName) => {
+    const response = await api.put(`/submissions/${submissionId}/rename`, { newName });
+    return response.data;
+  }
 };
 
 // Test function to compare axios vs fetch

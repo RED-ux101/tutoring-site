@@ -272,4 +272,41 @@ router.post('/reject/:id', auth, (req, res) => {
   });
 });
 
+// Rename submission file (admin only)
+router.put('/:id/rename', auth, (req, res) => {
+  const submissionId = req.params.id;
+  const { newName } = req.body;
+
+  if (!newName || newName.trim() === '') {
+    return res.status(400).json({ message: 'New name is required' });
+  }
+
+  // Get submission details
+  db.get('SELECT * FROM submissions WHERE id = ?', [submissionId], (err, submission) => {
+    if (err) {
+      return res.status(500).json({ message: 'Database error' });
+    }
+
+    if (!submission) {
+      return res.status(404).json({ message: 'Submission not found' });
+    }
+
+    // Update the original_name in database
+    db.run(
+      'UPDATE submissions SET original_name = ? WHERE id = ?',
+      [newName.trim(), submissionId],
+      (err) => {
+        if (err) {
+          return res.status(500).json({ message: 'Error renaming submission' });
+        }
+
+        res.json({ 
+          message: 'Submission renamed successfully',
+          newName: newName.trim()
+        });
+      }
+    );
+  });
+});
+
 module.exports = router; 

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { filesAPI } from '../services/api';
+import { filesAPI, submissionsAPI } from '../services/api';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
@@ -27,7 +27,10 @@ import {
   X,
   Activity,
   Zap,
-  Sparkles
+  Sparkles,
+  Edit3,
+  Save,
+  FileEdit
 } from 'lucide-react';
 
 const Dashboard = () => {
@@ -52,6 +55,9 @@ const Dashboard = () => {
   const [notifications, setNotifications] = useState([]);
   const [userName] = useState('Damesha');
   const [greeting, setGreeting] = useState('');
+  const [renamingFile, setRenamingFile] = useState(null);
+  const [newFileName, setNewFileName] = useState('');
+  const [showRenameModal, setShowRenameModal] = useState(false);
   const fileInputRef = useRef(null);
 
   // Set greeting based on time of day
@@ -99,26 +105,16 @@ const Dashboard = () => {
 
   const loadPendingSubmissions = useCallback(async () => {
     try {
-      const response = await fetch('https://tutoring-site-production-30eb.up.railway.app/api/submissions/pending', {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('tutorToken')}`
-        }
-      });
-      if (response.ok) {
-        const data = await response.json();
-        const newSubmissions = data.submissions || [];
-        
-        // Check for new submissions to trigger notifications
-        if (submissions.length > 0 && newSubmissions.length > submissions.length) {
-          const newCount = newSubmissions.length - submissions.length;
-          addNotification(`${newCount} new submission${newCount > 1 ? 's' : ''} received!`, 'info');
-        }
-        
-        setSubmissions(newSubmissions);
-      } else {
-        console.error('Failed to load submissions:', response.status);
-        setSubmissions([]);
+      const response = await submissionsAPI.getPendingSubmissions();
+      const newSubmissions = response.submissions || [];
+      
+      // Check for new submissions to trigger notifications
+      if (submissions.length > 0 && newSubmissions.length > submissions.length) {
+        const newCount = newSubmissions.length - submissions.length;
+        addNotification(`${newCount} new submission${newCount > 1 ? 's' : ''} received!`, 'info');
       }
+      
+      setSubmissions(newSubmissions);
     } catch (error) {
       console.error('Error loading submissions:', error);
       setSubmissions([]);
@@ -264,48 +260,67 @@ const Dashboard = () => {
   };
 
   const handleDeleteFile = async (fileId, fileName) => {
-    if (!window.confirm(`Are you sure you want to delete "${fileName}"?`)) {
-      return;
-    }
-
-    try {
-      await filesAPI.deleteFile(fileId);
-      setSuccess('File deleted successfully!');
-      addNotification(`File "${fileName}" deleted successfully!`, 'success');
-      loadFiles();
-      loadStats(); // Update stats after successful deletion
-      
-      setTimeout(() => setSuccess(''), 3000);
-    } catch (error) {
-      setError('Failed to delete file');
-      addNotification('Failed to delete file', 'warning');
+    if (window.confirm(`Are you sure you want to delete "${fileName}"?`)) {
+      try {
+        await filesAPI.deleteFile(fileId);
+        addNotification(`File "${fileName}" deleted successfully`, 'success');
+        loadFiles(); // Reload files
+        loadStats(); // Reload stats
+      } catch (error) {
+        console.error('Error deleting file:', error);
+        addNotification('Failed to delete file', 'error');
+      }
     }
   };
 
-  const handleApproveSubmission = async (submissionId, fileName) => {
-    if (!window.confirm(`Approve "${fileName}" and add it to public files?`)) {
+  const handleRenameFile = async (fileId, currentName) => {
+    setRenamingFile({ id: fileId, name: currentName, type: 'file' });
+    setNewFileName(currentName);
+    setShowRenameModal(true);
+  };
+
+  const handleSaveRename = async () => {
+    if (!newFileName.trim()) {
+      addNotification('Name cannot be empty', 'error');
       return;
     }
 
     try {
-      const response = await fetch(`https://tutoring-site-production-30eb.up.railway.app/api/submissions/approve/${submissionId}`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('tutorToken')}`
-        }
-      });
-
-      if (response.ok) {
-        setSuccess('Submission approved and added to public files!');
-        addNotification(`Submission "${fileName}" approved!`, 'success');
+      if (renamingFile.type === 'submission') {
+        // Rename submission
+        await filesAPI.renameSubmission(renamingFile.id, newFileName.trim());
+        addNotification(`Submission renamed to "${newFileName.trim()}" successfully`, 'success');
         loadPendingSubmissions();
-        loadFiles();
-        loadStats(); // Update stats after successful approval
-        setTimeout(() => setSuccess(''), 3000);
       } else {
-        setError('Failed to approve submission');
-        addNotification('Failed to approve submission', 'warning');
+        // Rename file
+        await filesAPI.renameFile(renamingFile.id, newFileName.trim());
+        addNotification(`File renamed to "${newFileName.trim()}" successfully`, 'success');
+        loadFiles();
       }
+      setShowRenameModal(false);
+      setRenamingFile(null);
+      setNewFileName('');
+    } catch (error) {
+      console.error('Error renaming:', error);
+      addNotification('Failed to rename', 'error');
+    }
+  };
+
+  const handleCancelRename = () => {
+    setShowRenameModal(false);
+    setRenamingFile(null);
+    setNewFileName('');
+  };
+
+  const handleApproveSubmission = async (submissionId, fileName) => {
+    try {
+      await submissionsAPI.approveSubmission(submissionId);
+      setSuccess('Submission approved and added to public files!');
+      addNotification(`Submission "${fileName}" approved!`, 'success');
+      loadPendingSubmissions();
+      loadFiles();
+      loadStats(); // Update stats after successful approval
+      setTimeout(() => setSuccess(''), 3000);
     } catch (error) {
       setError('Failed to approve submission');
       addNotification('Failed to approve submission', 'warning');
@@ -317,28 +332,46 @@ const Dashboard = () => {
     if (reason === null) return;
 
     try {
-      const response = await fetch(`https://tutoring-site-production-30eb.up.railway.app/api/submissions/reject/${submissionId}`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('tutorToken')}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ reason })
-      });
-
-      if (response.ok) {
-        setSuccess('Submission rejected');
-        addNotification(`Submission "${fileName}" rejected`, 'info');
-        loadPendingSubmissions();
-        setTimeout(() => setSuccess(''), 3000);
-      } else {
-        setError('Failed to reject submission');
-        addNotification('Failed to reject submission', 'warning');
-      }
+      await submissionsAPI.rejectSubmission(submissionId, reason);
+      setSuccess('Submission rejected');
+      addNotification(`Submission "${fileName}" rejected`, 'info');
+      loadPendingSubmissions();
+      setTimeout(() => setSuccess(''), 3000);
     } catch (error) {
       setError('Failed to reject submission');
       addNotification('Failed to reject submission', 'warning');
     }
+  };
+
+  const handleRenameSubmission = async (submissionId, currentName) => {
+    setRenamingFile({ id: submissionId, name: currentName, type: 'submission' });
+    setNewFileName(currentName);
+    setShowRenameModal(true);
+  };
+
+  const handleSaveRenameSubmission = async () => {
+    if (!newFileName.trim()) {
+      addNotification('Submission name cannot be empty', 'error');
+      return;
+    }
+
+    try {
+      await filesAPI.renameSubmission(renamingFile.id, newFileName.trim());
+      addNotification(`Submission renamed to "${newFileName.trim()}" successfully`, 'success');
+      setShowRenameModal(false);
+      setRenamingFile(null);
+      setNewFileName('');
+      loadPendingSubmissions();
+    } catch (error) {
+      console.error('Error renaming submission:', error);
+      addNotification('Failed to rename submission', 'error');
+    }
+  };
+
+  const handleCancelRenameSubmission = () => {
+    setShowRenameModal(false);
+    setRenamingFile(null);
+    setNewFileName('');
   };
 
   const formatFileSize = (bytes) => {
@@ -398,23 +431,21 @@ const Dashboard = () => {
   );
 
   const handleBulkApprove = async () => {
-    if (selectedSubmissions.length === 0) return;
-    
-    if (!window.confirm(`Approve ${selectedSubmissions.length} selected submissions?`)) {
+    if (selectedSubmissions.length === 0) {
+      addNotification('No submissions selected', 'warning');
+      return;
+    }
+
+    if (!window.confirm(`Approve ${selectedSubmissions.length} submissions?`)) {
       return;
     }
 
     try {
       await Promise.all(
-        selectedSubmissions.map(id =>
-          fetch(`https://tutoring-site-production-30eb.up.railway.app/api/submissions/approve/${id}`, {
-            method: 'POST',
-            headers: { 'Authorization': `Bearer ${localStorage.getItem('tutorToken')}` }
-          })
-        )
+        selectedSubmissions.map(id => submissionsAPI.approveSubmission(id))
       );
       
-      addNotification(`${selectedSubmissions.length} submissions approved!`, 'success');
+      addNotification(`${selectedSubmissions.length} submissions approved`, 'success');
       setSelectedSubmissions([]);
       loadDashboardData();
     } catch (error) {
@@ -424,23 +455,21 @@ const Dashboard = () => {
   };
 
   const handleBulkReject = async () => {
-    if (selectedSubmissions.length === 0) return;
+    if (selectedSubmissions.length === 0) {
+      addNotification('No submissions selected', 'warning');
+      return;
+    }
+
+    if (!window.confirm(`Reject ${selectedSubmissions.length} submissions?`)) {
+      return;
+    }
     
     const reason = window.prompt(`Reason for rejecting ${selectedSubmissions.length} submissions?`);
     if (reason === null) return;
 
     try {
       await Promise.all(
-        selectedSubmissions.map(id =>
-          fetch(`https://tutoring-site-production-30eb.up.railway.app/api/submissions/reject/${id}`, {
-            method: 'POST',
-            headers: { 
-              'Authorization': `Bearer ${localStorage.getItem('tutorToken')}`,
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ reason })
-          })
-        )
+        selectedSubmissions.map(id => submissionsAPI.rejectSubmission(id, reason))
       );
       
       addNotification(`${selectedSubmissions.length} submissions rejected`, 'info');
@@ -879,6 +908,14 @@ const Dashboard = () => {
                           <Button
                             variant="outline"
                             size="sm"
+                            onClick={() => handleRenameSubmission(submission.id, submission.originalName)}
+                            className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                          >
+                            <Edit3 className="w-4 h-4" />
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
                             onClick={() => handleApproveSubmission(submission.id, submission.originalName)}
                             className="text-green-600 hover:text-green-700 hover:bg-green-50"
                           >
@@ -975,6 +1012,14 @@ const Dashboard = () => {
                           <Button
                             variant="outline"
                             size="sm"
+                            onClick={() => handleRenameFile(file.id, file.originalName)}
+                            className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                          >
+                            <Edit3 className="w-4 h-4" />
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
                             onClick={() => handleDeleteFile(file.id, file.originalName)}
                             className="text-red-600 hover:text-red-700 hover:bg-red-50"
                           >
@@ -990,6 +1035,114 @@ const Dashboard = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* Rename File Modal */}
+      {showRenameModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold">Rename File</h3>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleCancelRename}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                <X className="w-4 h-4" />
+              </Button>
+            </div>
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                New File Name
+              </label>
+              <Input
+                type="text"
+                value={newFileName}
+                onChange={(e) => setNewFileName(e.target.value)}
+                placeholder="Enter new file name"
+                className="w-full"
+                autoFocus
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    handleSaveRename();
+                  } else if (e.key === 'Escape') {
+                    handleCancelRename();
+                  }
+                }}
+              />
+            </div>
+            <div className="flex justify-end gap-2">
+              <Button
+                variant="outline"
+                onClick={handleCancelRename}
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleSaveRename}
+                className="bg-blue-600 hover:bg-blue-700"
+              >
+                <Save className="w-4 h-4 mr-2" />
+                Save
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Rename Submission Modal */}
+      {showRenameModal && renamingFile && renamingFile.type === 'submission' && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold">Rename Submission</h3>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleCancelRenameSubmission}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                <X className="w-4 h-4" />
+              </Button>
+            </div>
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                New Submission Name
+              </label>
+              <Input
+                type="text"
+                value={newFileName}
+                onChange={(e) => setNewFileName(e.target.value)}
+                placeholder="Enter new submission name"
+                className="w-full"
+                autoFocus
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    handleSaveRenameSubmission();
+                  } else if (e.key === 'Escape') {
+                    handleCancelRenameSubmission();
+                  }
+                }}
+              />
+            </div>
+            <div className="flex justify-end gap-2">
+              <Button
+                variant="outline"
+                onClick={handleCancelRenameSubmission}
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleSaveRenameSubmission}
+                className="bg-blue-600 hover:bg-blue-700"
+              >
+                <Save className="w-4 h-4 mr-2" />
+                Save
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

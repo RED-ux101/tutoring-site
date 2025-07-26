@@ -202,4 +202,45 @@ router.delete('/:id', auth, (req, res) => {
   );
 });
 
+// Rename file (protected route)
+router.put('/:id/rename', auth, (req, res) => {
+  const fileId = req.params.id;
+  const { newName } = req.body;
+
+  if (!newName || newName.trim() === '') {
+    return res.status(400).json({ message: 'New name is required' });
+  }
+
+  // First get file info to check ownership
+  db.get(
+    'SELECT * FROM files WHERE id = ? AND tutor_id = ?',
+    [fileId, req.tutor.id],
+    (err, file) => {
+      if (err) {
+        return res.status(500).json({ message: 'Database error' });
+      }
+
+      if (!file) {
+        return res.status(404).json({ message: 'File not found or unauthorized' });
+      }
+
+      // Update the original_name in database
+      db.run(
+        'UPDATE files SET original_name = ? WHERE id = ?',
+        [newName.trim(), fileId],
+        (err) => {
+          if (err) {
+            return res.status(500).json({ message: 'Error renaming file' });
+          }
+
+          res.json({ 
+            message: 'File renamed successfully',
+            newName: newName.trim()
+          });
+        }
+      );
+    }
+  );
+});
+
 module.exports = router; 
