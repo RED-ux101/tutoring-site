@@ -20,7 +20,7 @@ import {
 } from 'lucide-react';
 
 const PublicFilesPage = () => {
-  const [files, setFiles] = useState([]);
+  const [files, setFiles] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
@@ -37,18 +37,25 @@ const PublicFilesPage = () => {
     try {
       setLoading(true);
       const response = await filesAPI.getPublicFiles();
-      setFiles(response.files);
+      const filesData = response.files || [];
+      setFiles(filesData);
       
       // Calculate stats
-      const categories = [...new Set(response.files.map(file => getFileTypeLabel(file.mimeType)))];
+      const categories = [...new Set(filesData.map(file => getFileTypeLabel(file.mimeType)))];
       setStats({
-        totalFiles: response.files.length,
-        totalDownloads: response.files.reduce((acc, file) => acc + (file.downloads || Math.floor(Math.random() * 100)), 0),
+        totalFiles: filesData.length,
+        totalDownloads: filesData.reduce((acc, file) => acc + (file.downloads || Math.floor(Math.random() * 100)), 0),
         categories: categories
       });
     } catch (error) {
       setError('Failed to load files');
       console.error('Error loading files:', error);
+      setFiles([]); // Set empty array on error
+      setStats({
+        totalFiles: 0,
+        totalDownloads: 0,
+        categories: []
+      });
     } finally {
       setLoading(false);
     }
@@ -59,7 +66,7 @@ const PublicFilesPage = () => {
   }, [loadFiles]);
 
   // Filter and sort files
-  const filteredAndSortedFiles = files
+  const filteredAndSortedFiles = (files || [])
     .filter(file => {
       const matchesSearch = file.originalName.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesCategory = selectedCategory === 'all' || getFileTypeLabel(file.mimeType).toLowerCase() === selectedCategory.toLowerCase();
@@ -121,8 +128,14 @@ const PublicFilesPage = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-slate-900 flex items-center justify-center">
-        <LoadingSpinner size="large" text="Loading files..." />
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 flex items-center justify-center">
+        <div className="text-center">
+          <LoadingSpinner size="large" text="Loading study materials..." />
+          <div className="mt-4 text-sm text-muted-foreground">
+            <BookOpen className="w-4 h-4 inline mr-2 animate-pulse" />
+            Preparing your learning resources...
+          </div>
+        </div>
       </div>
     );
   }
@@ -187,7 +200,7 @@ const PublicFilesPage = () => {
                   Find Resources
                 </CardTitle>
                 <CardDescription>
-                  Search and filter through {files.length} available study materials
+                  Search and filter through {files ? files.length : 0} available study materials
                 </CardDescription>
               </div>
               
@@ -254,7 +267,7 @@ const PublicFilesPage = () => {
             {(searchTerm || selectedCategory !== 'all') && (
               <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
                 <p className="text-sm text-blue-700 dark:text-blue-300">
-                  Showing {filteredAndSortedFiles.length} of {files.length} files
+                  Showing {filteredAndSortedFiles.length} of {files ? files.length : 0} files
                   {searchTerm && ` matching "${searchTerm}"`}
                   {selectedCategory !== 'all' && ` in ${selectedCategory} category`}
                   <Button
@@ -307,7 +320,7 @@ const PublicFilesPage = () => {
                   Try adjusting your search terms or filters
                 </p>
               </div>
-            ) : files.length === 0 ? (
+            ) : !files || files.length === 0 ? (
               <div className="text-center py-16">
                 <Search className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
                 <h3 className="text-lg font-medium text-foreground mb-2">No files available</h3>
@@ -406,7 +419,7 @@ const PublicFilesPage = () => {
         </Card>
 
         {/* Call to Action */}
-        {files.length > 0 && (
+        {files && files.length > 0 && (
           <Card className="mt-8 bg-primary text-primary-foreground">
             <CardContent className="pt-6">
               <div className="text-center">
