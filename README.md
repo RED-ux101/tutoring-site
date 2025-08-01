@@ -1,135 +1,133 @@
-# Damesha's Learning Hub
+# Tutor File Sharing Platform
 
-A modern, full-stack web application that serves as Damesha's personal learning hub, where he can share educational materials with students and students can contribute their own resources to the community.
+A secure file sharing platform for tutors and students, built with React frontend and Node.js backend.
 
-## Features
+## 🚀 Features
 
-### For Damesha (Admin)
-- **Secure Authentication** - Admin login to access dashboard
-- **File Upload** - Drag-and-drop or click to upload educational materials
-- **File Management** - View, download, and delete uploaded files
-- **Submission Review** - Approve or reject student-submitted resources
-- **Admin Dashboard** - Centralized interface to manage all content
+- **Secure File Upload**: Tutors can upload educational resources with category organization
+- **Student Submissions**: Students can submit resources for review and approval
+- **Admin Dashboard**: Comprehensive dashboard for managing files and submissions
+- **Public File Access**: Students can download approved educational resources
+- **Responsive Design**: Modern UI built with React and Tailwind CSS
 
-### For Students  
-- **Public Access** - Browse and download study materials without registration
-- **Resource Submission** - Submit helpful resources for community sharing
-- **File Details** - See file names, sizes, upload dates, and categories
-- **Direct Downloads** - One-click file downloads
+## 🔒 Security Features
 
-### Technical Features
-- **Modern UI** - Built with React and TailwindCSS
-- **Responsive Design** - Works on desktop, tablet, and mobile
-- **File Support** - PDFs, Word docs, PowerPoint, Excel, images, and text files
-- **Security** - JWT authentication and protected routes
-- **Database** - SQLite for easy deployment and development
+### Authentication & Authorization
+- JWT-based authentication with secure token management
+- Rate limiting on authentication endpoints (5 attempts per 15 minutes)
+- Password hashing with bcryptjs
+- Protected routes for admin-only operations
+- Input validation and sanitization
 
-## Tech Stack
+### File Upload Security
+- File type validation (MIME type and extension checking)
+- File size limits (10MB maximum)
+- Secure filename generation to prevent path traversal
+- Malicious file detection and prevention
+- File cleanup on upload errors
 
-### Frontend
-- React 18
-- React Router for navigation
-- TailwindCSS for styling
-- Axios for API calls
+### API Security
+- Helmet.js for security headers
+- CORS protection with whitelisted origins
+- Input validation and sanitization
+- SQL injection prevention with parameterized queries
+- XSS protection with Content Security Policy
+- Rate limiting on all endpoints
 
-### Backend
-- Node.js with Express
-- SQLite database
-- JWT authentication
-- Multer for file uploads
-- bcryptjs for password hashing
+### Data Protection
+- No sensitive data logging
+- Secure error handling without information disclosure
+- Environment variable validation
+- HTTPS enforcement in production
 
-## Getting Started
+## 🛠️ Installation
 
 ### Prerequisites
-- Node.js (v14 or higher)
+- Node.js (v16 or higher)
 - npm or yarn
 
-### Installation
+### Backend Setup
 
-1. **Clone the repository**
+1. **Install dependencies:**
    ```bash
-   git clone <repository-url>
-   cd tutor-file-sharing
+   cd backend
+   npm install
    ```
 
-2. **Install dependencies**
-   ```bash
-   npm run install-all
+2. **Set up environment variables:**
+   Create a `.env` file in the backend directory:
+   ```env
+   NODE_ENV=production
+   PORT=5000
+   JWT_SECRET=your-super-secure-jwt-secret-key-here-minimum-32-characters
+   ADMIN_EMAIL=admin@yourdomain.com
+   ADMIN_PASSWORD_HASH=$2a$12$your-bcrypt-hash-here
+   DATABASE_PATH=/tmp/database.db
    ```
 
-3. **Start the development servers**
+3. **Generate admin password hash:**
    ```bash
-   npm run dev
+   node -e "console.log(require('bcryptjs').hashSync('your-admin-password', 12))"
    ```
 
-   This will start both the backend server (port 5000) and frontend development server (port 3000).
+4. **Start the server:**
+   ```bash
+   npm start
+   ```
 
-### Individual Services
+### Frontend Setup
 
-**Backend only:**
-```bash
-npm run server
-```
+1. **Install dependencies:**
+   ```bash
+   cd frontend
+   npm install
+   ```
 
-**Frontend only:**
-```bash
-npm run client
-```
+2. **Start the development server:**
+   ```bash
+   npm start
+   ```
 
-## Environment Variables
-
-Create a `.env` file in the `backend` directory with the following variables:
-
-```env
-PORT=5000
-JWT_SECRET=your-very-secure-jwt-secret-key-here
-NODE_ENV=development
-```
-
-For production, make sure to set `NODE_ENV=production` and use a strong JWT secret.
-
-## Project Structure
+## 📁 Project Structure
 
 ```
-tutor-file-sharing/
+website/
 ├── backend/
+│   ├── database.js          # Database initialization and configuration
 │   ├── middleware/
 │   │   └── auth.js          # JWT authentication middleware
 │   ├── routes/
 │   │   ├── auth.js          # Authentication routes
-│   │   └── files.js         # File management routes
-│   ├── uploads/             # File storage directory
-│   ├── database.js          # SQLite database setup
-│   ├── server.js            # Express server configuration
+│   │   ├── files.js         # File management routes
+│   │   └── submissions.js   # Student submission routes
+│   ├── security-config.js   # Security configuration and validation
+│   ├── server.js            # Express server setup
 │   └── package.json
 ├── frontend/
-│   ├── public/
-│   │   └── index.html
 │   ├── src/
-│   │   ├── components/      # Reusable UI components
-│   │   ├── context/         # React context for state management
+│   │   ├── components/      # React components
 │   │   ├── pages/           # Page components
-│   │   ├── services/        # API service functions
-│   │   ├── App.js           # Main app component
-│   │   ├── index.js         # React entry point
-│   │   └── index.css        # TailwindCSS styles
+│   │   ├── services/
+│   │   │   └── api.js       # API service functions
+│   │   └── context/         # React context providers
 │   └── package.json
-└── package.json             # Root package.json
+└── README.md
 ```
 
-## API Endpoints
+## 🔧 API Endpoints
 
 ### Authentication
-- `POST /api/auth/signup` - Create admin account (Damesha only)
-- `POST /api/auth/login` - Admin login
+- `POST /api/auth/admin-login` - Admin login with email/password
+- `POST /api/auth/legacy-login` - Legacy key-based login (deprecated)
+- `GET /api/auth/health` - Health check
 
-### Files
+### File Management
 - `POST /api/files/upload` - Upload file (admin only)
 - `GET /api/files/my-files` - Get admin's files (admin only)
 - `GET /api/files/public` - Get all public files
 - `GET /api/files/download/:id` - Download file
 - `DELETE /api/files/:id` - Delete file (admin only)
+- `PUT /api/files/:id/rename` - Rename file (admin only)
 
 ### Student Submissions
 - `POST /api/submissions/submit` - Submit resource (no auth required)
@@ -138,8 +136,9 @@ tutor-file-sharing/
 - `GET /api/submissions/download/:id` - Download submission (admin only)
 - `POST /api/submissions/approve/:id` - Approve submission (admin only)
 - `POST /api/submissions/reject/:id` - Reject submission (admin only)
+- `PUT /api/submissions/:id/rename` - Rename submission (admin only)
 
-## Deployment
+## 🚀 Deployment
 
 ### Railway Deployment
 
@@ -153,7 +152,9 @@ This application is configured for deployment on Railway. Here's how to deploy:
 
 2. **Set environment variables on Railway:**
    - `NODE_ENV=production`
-   - `JWT_SECRET=your-production-jwt-secret`
+   - `JWT_SECRET=your-production-jwt-secret` (minimum 32 characters)
+   - `ADMIN_EMAIL=admin@yourdomain.com`
+   - `ADMIN_PASSWORD_HASH=your-bcrypt-hash`
    - `PORT` (Railway will set this automatically)
 
 3. **Deploy**
@@ -161,39 +162,39 @@ This application is configured for deployment on Railway. Here's how to deploy:
    - Set the start command to: `npm start`
    - Railway will automatically build and deploy
 
-### Other Platforms
+### Security Checklist for Production
 
-For other platforms (Heroku, DigitalOcean, etc.):
+- [ ] Set strong JWT_SECRET (minimum 32 characters)
+- [ ] Configure admin credentials (email and password hash)
+- [ ] Enable HTTPS
+- [ ] Set up proper CORS origins
+- [ ] Configure rate limiting
+- [ ] Set up monitoring and logging
+- [ ] Regular security updates
+- [ ] Database backups
 
-1. **Build the frontend:**
-   ```bash
-   cd frontend && npm run build
-   ```
+## 🔒 Security Best Practices
 
-2. **Set environment variables:**
-   - `NODE_ENV=production`
-   - `JWT_SECRET=strong-random-secret`
-   - `PORT=5000` (or platform-specific)
+### For Administrators
+1. Use strong, unique passwords
+2. Regularly rotate JWT secrets
+3. Monitor access logs
+4. Keep dependencies updated
+5. Use HTTPS in production
 
-3. **Start command:**
-   ```bash
-   npm start
-   ```
+### For Students
+1. Only upload appropriate educational content
+2. Don't share personal information in submissions
+3. Use valid email addresses for submissions
 
-## File Upload Limits
+## 📝 File Upload Limits
 
 - Maximum file size: 10MB
 - Supported formats: PDF, Word, PowerPoint, Excel, images (JPG, PNG, GIF), text files
+- File type validation: Both MIME type and extension checking
+- Secure filename generation to prevent path traversal attacks
 
-## Security Features
-
-- Password hashing with bcryptjs
-- JWT tokens for authentication
-- Protected routes for tutor-only operations
-- File type validation
-- SQL injection prevention with parameterized queries
-
-## Contributing
+## 🤝 Contributing
 
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/amazing-feature`)
@@ -201,10 +202,10 @@ For other platforms (Heroku, DigitalOcean, etc.):
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
-## License
+## 📄 License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
 
-## Support
+## 🆘 Support
 
-For support or questions, please open an issue in the repository. 
+For security issues, please contact the administrator directly. For other issues, please create an issue in the repository. 

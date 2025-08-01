@@ -24,44 +24,20 @@ const api = axios.create({
 // Add auth token to requests
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('tutorToken');
-  console.log('🔐 Token from localStorage:', token ? 'EXISTS' : 'MISSING');
-  console.log('🔐 Token value:', token);
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
-    console.log('🔐 Authorization header set:', `Bearer ${token.substring(0, 20)}...`);
-  } else {
-    console.log('❌ No token found in localStorage');
   }
-  console.log('🔐 Request config:', {
-    url: config.url,
-    method: config.method,
-    headers: config.headers
-  });
   return config;
 });
 
 // Handle auth errors and network issues
 api.interceptors.response.use(
   (response) => {
-    console.log('✅ API Response received:', {
-      status: response.status,
-      url: response.config.url,
-      data: response.data
-    });
     return response;
   },
   (error) => {
-    console.error('❌ API Error:', error);
-    console.error('❌ Error response:', error.response);
-    console.error('❌ Error config:', error.config);
-    
     if (error.response?.status === 401) {
-      console.error('401 Unauthorized - Token might be invalid');
-      console.error('401 Response data:', error.response.data);
       // Don't automatically logout, let the component handle it
-      // localStorage.removeItem('tutorToken');
-      // localStorage.removeItem('tutorData');
-      // window.location.href = '/admin';
     } else if (error.code === 'NETWORK_ERROR' || error.code === 'ECONNREFUSED') {
       console.error('Network error - backend may not be available');
     }
@@ -136,9 +112,7 @@ export const filesAPI = {
   },
   
   renameFile: async (fileId, newName) => {
-    console.log('🔧 API: Renaming file', fileId, 'to', newName);
     const response = await api.put(`/files/${fileId}/rename`, { newName });
-    console.log('🔧 API: File rename response', response);
     return response.data;
   },
   
@@ -191,40 +165,8 @@ export const submissionsAPI = {
   },
   
   renameSubmission: async (submissionId, newName) => {
-    console.log('🔧 API: Renaming submission', submissionId, 'to', newName);
     const response = await api.put(`/submissions/${submissionId}/rename`, { newName });
-    console.log('🔧 API: Submission rename response', response);
     return response.data;
-  }
-};
-
-// Test function to compare axios vs fetch
-export const testAPI = async () => {
-  const token = localStorage.getItem('tutorToken');
-  console.log('🧪 Testing API with token:', token ? 'EXISTS' : 'MISSING');
-  
-  // Test with axios
-  try {
-    console.log('🧪 Testing with axios...');
-    const axiosResponse = await api.get('/files/my-files');
-    console.log('✅ Axios response:', axiosResponse.data);
-  } catch (axiosError) {
-    console.log('❌ Axios error:', axiosError.response?.status, axiosError.response?.data);
-  }
-  
-  // Test with fetch
-  try {
-    console.log('🧪 Testing with fetch...');
-    const fetchResponse = await fetch('https://tutoring-site-production-30eb.up.railway.app/api/files/my-files', {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      }
-    });
-    const fetchData = await fetchResponse.text();
-    console.log('✅ Fetch response:', fetchResponse.status, fetchData);
-  } catch (fetchError) {
-    console.log('❌ Fetch error:', fetchError);
   }
 };
 

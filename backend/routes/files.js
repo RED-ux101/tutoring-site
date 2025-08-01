@@ -12,24 +12,46 @@ if (!fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir, { recursive: true });
 }
 
-// Configure multer for file uploads
+// Input validation middleware
+const validateFileInput = (req, res, next) => {
+  const { category } = req.body;
+  
+  // Validate category if provided
+  if (category && typeof category !== 'string') {
+    return res.status(400).json({ message: 'Invalid category format' });
+  }
+  
+  // Sanitize category
+  if (category) {
+    req.body.category = category.trim().substring(0, 100); // Limit length
+  }
+  
+  next();
+};
+
+// Configure multer for file uploads with enhanced security
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, uploadsDir);
   },
   filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
+    // Generate secure filename
+    const timestamp = Date.now();
+    const random = Math.random().toString(36).substring(2, 15);
+    const ext = path.extname(file.originalname).toLowerCase();
+    const safeName = `${timestamp}-${random}${ext}`;
+    cb(null, safeName);
   }
 });
 
 const upload = multer({
   storage: storage,
   limits: {
-    fileSize: 10 * 1024 * 1024 // 10MB limit
+    fileSize: 10 * 1024 * 1024, // 10MB limit
+    files: 1 // Only allow 1 file per request
   },
   fileFilter: (req, file, cb) => {
-    // Allow common document types
+    // Enhanced file type validation
     const allowedTypes = [
       'application/pdf',
       'application/msword',
@@ -44,16 +66,30 @@ const upload = multer({
       'image/gif'
     ];
 
-    if (allowedTypes.includes(file.mimetype)) {
-      cb(null, true);
-    } else {
-      cb(new Error('Invalid file type. Only documents, PDFs, and images are allowed.'));
+    // Check MIME type
+    if (!allowedTypes.includes(file.mimetype)) {
+      return cb(new Error('Invalid file type. Only documents, PDFs, and images are allowed.'), false);
     }
+
+    // Check file extension
+    const allowedExtensions = ['.pdf', '.doc', '.docx', '.xls', '.xlsx', '.ppt', '.pptx', '.txt', '.jpg', '.jpeg', '.png', '.gif'];
+    const fileExtension = path.extname(file.originalname).toLowerCase();
+    
+    if (!allowedExtensions.includes(fileExtension)) {
+      return cb(new Error('Invalid file extension.'), false);
+    }
+
+    // Additional security checks
+    if (file.originalname.includes('..') || file.originalname.includes('/') || file.originalname.includes('\\')) {
+      return cb(new Error('Invalid filename.'), false);
+    }
+
+    cb(null, true);
   }
 });
 
 // Upload file (protected route)
-router.post('/upload', auth, upload.single('file'), (req, res) => {
+router.post('/upload', auth, validateFileInput, upload.single('file'), (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ message: 'No file uploaded' });
@@ -63,13 +99,21 @@ router.post('/upload', auth, upload.single('file'), (req, res) => {
     const { category } = req.body;
     const filePath = path.join('uploads', filename);
 
+    // Validate file size
+    if (size > 10 * 1024 * 1024) {
+      // Remove uploaded file
+      fs.unlinkSync(req.file.path);
+      return res.status(400).json({ message: 'File too large. Maximum size is 10MB.' });
+    }
+
     // Save file info to database
     db.run(
       'INSERT INTO files (tutor_id, filename, original_name, file_path, file_size, mime_type, category) VALUES (?, ?, ?, ?, ?, ?, ?)',
       [req.tutor.id, filename, originalname, filePath, size, mimetype, category || null],
       function (err) {
         if (err) {
-          console.error('Database error:', err);
+          // Remove uploaded file if database save fails
+          fs.unlinkSync(req.file.path);
           return res.status(500).json({ message: 'Error saving file info' });
         }
 
@@ -88,7 +132,10 @@ router.post('/upload', auth, upload.single('file'), (req, res) => {
       }
     );
   } catch (error) {
-    console.error('Upload error:', error);
+    // Clean up uploaded file on error
+    if (req.file && fs.existsSync(req.file.path)) {
+      fs.unlinkSync(req.file.path);
+    }
     res.status(500).json({ message: 'Server error during upload' });
   }
 });
@@ -127,7 +174,6 @@ router.get('/public', (req, res) => {
      ORDER BY files.uploaded_at DESC`,
     (err, rows) => {
       if (err) {
-        console.error('Database error:', err);
         return res.status(500).json({ message: 'Database error' });
       }
 
@@ -142,7 +188,6 @@ router.get('/public', (req, res) => {
         tutorName: file.tutor_name || 'Admin'
       }));
 
-      console.log(`Found ${files.length} public files`);
       res.json({ files });
     }
   );
@@ -150,7 +195,11 @@ router.get('/public', (req, res) => {
 
 // Download file (no auth required)
 router.get('/download/:id', (req, res) => {
-  const fileId = req.params.id;
+  const fileId = parseInt(req.params.id);
+  
+  if (isNaN(fileId) || fileId <= 0) {
+    return res.status(400).json({ message: 'Invalid file ID' });
+  }
 
   db.get('SELECT * FROM files WHERE id = ?', [fileId], (err, file) => {
     if (err) {
@@ -167,13 +216,20 @@ router.get('/download/:id', (req, res) => {
       return res.status(404).json({ message: 'File not found on disk' });
     }
 
+    // Set security headers
+    res.set('X-Content-Type-Options', 'nosniff');
+    res.set('X-Frame-Options', 'DENY');
     res.download(filePath, file.original_name);
   });
 });
 
 // Delete file (protected route)
 router.delete('/:id', auth, (req, res) => {
-  const fileId = req.params.id;
+  const fileId = parseInt(req.params.id);
+  
+  if (isNaN(fileId) || fileId <= 0) {
+    return res.status(400).json({ message: 'Invalid file ID' });
+  }
 
   // First get file info to check ownership and get file path
   db.get(
@@ -208,12 +264,19 @@ router.delete('/:id', auth, (req, res) => {
 
 // Rename file (protected route)
 router.put('/:id/rename', auth, (req, res) => {
-  const fileId = req.params.id;
+  const fileId = parseInt(req.params.id);
   const { newName } = req.body;
 
-  if (!newName || newName.trim() === '') {
+  if (isNaN(fileId) || fileId <= 0) {
+    return res.status(400).json({ message: 'Invalid file ID' });
+  }
+
+  if (!newName || typeof newName !== 'string' || newName.trim() === '') {
     return res.status(400).json({ message: 'New name is required' });
   }
+
+  // Sanitize new name
+  const sanitizedName = newName.trim().substring(0, 255);
 
   // First get file info to check ownership
   db.get(
@@ -231,7 +294,7 @@ router.put('/:id/rename', auth, (req, res) => {
       // Update the original_name in database
       db.run(
         'UPDATE files SET original_name = ? WHERE id = ?',
-        [newName.trim(), fileId],
+        [sanitizedName, fileId],
         (err) => {
           if (err) {
             return res.status(500).json({ message: 'Error renaming file' });
@@ -239,7 +302,7 @@ router.put('/:id/rename', auth, (req, res) => {
 
           res.json({ 
             message: 'File renamed successfully',
-            newName: newName.trim()
+            newName: sanitizedName
           });
         }
       );

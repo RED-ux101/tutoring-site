@@ -2,27 +2,18 @@ const jwt = require('jsonwebtoken');
 
 const auth = (req, res, next) => {
   const authHeader = req.header('Authorization');
-  console.log('🔐 Auth middleware - Authorization header:', authHeader);
   
   const token = authHeader?.replace('Bearer ', '');
-  console.log('🔐 Auth middleware - Extracted token:', token ? 'EXISTS' : 'MISSING');
-  console.log('🔐 Auth middleware - Token value:', token);
-  console.log('🔐 Auth middleware - JWT_SECRET:', process.env.JWT_SECRET || 'your-secret-key');
 
   if (!token) {
-    console.log('❌ Auth middleware - No token provided');
     return res.status(401).json({ message: 'No token, authorization denied' });
   }
 
   try {
-    console.log('🔐 Auth middleware - Attempting to verify token...');
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key');
-    console.log('✅ Auth middleware - Token verified successfully:', decoded);
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
     req.tutor = decoded;
     next();
   } catch (error) {
-    console.log('❌ Auth middleware - Token verification failed:', error.message);
-    console.log('❌ Auth middleware - Error details:', error);
     res.status(401).json({ message: 'Token is not valid' });
   }
 };

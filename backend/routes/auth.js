@@ -1,188 +1,127 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const rateLimit = require('express-rate-limit');
 const router = express.Router();
 
-// Alternative GET-based login (Railway might block POST to auth routes)
-router.get('/verify', (req, res) => {
+// Rate limiting for auth endpoints
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 5, // limit each IP to 5 requests per windowMs
+  message: { message: 'Too many authentication attempts, please try again later' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+// Apply rate limiting to all auth routes
+router.use(authLimiter);
+
+// Input validation middleware
+const validateLoginInput = (req, res, next) => {
+  const { email, password } = req.body;
+  
+  if (!email || !password) {
+    return res.status(400).json({ message: 'Email and password are required' });
+  }
+  
+  // Basic email validation
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    return res.status(400).json({ message: 'Invalid email format' });
+  }
+  
+  // Password strength validation
+  if (password.length < 8) {
+    return res.status(400).json({ message: 'Password must be at least 8 characters long' });
+  }
+  
+  next();
+};
+
+// Admin login with proper validation
+router.post('/admin-login', validateLoginInput, async (req, res) => {
   try {
-    console.log('🔑 GET-based verification endpoint hit!');
-    console.log('🔑 Query params:', req.query);
+    const { email, password } = req.body;
     
-    const { key, access, secret, token } = req.query;
-    const providedKey = key || access || secret || token;
+    // Get admin credentials from environment variables
+    const adminEmail = process.env.ADMIN_EMAIL;
+    const adminPasswordHash = process.env.ADMIN_PASSWORD_HASH;
     
-    if (!providedKey) {
-      return res.status(400).json({ message: 'Access key required' });
+    if (!adminEmail || !adminPasswordHash) {
+      console.error('Admin credentials not configured');
+      return res.status(500).json({ message: 'Server configuration error' });
     }
-
-    console.log('🔑 Key received via GET:', providedKey);
-
-    // Valid access keys
-    const validKeys = [
-      'damesha2024',
-      'damesha123', 
-      'admin2024',
-      'secure123',
-      'tutor2024',
-      'verify123'
-    ];
-
-    const isValidKey = validKeys.includes(providedKey);
-    console.log('🔍 Key is valid:', isValidKey);
-
-    if (!isValidKey) {
-      console.log('❌ Invalid access key');
+    
+    // Check email
+    if (email !== adminEmail) {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
-
-    console.log('✅ GET verification successful!');
-
+    
+    // Verify password
+    const isValidPassword = await bcrypt.compare(password, adminPasswordHash);
+    if (!isValidPassword) {
+      return res.status(401).json({ message: 'Invalid credentials' });
+    }
+    
     // Issue JWT token
-    const jwtToken = jwt.sign(
-      { id: 1, name: 'Damesha', role: 'admin' },
-      process.env.JWT_SECRET || 'your-secret-key',
-      { expiresIn: '7d' }
+    const token = jwt.sign(
+      { id: 1, name: 'Admin', role: 'admin', email },
+      process.env.JWT_SECRET,
+      { expiresIn: '24h' }
     );
-
+    
     res.json({
-      message: 'Verification successful',
-      token: jwtToken,
-      tutor: { id: 1, name: 'Damesha', email: 'admin@hidden.local' }
+      message: 'Login successful',
+      token,
+      tutor: { id: 1, name: 'Admin', email }
     });
   } catch (error) {
-    console.error('🚨 Server error in verify:', error);
+    console.error('Login error:', error);
     res.status(500).json({ message: 'Server error' });
   }
 });
 
-// Test route to verify auth routes are working
-router.get('/test', (req, res) => {
+// Legacy key-based login (deprecated - for backward compatibility)
+router.post('/legacy-login', authLimiter, async (req, res) => {
+  try {
+    const { accessKey } = req.body;
+    
+    if (!accessKey) {
+      return res.status(400).json({ message: 'Access key required' });
+    }
+    
+    // Check against environment variable
+    const validAccessKey = process.env.LEGACY_ACCESS_KEY;
+    
+    if (!validAccessKey || accessKey !== validAccessKey) {
+      return res.status(401).json({ message: 'Invalid credentials' });
+    }
+    
+    // Issue JWT token
+    const token = jwt.sign(
+      { id: 1, name: 'Admin', role: 'admin' },
+      process.env.JWT_SECRET,
+      { expiresIn: '24h' }
+    );
+    
+    res.json({
+      message: 'Login successful',
+      token,
+      tutor: { id: 1, name: 'Admin', email: 'admin@system.local' }
+    });
+  } catch (error) {
+    console.error('Legacy login error:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// Health check endpoint (no sensitive info)
+router.get('/health', (req, res) => {
   res.json({ 
-    message: 'Auth routes are working!', 
+    message: 'Auth service is running', 
     timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV || 'development'
   });
-});
-
-// Alternative login route (in case "admin" is blocked)
-router.post('/secure-access', async (req, res) => {
-  try {
-    console.log('🔑 Secure access endpoint hit!');
-    console.log('🔑 Request method:', req.method);
-    console.log('🔑 Request body:', req.body);
-    
-    const { adminKey, accessKey, secretKey } = req.body;
-    const key = adminKey || accessKey || secretKey;
-    
-    if (!key) {
-      console.log('❌ No access key provided');
-      return res.status(400).json({ message: 'Access key required' });
-    }
-
-    console.log('🔑 Access key received:', key);
-
-    // Valid access keys
-    const validKeys = [
-      'damesha2024',
-      'damesha123', 
-      'admin2024',
-      'secure123',
-      'tutor2024'
-    ];
-
-    const isValidKey = validKeys.includes(key);
-    console.log('🔍 Key is valid:', isValidKey);
-
-    if (!isValidKey) {
-      console.log('❌ Invalid access key');
-      return res.status(401).json({ message: 'Invalid credentials' });
-    }
-
-    console.log('✅ Secure access successful!');
-
-    // Issue JWT token
-    const token = jwt.sign(
-      { id: 1, name: 'Damesha', role: 'admin' },
-      process.env.JWT_SECRET || 'your-secret-key',
-      { expiresIn: '7d' }
-    );
-
-    res.json({
-      message: 'Login successful',
-      token,
-      tutor: { id: 1, name: 'Damesha', email: 'admin@hidden.local' }
-    });
-  } catch (error) {
-    console.error('🚨 Server error in secure-access:', error);
-    res.status(500).json({ message: 'Server error' });
-  }
-});
-
-// POST /api/auth/admin-login
-router.post('/admin-login', async (req, res) => {
-  try {
-    console.log('🔥 Admin login endpoint hit!');
-    console.log('🔥 Request method:', req.method);
-    console.log('🔥 Request body:', req.body);
-    console.log('🔥 Environment:', process.env.NODE_ENV);
-    
-    const { adminKey } = req.body;
-    if (!adminKey) {
-      console.log('❌ No admin key provided');
-      return res.status(400).json({ message: 'Admin key required' });
-    }
-
-    console.log('🔑 Admin key received:', adminKey);
-
-    // Simple admin key check - works immediately on Railway
-    const validAdminKeys = [
-      'damesha2024',
-      'damesha123',
-      'admin2024'
-    ];
-
-    // Check if the provided key is valid
-    const isValidKey = validAdminKeys.includes(adminKey);
-    console.log('🔍 Key is valid:', isValidKey);
-    
-    // Also check bcrypt hash if available (for production)
-    const adminKeyHash = process.env.ADMIN_KEY_HASH;
-    let isBcryptMatch = false;
-    
-    if (adminKeyHash) {
-      try {
-        isBcryptMatch = await bcrypt.compare(adminKey, adminKeyHash);
-        console.log('🔐 Bcrypt match:', isBcryptMatch);
-      } catch (error) {
-        console.log('❌ Bcrypt comparison failed:', error.message);
-      }
-    }
-
-    if (!isValidKey && !isBcryptMatch) {
-      console.log('❌ Invalid credentials');
-      // Always return generic error
-      return res.status(401).json({ message: 'Invalid credentials' });
-    }
-
-    console.log('✅ Login successful!');
-
-    // Issue JWT token
-    const token = jwt.sign(
-      { id: 1, name: 'Damesha', role: 'admin' },
-      process.env.JWT_SECRET || 'your-secret-key',
-      { expiresIn: '7d' }
-    );
-
-    res.json({
-      message: 'Login successful',
-      token,
-      tutor: { id: 1, name: 'Damesha', email: 'admin@hidden.local' }
-    });
-  } catch (error) {
-    console.error('🚨 Server error in admin-login:', error);
-    res.status(500).json({ message: 'Server error' });
-  }
 });
 
 module.exports = router; 
