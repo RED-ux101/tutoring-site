@@ -192,7 +192,7 @@ const dbOperations = {
   }
 };
 
-// Storage operations
+// Storage operations - Secure implementation without problematic packages
 const storageOperations = {
   async uploadFile(file, destination) {
     const bucket = getStorage().bucket();

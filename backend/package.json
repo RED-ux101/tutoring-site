@@ -17,7 +17,6 @@
     "helmet": "^7.1.0",
     "jsonwebtoken": "^9.0.2",
     "multer": "^1.4.5-lts.1",
-    "multer-firebase-storage": "^1.0.0",
     "path": "^0.12.7",
     "sqlite3": "^5.1.6"
   },
