@@ -4,94 +4,65 @@
 
 @layer base {
   :root {
-    /* Neumorphic + Gradient system */
-    --background: 210 40% 98%;
-    --foreground: 224 71% 4%;
+    /* Modern minimal: dark surfaces with subtle color accents */
+    --background: 222 14% 16%;        /* slate-800-ish */
+    --foreground: 210 40% 98%;        /* near-white */
 
-    --card: 0 0% 100%;
-    --card-foreground: 224 71% 4%;
+    --card: 223 13% 18%;
+    --card-foreground: 210 40% 96%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 224 71% 4%;
+    --popover: 223 13% 18%;
+    --popover-foreground: 210 40% 96%;
 
-    /* Brand: Indigo/Violet blend */
-    --primary: 248 83% 60%; /* ~#7c3aed with richer saturation */
+    /* Accents: teal + violet (complimentary yet restrained) */
+    --primary: 222 70% 55%;           /* modern indigo */
     --primary-foreground: 210 40% 98%;
 
-    /* Secondary soft surfaces */
-    --secondary: 220 14% 96%;
-    --secondary-foreground: 224 71% 4%;
+    --secondary: 200 12% 22%;
+    --secondary-foreground: 210 40% 92%;
 
-    --muted: 220 14% 96%;
-    --muted-foreground: 215 16% 47%;
+    --muted: 223 10% 24%;
+    --muted-foreground: 220 9% 70%;
 
-    --accent: 221 83% 53%;
+    --accent: 174 60% 45%;            /* teal accent */
     --accent-foreground: 210 40% 98%;
 
-    --destructive: 0 84% 60%;
+    --destructive: 0 65% 50%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 220 13% 91%;
-    --input: 220 13% 91%;
-    --ring: 248 83% 60%;
+    --border: 220 12% 26%;
+    --input: 220 12% 26%;
+    --ring: 174 60% 45%;
 
     /* Shape */
-    --radius: 0.75rem;
+    --radius: 0.6rem;
 
-    /* Elevation */
-    --shadow-sm: 0 1px 2px rgba(2,6,23,0.06), 0 1px 1px rgba(2,6,23,0.04);
-    --shadow-md: 0 10px 20px rgba(2,6,23,0.08), 0 3px 6px rgba(2,6,23,0.06);
-    --shadow-lg: 0 20px 40px rgba(2,6,23,0.12), 0 8px 16px rgba(2,6,23,0.08);
+    /* Elevation: subtle for minimalism */
+    --shadow-sm: 0 1px 1px rgba(0,0,0,0.2);
+    --shadow-md: 0 6px 12px rgba(0,0,0,0.25);
+    --shadow-lg: 0 14px 28px rgba(0,0,0,0.3);
   }
 
-  .dark {
-    --background: 222 47% 11%;
-    --foreground: 210 40% 98%;
-
-    --card: 222 47% 13%;
-    --card-foreground: 210 40% 98%;
-
-    --popover: 222 47% 13%;
-    --popover-foreground: 210 40% 98%;
-
-    --primary: 247 95% 76%;
-    --primary-foreground: 222 47% 13%;
-
-    --secondary: 217 33% 17%;
-    --secondary-foreground: 210 40% 98%;
-
-    --muted: 217 33% 17%;
-    --muted-foreground: 215 20% 65%;
-
-    --accent: 221 83% 53%;
-    --accent-foreground: 210 40% 98%;
-
-    --destructive: 0 62% 30%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 217 33% 20%;
-    --input: 217 33% 20%;
-    --ring: 247 95% 76%;
-
-    --shadow-sm: 0 1px 2px rgba(0,0,0,0.4), 0 1px 1px rgba(0,0,0,0.24);
-    --shadow-md: 0 12px 24px rgba(0,0,0,0.45), 0 3px 6px rgba(0,0,0,0.3);
-    --shadow-lg: 0 24px 48px rgba(0,0,0,0.55), 0 8px 16px rgba(0,0,0,0.35);
+  .light, .light-theme {
+    /* Optional future light theme hook */
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
   }
 }
-/* Oxford Design tokens: Linen + Indigo + Sand */
+/* Minimal tokens for glass/gradients tuned for dark UI */
 :root {
-  --glass-bg-light: 255 255 255 / 0.7;
-  --glass-border-light: 20 20 20 / 0.08;
-  --glass-bg-dark: 17 24 39 / 0.4; /* slate-900-ish */
-  --glass-border-dark: 255 255 255 / 0.08;
+  --glass-bg-light: 30 41 59 / 0.5;   /* slate-700 */
+  --glass-border-light: 255 255 255 / 0.06;
+  --glass-bg-dark: 15 23 42 / 0.5;    /* slate-900 */
+  --glass-border-dark: 255 255 255 / 0.06;
 
-  /* Warm academic gradients */
-  --gradient-primary-from: 49 46 129;   /* indigo-900ish */
-  --gradient-primary-to: 79 70 229;     /* indigo-600ish */
-  --gradient-accent-from: 234 179 8;    /* amber-500 */
-  --gradient-accent-to: 217 119 6;      /* amber-600 */
-  --gradient-linen-from: 250 245 235;   /* linen */
-  --gradient-linen-to: 245 238 225;     /* parchment */
+  --gradient-primary-from: 99 102 241;  /* indigo-500 */
+  --gradient-primary-to: 56 189 248;    /* sky-400/teal-ish */
+  --gradient-accent-from: 45 212 191;   /* teal-400 */
+  --gradient-accent-to: 147 51 234;     /* violet-600 */
+
+  --gradient-linen-from: 30 41 59;      /* tone down for dark */
+  --gradient-linen-to: 15 23 42;
 }
 
 /* Utilities: gradient backgrounds and text */
@@ -112,6 +83,12 @@
   background-image: linear-gradient(135deg,
     rgb(var(--gradient-accent-from)) 0%,
     rgb(var(--gradient-accent-to)) 100%
+  );
+}
+.gradient-surface {
+  background-image: linear-gradient(180deg,
+    rgb(var(--gradient-linen-from)) 0%,
+    rgb(var(--gradient-linen-to)) 100%
   );
 }
 
@@ -192,8 +169,8 @@
   height: 2px;
   width: 0%;
   background-image: linear-gradient(90deg,
-    rgba(49,46,129,0.9) 0%,
-    rgba(217,119,6,0.9) 100%
+    rgba(45,212,191,0.9) 0%,
+    rgba(99,102,241,0.9) 100%
   );
   transition: width 0.25s ease;
 }
@@ -208,10 +185,12 @@
   }
   body {
     @apply bg-background text-foreground antialiased;
-    font-feature-settings: "liga" 1, "kern" 1, "ss01" 1;
+    font-feature-settings: "liga" 1, "kern" 1;
   }
+  /* Headings use modern geometric sans (we’ll rely on system fonts) */
   h1,h2,h3,h4 {
-    letter-spacing: -0.01em;
+    letter-spacing: -0.015em;
+    font-weight: 800;
   }
 }
 

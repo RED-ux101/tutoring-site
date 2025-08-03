@@ -31,8 +31,8 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="sticky top-0 z-50">
-      <div className="backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b">
+    <nav className="sticky top-0 z-50 border-b border-border/60">
+      <div className="border-b bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container mx-auto px-4">
           <div className="flex h-16 items-center justify-between">
             <div className="flex items-center gap-8">
@@ -40,9 +40,9 @@ const Navbar = () => {
                 <div className="flex h-9 w-9 items-center justify-center rounded-md gradient-primary text-white shadow-[var(--shadow-md)] group-hover:brightness-110 transition">
                   <GraduationCap className="h-5 w-5" />
                 </div>
-                <span className="text-xl font-bold tracking-tight">
-                  <span className="text-gradient-primary">Damesha's</span>
-                  <span className="ml-2 text-foreground/90">Learning Hub</span>
+                <span className="text-xl font-extrabold tracking-tight">
+                  <span className="text-foreground">Damesha's</span>
+                  <span className="ml-2 text-muted-foreground">Learning Hub</span>
                 </span>
               </Link>
 
@@ -69,21 +69,21 @@ const Navbar = () => {
               </Button>
 
               {isAuthenticated() ? (
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2">
                   <Link to="/dashboard">
-                    <Button variant="gradient" size="sm" elevation="md" className="hover:scale-105 active:scale-95">
+                    <Button variant="default" size="sm" elevation="md" className="hover:scale-105 active:scale-95">
                       <Settings className="h-4 w-4 mr-2" />
                       Dashboard
                     </Button>
                   </Link>
                   
                   <div className="hidden md:flex items-center gap-2 pl-3 ml-1 border-l border-border">
-                    <div className="h-8 w-8 rounded-full bg-white/30 dark:bg-white/10 flex items-center justify-center backdrop-blur text-white shadow-[var(--shadow-sm)]">
-                      <span className="text-sm font-medium">
+                    <div className="h-8 w-8 rounded-full bg-secondary flex items-center justify-center text-foreground shadow-[var(--shadow-sm)]">
+                      <span className="text-sm font-semibold">
                         {tutor?.name?.charAt(0).toUpperCase()}
                       </span>
                     </div>
-                    <span className="text-sm font-medium text-foreground">
+                    <span className="text-sm font-medium text-muted-foreground">
                       {tutor?.name}
                     </span>
                   </div>

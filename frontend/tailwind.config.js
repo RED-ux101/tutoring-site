@@ -60,9 +60,10 @@ module.exports = {
         overlay: "var(--shadow-lg)",
       },
       backgroundImage: {
-        "gradient-primary": "linear-gradient(135deg, #7c3aed 0%, #2563eb 100%)",
-        "gradient-accent": "linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%)",
-        "gradient-hero": "radial-gradient(ellipse at top left, rgba(124,58,237,0.15), transparent 40%), radial-gradient(ellipse at bottom right, rgba(37,99,235,0.15), transparent 40%)",
+        "gradient-primary": "linear-gradient(135deg, rgb(var(--gradient-primary-from)) 0%, rgb(var(--gradient-primary-to)) 100%)",
+        "gradient-accent": "linear-gradient(135deg, rgb(var(--gradient-accent-from)) 0%, rgb(var(--gradient-accent-to)) 100%)",
+        "gradient-hero": "radial-gradient(1200px 600px at 10% -10%, rgba(99,102,241,0.08), transparent 60%), radial-gradient(800px 400px at 110% 10%, rgba(45,212,191,0.06), transparent 60%)",
+        "gradient-surface": "linear-gradient(180deg, rgb(var(--gradient-linen-from)) 0%, rgb(var(--gradient-linen-to)) 100%)",
       },
       keyframes: {
         "accordion-down": {
