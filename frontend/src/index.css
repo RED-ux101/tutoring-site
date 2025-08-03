@@ -48,6 +48,120 @@
     --ring: 224.3 76.3% 94.1%;
   }
 }
+/* Design tokens for Gradient + Glass */
+:root {
+  --glass-bg-light: 255 255 255 / 0.6;
+  --glass-border-light: 255 255 255 / 0.2;
+  --glass-bg-dark: 17 24 39 / 0.4; /* slate-900-ish */
+  --glass-border-dark: 255 255 255 / 0.1;
+
+  --gradient-primary-from: 124 58 237; /* #7c3aed */
+  --gradient-primary-to: 37 99 235;    /* #2563eb */
+  --gradient-accent-from: 6 182 212;   /* #06b6d4 */
+  --gradient-accent-to: 59 130 246;    /* #3b82f6 */
+}
+
+/* Utilities: gradient backgrounds and text */
+.gradient-primary {
+  background-image: linear-gradient(135deg,
+    rgb(var(--gradient-primary-from)) 0%,
+    rgb(var(--gradient-primary-to)) 100%
+  );
+}
+
+.gradient-accent {
+  background-image: linear-gradient(135deg,
+    rgb(var(--gradient-accent-from)) 0%,
+    rgb(var(--gradient-accent-to)) 100%
+  );
+}
+
+.text-gradient-primary {
+  background-image: linear-gradient(135deg,
+    rgb(var(--gradient-primary-from)) 0%,
+    rgb(var(--gradient-primary-to)) 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Utilities: glass surfaces */
+.glass {
+  background-color: rgba(var(--glass-bg-light));
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(var(--glass-border-light));
+  box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+}
+.dark .glass {
+  background-color: rgba(var(--glass-bg-dark));
+  border: 1px solid rgba(var(--glass-border-dark));
+  box-shadow: 0 8px 30px rgba(0,0,0,0.45);
+}
+
+.glass-hover {
+  transition: background-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+}
+.glass-hover:hover {
+  background-color: rgba(255,255,255,0.7);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.18);
+  transform: translateY(-2px);
+}
+.dark .glass-hover:hover {
+  background-color: rgba(17,24,39,0.55);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.6);
+}
+
+/* Utilities: ring and elevated shadow */
+.ring-primary {
+  outline: none !important;
+  box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.6), 0 0 0 4px rgb(255 255 255 / 0.8);
+}
+.dark .ring-primary {
+  box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.6), 0 0 0 4px rgb(17 24 39 / 0.8);
+}
+
+.shadow-elevated {
+  box-shadow: 0 10px 30px rgba(2,6,23,0.15);
+}
+.dark .shadow-elevated {
+  box-shadow: 0 10px 30px rgba(0,0,0,0.45);
+}
+
+/* Spinner: gradient arc + glow */
+.spinner-gradient {
+  position: relative;
+  border-radius: 9999px;
+  background:
+    conic-gradient(from 0deg, transparent 0deg, rgba(124,58,237,0.9) 120deg, rgba(37,99,235,0.9) 180deg, transparent 360deg);
+  mask: radial-gradient(farthest-side, transparent calc(100% - 6px), #000 calc(100% - 6px));
+}
+.spinner-glow {
+  box-shadow: 0 0 20px rgba(124,58,237,0.35), 0 0 40px rgba(37,99,235,0.25);
+}
+
+/* Link underline accent for navigation */
+.nav-underline {
+  position: relative;
+}
+.nav-underline::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -6px;
+  height: 2px;
+  width: 0%;
+  background-image: linear-gradient(135deg,
+    rgb(var(--gradient-primary-from)) 0%,
+    rgb(var(--gradient-primary-to)) 100%
+  );
+  transition: width 0.25s ease;
+}
+.nav-underline:hover::after,
+.nav-underline[aria-current="page"]::after {
+  width: 100%;
+}
 
 @layer base {
   * {

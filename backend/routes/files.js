@@ -1,9 +1,16 @@
 const express = require('express');
 const multer = require('multer');
 const path = require('path');
-const { dbOperations, storageOperations } = require('../firebase-config');
+const fs = require('fs');
+const { db } = require('../database');
 const auth = require('../middleware/auth');
 const router = express.Router();
+
+// Ensure uploads directory exists
+const uploadsDir = path.join(__dirname, '../uploads');
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
 
 // Input validation middleware
 const validateFileInput = (req, res, next) => {
@@ -22,9 +29,23 @@ const validateFileInput = (req, res, next) => {
   next();
 };
 
-// Configure multer for memory storage (for Firebase upload)
+// Configure multer for file uploads with enhanced security
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, uploadsDir);
+  },
+  filename: (req, file, cb) => {
+    // Generate secure filename
+    const timestamp = Date.now();
+    const random = Math.random().toString(36).substring(2, 15);
+    const ext = path.extname(file.originalname).toLowerCase();
+    const safeName = `${timestamp}-${random}${ext}`;
+    cb(null, safeName);
+  }
+});
+
 const upload = multer({
-  storage: multer.memoryStorage(),
+  storage: storage,
   limits: {
     fileSize: 10 * 1024 * 1024, // 10MB limit
     files: 1 // Only allow 1 file per request
@@ -68,197 +89,225 @@ const upload = multer({
 });
 
 // Upload file (protected route)
-router.post('/upload', auth, validateFileInput, upload.single('file'), async (req, res) => {
+router.post('/upload', auth, validateFileInput, upload.single('file'), (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ message: 'No file uploaded' });
     }
 
+    const { filename, originalname, size, mimetype } = req.file;
     const { category } = req.body;
-    const { originalname, size, mimetype } = req.file;
+    const filePath = path.join('uploads', filename);
 
     // Validate file size
     if (size > 10 * 1024 * 1024) {
+      // Remove uploaded file
+      fs.unlinkSync(req.file.path);
       return res.status(400).json({ message: 'File too large. Maximum size is 10MB.' });
     }
 
-    // Upload file to Firebase Storage
-    const uploadResult = await storageOperations.uploadFile(req.file, 'uploads');
-    
-    // Save file info to Firestore
-    const fileData = {
-      tutorId: req.tutor.id,
-      fileName: uploadResult.fileName,
-      originalName: uploadResult.originalName,
-      publicUrl: uploadResult.publicUrl,
-      size: uploadResult.size,
-      mimeType: uploadResult.mimeType,
-      category: category || null
-    };
+    // Save file info to database
+    db.run(
+      'INSERT INTO files (tutor_id, filename, original_name, file_path, file_size, mime_type, category) VALUES (?, ?, ?, ?, ?, ?, ?)',
+      [req.tutor.id, filename, originalname, filePath, size, mimetype, category || null],
+      function (err) {
+        if (err) {
+          // Remove uploaded file if database save fails
+          fs.unlinkSync(req.file.path);
+          return res.status(500).json({ message: 'Error saving file info' });
+        }
 
-    const savedFile = await dbOperations.files.create(fileData);
-
-    res.status(201).json({
-      message: 'File uploaded successfully',
-      file: {
-        id: savedFile.id,
-        fileName: savedFile.fileName,
-        originalName: savedFile.originalName,
-        publicUrl: savedFile.publicUrl,
-        size: savedFile.size,
-        mimeType: savedFile.mimeType,
-        category: savedFile.category,
-        uploadedAt: new Date().toISOString()
+        res.status(201).json({
+          message: 'File uploaded successfully',
+          file: {
+            id: this.lastID,
+            filename,
+            originalName: originalname,
+            size,
+            mimeType: mimetype,
+            category: category || null,
+            uploadedAt: new Date().toISOString()
+          }
+        });
       }
-    });
+    );
   } catch (error) {
-    console.error('Upload error:', error);
+    // Clean up uploaded file on error
+    if (req.file && fs.existsSync(req.file.path)) {
+      fs.unlinkSync(req.file.path);
+    }
     res.status(500).json({ message: 'Server error during upload' });
   }
 });
 
 // Get all files for a tutor (protected route)
-router.get('/my-files', auth, async (req, res) => {
-  try {
-    const files = await dbOperations.files.getByTutorId(req.tutor.id);
-    
-    const formattedFiles = files.map(file => ({
-      id: file.id,
-      fileName: file.fileName,
-      originalName: file.originalName,
-      publicUrl: file.publicUrl,
-      size: file.size,
-      mimeType: file.mimeType,
-      category: file.category,
-      uploadedAt: file.createdAt?.toDate?.() || file.createdAt
-    }));
+router.get('/my-files', auth, (req, res) => {
+  db.all(
+    'SELECT * FROM files WHERE tutor_id = ? ORDER BY uploaded_at DESC',
+    [req.tutor.id],
+    (err, rows) => {
+      if (err) {
+        return res.status(500).json({ message: 'Database error' });
+      }
 
-    res.json({ files: formattedFiles });
-  } catch (error) {
-    console.error('Error fetching files:', error);
-    res.status(500).json({ message: 'Database error' });
-  }
+      const files = rows.map(file => ({
+        id: file.id,
+        filename: file.filename,
+        originalName: file.original_name,
+        size: file.file_size,
+        mimeType: file.mime_type,
+        category: file.category,
+        uploadedAt: file.uploaded_at
+      }));
+
+      res.json({ files });
+    }
+  );
 });
 
 // Get all public files (no auth required)
-router.get('/public', async (req, res) => {
-  try {
-    const files = await dbOperations.files.getAll();
-    
-    const formattedFiles = files.map(file => ({
-      id: file.id,
-      fileName: file.fileName,
-      originalName: file.originalName,
-      publicUrl: file.publicUrl,
-      size: file.size,
-      mimeType: file.mimeType,
-      category: file.category,
-      uploadedAt: file.createdAt?.toDate?.() || file.createdAt,
-      tutorName: file.tutorName || 'Admin'
-    }));
+router.get('/public', (req, res) => {
+  db.all(
+    `SELECT files.*, COALESCE(tutors.name, 'Admin') as tutor_name 
+     FROM files 
+     LEFT JOIN tutors ON files.tutor_id = tutors.id 
+     ORDER BY files.uploaded_at DESC`,
+    (err, rows) => {
+      if (err) {
+        return res.status(500).json({ message: 'Database error' });
+      }
 
-    res.json({ files: formattedFiles });
-  } catch (error) {
-    console.error('Error fetching public files:', error);
-    res.status(500).json({ message: 'Database error' });
-  }
+      const files = rows.map(file => ({
+        id: file.id,
+        filename: file.filename,
+        originalName: file.original_name,
+        size: file.file_size,
+        mimeType: file.mime_type,
+        category: file.category,
+        uploadedAt: file.uploaded_at,
+        tutorName: file.tutor_name || 'Admin'
+      }));
+
+      res.json({ files });
+    }
+  );
 });
 
 // Download file (no auth required)
-router.get('/download/:id', async (req, res) => {
-  try {
-    const fileId = req.params.id;
-    
-    if (!fileId) {
-      return res.status(400).json({ message: 'File ID is required' });
+router.get('/download/:id', (req, res) => {
+  const fileId = parseInt(req.params.id);
+  
+  if (isNaN(fileId) || fileId <= 0) {
+    return res.status(400).json({ message: 'Invalid file ID' });
+  }
+
+  db.get('SELECT * FROM files WHERE id = ?', [fileId], (err, file) => {
+    if (err) {
+      return res.status(500).json({ message: 'Database error' });
     }
 
-    const file = await dbOperations.files.getById(fileId);
-    
     if (!file) {
       return res.status(404).json({ message: 'File not found' });
     }
 
-    // Redirect to Firebase Storage URL
-    res.redirect(file.publicUrl);
-  } catch (error) {
-    console.error('Error downloading file:', error);
-    res.status(500).json({ message: 'Database error' });
-  }
+    const filePath = path.join(__dirname, '..', file.file_path);
+
+    if (!fs.existsSync(filePath)) {
+      return res.status(404).json({ message: 'File not found on disk' });
+    }
+
+    // Set security headers
+    res.set('X-Content-Type-Options', 'nosniff');
+    res.set('X-Frame-Options', 'DENY');
+    res.download(filePath, file.original_name);
+  });
 });
 
 // Delete file (protected route)
-router.delete('/:id', auth, async (req, res) => {
-  try {
-    const fileId = req.params.id;
-    
-    if (!fileId) {
-      return res.status(400).json({ message: 'File ID is required' });
-    }
-
-    // Get file info to check ownership and get file path
-    const file = await dbOperations.files.getById(fileId);
-    
-    if (!file) {
-      return res.status(404).json({ message: 'File not found' });
-    }
-
-    if (file.tutorId !== req.tutor.id) {
-      return res.status(403).json({ message: 'Unauthorized to delete this file' });
-    }
-
-    // Delete file from Firebase Storage
-    await storageOperations.deleteFile(file.fileName);
-
-    // Delete from Firestore
-    await dbOperations.files.delete(fileId);
-
-    res.json({ message: 'File deleted successfully' });
-  } catch (error) {
-    console.error('Error deleting file:', error);
-    res.status(500).json({ message: 'Error deleting file' });
+router.delete('/:id', auth, (req, res) => {
+  const fileId = parseInt(req.params.id);
+  
+  if (isNaN(fileId) || fileId <= 0) {
+    return res.status(400).json({ message: 'Invalid file ID' });
   }
+
+  // First get file info to check ownership and get file path
+  db.get(
+    'SELECT * FROM files WHERE id = ? AND tutor_id = ?',
+    [fileId, req.tutor.id],
+    (err, file) => {
+      if (err) {
+        return res.status(500).json({ message: 'Database error' });
+      }
+
+      if (!file) {
+        return res.status(404).json({ message: 'File not found or unauthorized' });
+      }
+
+      // Delete file from filesystem
+      const filePath = path.join(__dirname, '..', file.file_path);
+      if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);
+      }
+
+      // Delete from database
+      db.run('DELETE FROM files WHERE id = ?', [fileId], (err) => {
+        if (err) {
+          return res.status(500).json({ message: 'Error deleting file' });
+        }
+
+        res.json({ message: 'File deleted successfully' });
+      });
+    }
+  );
 });
 
 // Rename file (protected route)
-router.put('/:id/rename', auth, async (req, res) => {
-  try {
-    const fileId = req.params.id;
-    const { newName } = req.body;
+router.put('/:id/rename', auth, (req, res) => {
+  const fileId = parseInt(req.params.id);
+  const { newName } = req.body;
 
-    if (!fileId) {
-      return res.status(400).json({ message: 'File ID is required' });
-    }
-
-    if (!newName || typeof newName !== 'string' || newName.trim() === '') {
-      return res.status(400).json({ message: 'New name is required' });
-    }
-
-    // Sanitize new name
-    const sanitizedName = newName.trim().substring(0, 255);
-
-    // Get file info to check ownership
-    const file = await dbOperations.files.getById(fileId);
-    
-    if (!file) {
-      return res.status(404).json({ message: 'File not found' });
-    }
-
-    if (file.tutorId !== req.tutor.id) {
-      return res.status(403).json({ message: 'Unauthorized to rename this file' });
-    }
-
-    // Update the original_name in Firestore
-    await dbOperations.files.update(fileId, { originalName: sanitizedName });
-
-    res.json({ 
-      message: 'File renamed successfully',
-      newName: sanitizedName
-    });
-  } catch (error) {
-    console.error('Error renaming file:', error);
-    res.status(500).json({ message: 'Error renaming file' });
+  if (isNaN(fileId) || fileId <= 0) {
+    return res.status(400).json({ message: 'Invalid file ID' });
   }
+
+  if (!newName || typeof newName !== 'string' || newName.trim() === '') {
+    return res.status(400).json({ message: 'New name is required' });
+  }
+
+  // Sanitize new name
+  const sanitizedName = newName.trim().substring(0, 255);
+
+  // First get file info to check ownership
+  db.get(
+    'SELECT * FROM files WHERE id = ? AND tutor_id = ?',
+    [fileId, req.tutor.id],
+    (err, file) => {
+      if (err) {
+        return res.status(500).json({ message: 'Database error' });
+      }
+
+      if (!file) {
+        return res.status(404).json({ message: 'File not found or unauthorized' });
+      }
+
+      // Update the original_name in database
+      db.run(
+        'UPDATE files SET original_name = ? WHERE id = ?',
+        [sanitizedName, fileId],
+        (err) => {
+          if (err) {
+            return res.status(500).json({ message: 'Error renaming file' });
+          }
+
+          res.json({ 
+            message: 'File renamed successfully',
+            newName: sanitizedName
+          });
+        }
+      );
+    }
+  );
 });
 
 module.exports = router; 

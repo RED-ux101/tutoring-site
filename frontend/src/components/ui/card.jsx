@@ -1,16 +1,24 @@
 import * as React from "react"
 import { cn } from "../../lib/utils"
 
-const Card = React.forwardRef(({ className, ...props }, ref) => (
-  <div
-    ref={ref}
-    className={cn(
-      "rounded-lg border bg-card text-card-foreground shadow-sm",
-      className
-    )}
-    {...props}
-  />
-))
+/**
+ * Card with variants to support plain, glass, and gradient surfaces.
+ */
+const Card = React.forwardRef(({ className, variant = "glass", ...props }, ref) => {
+  const base = "rounded-lg overflow-hidden transition-all"
+  const variants = {
+    plain: "border bg-card text-card-foreground shadow-sm",
+    glass: "glass glass-hover text-card-foreground",
+    gradient: "gradient-primary text-white shadow-elevated",
+  }
+  return (
+    <div
+      ref={ref}
+      className={cn(base, variants[variant] ?? variants.glass, className)}
+      {...props}
+    />
+  )
+})
 Card.displayName = "Card"
 
 const CardHeader = React.forwardRef(({ className, ...props }, ref) => (
@@ -59,4 +67,4 @@ const CardFooter = React.forwardRef(({ className, ...props }, ref) => (
 ))
 CardFooter.displayName = "CardFooter"
 
-export { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent } 
+export { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent }

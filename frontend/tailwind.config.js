@@ -53,6 +53,14 @@ module.exports = {
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
       },
+      boxShadow: {
+        elevated: "0 10px 30px rgba(2,6,23,0.15)",
+        "elevated-dark": "0 10px 30px rgba(0,0,0,0.45)",
+      },
+      backgroundImage: {
+        "gradient-primary": "linear-gradient(135deg, #7c3aed 0%, #2563eb 100%)",
+        "gradient-accent": "linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%)",
+      },
       keyframes: {
         "accordion-down": {
           from: { height: "0" },
@@ -70,4 +78,4 @@ module.exports = {
     },
   },
   plugins: [],
-} 
+}

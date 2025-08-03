@@ -4,7 +4,7 @@ const cors = require('cors');
 const helmet = require('helmet');
 const path = require('path');
 const multer = require('multer');
-const { initializeFirebase } = require('./firebase-config');
+const { initDB } = require('./database');
 
 // Import routes
 const authRoutes = require('./routes/auth');
@@ -13,9 +13,6 @@ const submissionRoutes = require('./routes/submissions');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
-
-// Initialize Firebase
-initializeFirebase();
 
 // Security middleware
 app.use(helmet({
@@ -61,6 +58,14 @@ app.use(cors({
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
+// Serve uploaded files statically with security headers
+app.use('/uploads', express.static(path.join(__dirname, 'uploads'), {
+  setHeaders: (res, path) => {
+    res.set('X-Content-Type-Options', 'nosniff');
+    res.set('X-Frame-Options', 'DENY');
+  }
+}));
+
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/files', fileRoutes);
@@ -71,8 +76,7 @@ app.get('/api/health', (req, res) => {
   res.json({ 
     message: 'Server is running!', 
     timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV || 'development',
-    firebase: 'initialized'
+    environment: process.env.NODE_ENV || 'development'
   });
 });
 
@@ -81,8 +85,7 @@ app.get('/', (req, res) => {
   res.json({ 
     message: 'Tutor File Sharing API is running!', 
     version: '1.0.0',
-    environment: process.env.NODE_ENV || 'development',
-    storage: 'Firebase'
+    environment: process.env.NODE_ENV || 'development'
   });
 });
 
@@ -116,13 +119,13 @@ app.use('*', (req, res) => {
   res.status(404).json({ message: 'Route not found' });
 });
 
-// Start server
+// Initialize database and start server
 const startServer = async () => {
   try {
+    await initDB();
     app.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);
       console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
-      console.log('Storage: Firebase');
     });
   } catch (error) {
     console.error('Failed to start server:', error);
