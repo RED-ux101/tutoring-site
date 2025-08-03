@@ -218,48 +218,47 @@ const PublicFilesPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-900 dark:to-slate-800">
+    <div className="min-h-screen">
       <div className="container mx-auto px-4 py-12">
-        {/* Enhanced Header */}
+        {/* Oxford Header */}
         <div className="text-center mb-12">
-          <div className="inline-flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 mb-6 animate-float">
-            <BookOpen className="h-8 w-8 text-primary" />
+          <div className="inline-flex h-16 w-16 items-center justify-center rounded-full bg-amber-500/10 border border-amber-700/20 mb-6 animate-float-soft">
+            <BookOpen className="h-8 w-8 text-amber-700" />
           </div>
-          <h1 className="text-4xl font-bold text-foreground mb-4 animate-slideUp">
+          <h1 className="text-4xl font-bold text-foreground mb-3" style={{fontFamily: 'var(--font-serif)'}}>
             Study Materials
           </h1>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto animate-slideUp" style={{animationDelay: '0.2s'}}>
-            Browse and download educational resources from Damesha's learning hub. 
-            All materials are available for free download without registration.
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            Curated resources to support GCSE and A‑Level progress.
           </p>
           
-          {/* Interactive Stats */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto mt-8 animate-slideUp" style={{animationDelay: '0.4s'}}>
-            <Card className="text-center hover-lift border-l-4 border-l-blue-500">
+          {/* Oxford Stats */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto mt-8">
+            <Card className="gradient-linen border-0 shadow-[var(--shadow-md)] text-center">
               <CardContent className="p-6">
                 <div className="flex items-center justify-center mb-2">
-                  <FileText className="w-6 h-6 text-blue-500 mr-2" />
-                  <span className="text-2xl font-bold text-blue-600">{stats.totalFiles}</span>
+                  <FileText className="w-6 h-6 text-indigo-700 mr-2" />
+                  <span className="text-2xl font-bold text-indigo-800">{stats.totalFiles}</span>
                 </div>
                 <p className="text-sm text-muted-foreground">Available Resources</p>
               </CardContent>
             </Card>
             
-            <Card className="text-center hover-lift border-l-4 border-l-green-500">
+            <Card className="gradient-linen border-0 shadow-[var(--shadow-md)] text-center">
               <CardContent className="p-6">
                 <div className="flex items-center justify-center mb-2">
-                  <Download className="w-6 h-6 text-green-500 mr-2" />
-                  <span className="text-2xl font-bold text-green-600">{stats.totalDownloads}</span>
+                  <Download className="w-6 h-6 text-emerald-700 mr-2" />
+                  <span className="text-2xl font-bold text-emerald-800">{stats.totalDownloads}</span>
                 </div>
                 <p className="text-sm text-muted-foreground">Total Downloads</p>
               </CardContent>
             </Card>
             
-            <Card className="text-center hover-lift border-l-4 border-l-purple-500">
+            <Card className="gradient-linen border-0 shadow-[var(--shadow-md)] text-center">
               <CardContent className="p-6">
                 <div className="flex items-center justify-center mb-2">
-                  <Star className="w-6 h-6 text-purple-500 mr-2" />
-                  <span className="text-2xl font-bold text-purple-600">{stats.categories.length}</span>
+                  <Star className="w-6 h-6 text-amber-700 mr-2" />
+                  <span className="text-2xl font-bold text-amber-800">{stats.categories.length}</span>
                 </div>
                 <p className="text-sm text-muted-foreground">Categories</p>
               </CardContent>
@@ -268,7 +267,7 @@ const PublicFilesPage = () => {
         </div>
 
         {/* Search and Filter Interface */}
-        <Card className="mb-8 shadow-lg animate-slideUp" style={{animationDelay: '0.6s'}}>
+        <Card className="mb-8 shadow-[var(--shadow-md)] gradient-linen">
           <CardHeader>
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
               <div>
@@ -367,7 +366,7 @@ const PublicFilesPage = () => {
         </Card>
 
         {/* Math Subject Tabs */}
-        <Card className="mb-8 shadow-lg animate-slideUp" style={{animationDelay: '0.7s'}}>
+        <Card className="mb-8 shadow-[var(--shadow-md)] gradient-linen">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Calculator className="w-5 h-5" />
@@ -459,7 +458,7 @@ const PublicFilesPage = () => {
         )}
 
         {/* Enhanced Files List */}
-        <Card className="shadow-lg animate-slideUp" style={{animationDelay: '0.8s'}}>
+        <Card className="shadow-[var(--shadow-md)] gradient-linen">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <FileText className="h-5 w-5" />
@@ -502,9 +501,9 @@ const PublicFilesPage = () => {
                 )}
               </div>
             ) : (
-              <Table>
-                <TableHeader>
-                  <TableRow>
+              <Table zebra>
+                <TableHeader sticky>
+                  <TableRow className="bg-white/60 dark:bg-slate-900/60">
                     <TableHead>File</TableHead>
                     <TableHead>Type</TableHead>
                     <TableHead>Shared by</TableHead>
@@ -515,10 +514,10 @@ const PublicFilesPage = () => {
                 </TableHeader>
                 <TableBody>
                   {filteredAndSortedFiles.map((file, index) => (
-                    <TableRow 
-                      key={file.id} 
-                      className="group hover:bg-muted/50 transition-all duration-200 animate-slideUp"
-                      style={{ animationDelay: `${index * 0.05}s` }}
+                    <TableRow
+                      key={file.id}
+                      className="group hover:bg-black/5 dark:hover:bg-white/5 transition-all duration-200"
+                      style={{ animationDelay: `${index * 0.03}s` }}
                     >
                       <TableCell>
                         <div className="flex items-center gap-3">
@@ -526,7 +525,7 @@ const PublicFilesPage = () => {
                             {getFileIcon(file.mimeType)}
                           </div>
                           <div>
-                            <div className="font-medium group-hover:text-primary transition-colors">
+                            <div className="font-medium group-hover:text-indigo-700 transition-colors">
                               {file.originalName}
                             </div>
                             <div className="text-sm text-muted-foreground">
@@ -536,14 +535,14 @@ const PublicFilesPage = () => {
                         </div>
                       </TableCell>
                       <TableCell>
-                        <Badge variant="secondary" className="group-hover:bg-primary/10">
+                        <Badge variant="secondary" className="group-hover:bg-amber-100 group-hover:text-amber-800">
                           {getFileTypeLabel(file.mimeType)}
                         </Badge>
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-2">
-                          <User className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
-                          <span className="group-hover:text-primary transition-colors">{file.tutorName}</span>
+                          <User className="h-4 w-4 text-muted-foreground group-hover:text-indigo-700 transition-colors" />
+                          <span className="group-hover:text-indigo-700 transition-colors">{file.tutorName}</span>
                         </div>
                       </TableCell>
                       <TableCell className="font-mono text-sm">{formatFileSize(file.size)}</TableCell>
@@ -557,7 +556,7 @@ const PublicFilesPage = () => {
                         <Button
                           asChild
                           size="sm"
-                          className="group-hover:bg-primary group-hover:text-primary-foreground group-hover:scale-105 transition-all duration-200"
+                          className="hover:scale-105 transition-all duration-200"
                         >
                           <a
                             href={filesAPI.getDownloadUrl(file.id)}
@@ -578,11 +577,11 @@ const PublicFilesPage = () => {
 
         {/* Call to Action */}
         {files && files.length > 0 && (
-          <Card className="mt-8 bg-primary text-primary-foreground">
+          <Card className="mt-8 gradient-primary text-primary-foreground border-0 shadow-[var(--shadow-md)]">
             <CardContent className="pt-6">
               <div className="text-center">
-                <h3 className="text-lg font-semibold mb-2">Have something to share?</h3>
-                <p className="text-primary-foreground/80 mb-4">
+                <h3 className="text-lg font-semibold mb-2" style={{fontFamily: 'var(--font-serif)'}}>Have something to share?</h3>
+                <p className="text-primary-foreground/90 mb-4">
                   Help grow our learning community by contributing your own study materials.
                 </p>
                 <Button variant="secondary" asChild>

@@ -1,23 +1,27 @@
 import * as React from "react"
 import { cn } from "../../lib/utils"
 
-const Table = React.forwardRef(({ className, ...props }, ref) => (
+const Table = React.forwardRef(({ className, zebra = true, ...props }, ref) => (
   <div className="relative w-full overflow-auto">
     <table
       ref={ref}
-      className={cn("w-full caption-bottom text-sm", className)}
+      className={cn(
+        "w-full caption-bottom text-sm",
+        zebra ? "[&_tbody_tr:nth-child(even)]:bg-black/0 [&_tbody_tr:nth-child(odd)]:bg-black/0 dark:[&_tbody_tr:nth-child(even)]:bg-white/0 dark:[&_tbody_tr:nth-child(odd)]:bg-white/0" : "",
+        className
+      )}
       {...props}
     />
   </div>
 ))
 Table.displayName = "Table"
 
-const TableHeader = React.forwardRef(({ className, sticky, ...props }, ref) => (
+const TableHeader = React.forwardRef(({ className, sticky = true, ...props }, ref) => (
   <thead
     ref={ref}
     className={cn(
       "[&_tr]:border-b",
-      sticky ? "sticky top-0 z-10 backdrop-blur bg-background/70" : "",
+      sticky ? "sticky top-0 z-10 backdrop-blur bg-background/80 supports-[backdrop-filter]:bg-background/60" : "",
       className
     )}
     {...props}
@@ -51,7 +55,7 @@ const TableRow = React.forwardRef(({ className, glassHover = true, ...props }, r
     ref={ref}
     className={cn(
       "border-b transition-colors data-[state=selected]:bg-muted",
-      glassHover ? "hover:bg-white/5 dark:hover:bg-white/5 backdrop-blur-sm" : "hover:bg-muted/50",
+      glassHover ? "hover:bg-black/5 dark:hover:bg-white/5 backdrop-blur-[2px]" : "hover:bg-muted/50",
       className
     )}
     {...props}

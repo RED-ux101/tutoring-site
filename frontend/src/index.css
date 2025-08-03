@@ -78,17 +78,20 @@
     --shadow-lg: 0 24px 48px rgba(0,0,0,0.55), 0 8px 16px rgba(0,0,0,0.35);
   }
 }
-/* Design tokens for Gradient + Glass */
+/* Oxford Design tokens: Linen + Indigo + Sand */
 :root {
-  --glass-bg-light: 255 255 255 / 0.6;
-  --glass-border-light: 255 255 255 / 0.2;
+  --glass-bg-light: 255 255 255 / 0.7;
+  --glass-border-light: 20 20 20 / 0.08;
   --glass-bg-dark: 17 24 39 / 0.4; /* slate-900-ish */
-  --glass-border-dark: 255 255 255 / 0.1;
+  --glass-border-dark: 255 255 255 / 0.08;
 
-  --gradient-primary-from: 124 58 237; /* #7c3aed */
-  --gradient-primary-to: 37 99 235;    /* #2563eb */
-  --gradient-accent-from: 6 182 212;   /* #06b6d4 */
-  --gradient-accent-to: 59 130 246;    /* #3b82f6 */
+  /* Warm academic gradients */
+  --gradient-primary-from: 49 46 129;   /* indigo-900ish */
+  --gradient-primary-to: 79 70 229;     /* indigo-600ish */
+  --gradient-accent-from: 234 179 8;    /* amber-500 */
+  --gradient-accent-to: 217 119 6;      /* amber-600 */
+  --gradient-linen-from: 250 245 235;   /* linen */
+  --gradient-linen-to: 245 238 225;     /* parchment */
 }
 
 /* Utilities: gradient backgrounds and text */
@@ -96,6 +99,12 @@
   background-image: linear-gradient(135deg,
     rgb(var(--gradient-primary-from)) 0%,
     rgb(var(--gradient-primary-to)) 100%
+  );
+}
+.gradient-linen {
+  background-image: linear-gradient(180deg,
+    rgb(var(--gradient-linen-from)) 0%,
+    rgb(var(--gradient-linen-to)) 100%
   );
 }
 
@@ -182,9 +191,9 @@
   bottom: -6px;
   height: 2px;
   width: 0%;
-  background-image: linear-gradient(135deg,
-    rgb(var(--gradient-primary-from)) 0%,
-    rgb(var(--gradient-primary-to)) 100%
+  background-image: linear-gradient(90deg,
+    rgba(49,46,129,0.9) 0%,
+    rgba(217,119,6,0.9) 100%
   );
   transition: width 0.25s ease;
 }
@@ -198,7 +207,11 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "liga" 1, "kern" 1, "ss01" 1;
+  }
+  h1,h2,h3,h4 {
+    letter-spacing: -0.01em;
   }
 }
 

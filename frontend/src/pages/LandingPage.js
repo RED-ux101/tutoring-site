@@ -65,95 +65,94 @@ const LandingPage = () => {
 
   return (
     <div className="min-h-screen">
-      {/* Animated Hero Section */}
-      <section className="relative bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-800 pt-16 pb-20 overflow-hidden">
-        {/* Animated background elements */}
-        <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-300 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse"></div>
-          <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-blue-300 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse" style={{animationDelay: '2s'}}></div>
-          <div className="absolute top-1/2 left-1/2 w-60 h-60 bg-indigo-300 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse" style={{animationDelay: '4s'}}></div>
-        </div>
-
+      {/* Oxford Hero */}
+      <section className="relative pt-20 pb-20 overflow-hidden">
         <div className="container mx-auto px-4 relative z-10">
-          <div className="max-w-4xl mx-auto text-center">
-            <div className="mb-6 animate-fadeIn">
-              <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium mb-6 hover:bg-primary/20 transition-colors cursor-pointer">
+          <div className="max-w-5xl mx-auto text-center">
+            <div className="mb-5 animate-fadeIn">
+              <div className="inline-flex items-center gap-2 bg-amber-500/10 text-amber-700 px-4 py-2 rounded-full text-sm font-medium mb-6 border border-amber-700/20">
                 <GraduationCap className="w-4 h-4" />
-                <Sparkles className="w-4 h-4" />
                 Damesha's Learning Hub
               </div>
             </div>
-            
-            <h1 className="text-5xl md:text-6xl font-bold tracking-tight text-foreground mb-6 animate-slideUp">
-              Your Gateway to 
-              <span className="text-primary block mt-2 relative">
-                Academic Excellence
-                <div className="absolute -top-2 -right-2">
-                  <Zap className="w-8 h-8 text-yellow-500 animate-bounce" />
-                </div>
-              </span>
+
+            <h1 className="text-5xl md:text-6xl font-bold tracking-tight text-foreground mb-4 animate-fadeIn" style={{fontFamily: 'var(--font-serif)'}}>
+              Private Tuition for
+              <span className="block mt-2 text-gradient-primary">Ambitious Students</span>
             </h1>
-            
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-8 leading-relaxed animate-slideUp" style={{animationDelay: '0.2s'}}>
-              Access curated study materials, share your own resources, and join a community 
-              dedicated to collaborative learning and academic growth.
+
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-10 leading-relaxed animate-fadeIn">
+              Calm, rigorous guidance for GCSE and A‑Level success. Curated resources and structured progression with a human touch.
             </p>
 
-            {/* Platform Info */}
-            <div className="grid grid-cols-3 gap-6 max-w-lg mx-auto mb-8 animate-slideUp" style={{animationDelay: '0.4s'}}>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-primary">Free</div>
-                <div className="text-sm text-muted-foreground">Access</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-primary">Simple</div>
-                <div className="text-sm text-muted-foreground">Interface</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-primary">Secure</div>
-                <div className="text-sm text-muted-foreground">Platform</div>
-              </div>
-            </div>
-            
-            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12 animate-slideUp" style={{animationDelay: '0.6s'}}>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12 animate-fadeIn">
               {isAuthenticated() ? (
                 <>
-                  <Button asChild size="lg" className="text-lg px-8 py-6 group hover:scale-105 transition-transform">
+                  <Button asChild variant="hero" size="lg" className="text-lg px-8 py-6">
                     <Link to="/dashboard">
-                      <Upload className="w-5 h-5 mr-2 group-hover:rotate-12 transition-transform" />
+                      <Upload className="w-5 h-5 mr-2" />
                       Admin Dashboard
                     </Link>
                   </Button>
-                  <Button asChild variant="outline" size="lg" className="text-lg px-8 py-6 group hover:scale-105 transition-transform">
+                  <Button asChild variant="outline" size="lg" className="text-lg px-8 py-6">
                     <Link to="/files">
-                      <BookOpen className="w-5 h-5 mr-2 group-hover:rotate-12 transition-transform" />
+                      <BookOpen className="w-5 h-5 mr-2" />
                       Study Materials
                     </Link>
                   </Button>
                 </>
               ) : (
                 <>
-                  <Button asChild size="lg" className="text-lg px-8 py-6 group hover:scale-105 transition-transform">
+                  <Button asChild variant="hero" size="lg" className="text-lg px-8 py-6">
                     <Link to="/files">
-                      <BookOpen className="w-5 h-5 mr-2 group-hover:rotate-12 transition-transform" />
-                      Explore Materials
-                      <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                      <BookOpen className="w-5 h-5 mr-2" />
+                      Browse Materials
+                      <ArrowRight className="w-4 h-4 ml-2" />
                     </Link>
                   </Button>
-                  <Button asChild variant="outline" size="lg" className="text-lg px-8 py-6 group hover:scale-105 transition-transform">
+                  <Button asChild variant="outline" size="lg" className="text-lg px-8 py-6">
                     <Link to="/submit">
-                      <Upload className="w-5 h-5 mr-2 group-hover:-translate-y-1 transition-transform" />
-                      Contribute Resource
+                      <Upload className="w-5 h-5 mr-2" />
+                      Submit a Resource
                     </Link>
                   </Button>
                 </>
               )}
             </div>
+
+            {/* Syllabus Tiles */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {[
+                { title: "GCSE Maths", desc: "Foundation to Higher", color: "indigo" },
+                { title: "AS Level", desc: "Pure • Applied", color: "amber" },
+                { title: "A2 Level", desc: "Pure • Applied", color: "slate" },
+              ].map((item) => (
+                <Card key={item.title} className="border-0 gradient-linen hover:shadow-[var(--shadow-lg)] transition">
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-xl" style={{fontFamily: 'var(--font-serif)'}}>{item.title}</CardTitle>
+                    <CardDescription>{item.desc}</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <Button asChild variant="ghost" size="sm">
+                      <Link to="/files">
+                        Explore
+                        <ArrowRight className="w-4 h-4 ml-2" />
+                      </Link>
+                    </Button>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
           </div>
+        </div>
+
+        {/* Subtle academic texture overlay */}
+        <div className="pointer-events-none absolute inset-0 mix-blend-multiply opacity-70">
+          <div className="w-full h-full gradient-linen" />
         </div>
       </section>
 
-      {/* Enhanced Features Section */}
+      {/* Features Section (Oxford tone) */}
       <section className="py-24 bg-white dark:bg-slate-900">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
@@ -213,7 +212,7 @@ const LandingPage = () => {
       </section>
 
       {/* Benefits Section */}
-      <section className="py-24 bg-gradient-to-br from-gray-50 to-blue-50 dark:from-slate-800 dark:to-slate-900">
+      <section className="py-24 bg-gradient-to-br from-[rgb(250,245,235)] to-[rgb(245,238,225)] dark:from-slate-800 dark:to-slate-900">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <Badge variant="outline" className="mb-4">
@@ -253,33 +252,33 @@ const LandingPage = () => {
         </div>
       </section>
 
-      {/* Enhanced CTA Section */}
-      <section className="py-24 bg-primary text-primary-foreground relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-purple-600"></div>
-        <div className="container mx-auto px-4 relative z-10">
-          <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-3xl md:text-5xl font-bold mb-6">
-              Ready to elevate your learning?
-            </h2>
-            <p className="text-xl mb-8 opacity-90">
-              Start exploring educational resources and contribute to the learning community.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button asChild size="lg" variant="secondary" className="text-lg px-8 py-6 group">
-                <Link to="/files">
-                  <BookOpen className="w-5 h-5 mr-2" />
-                  Start Exploring
-                  <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
-                </Link>
-              </Button>
-              <Button asChild size="lg" variant="outline" className="text-lg px-8 py-6 bg-white/10 border-white/20 hover:bg-white/20">
-                <Link to="/submit">
-                  <Upload className="w-5 h-5 mr-2" />
-                  Share Your Knowledge
-                </Link>
-              </Button>
-            </div>
-          </div>
+      {/* Academic CTA */}
+      <section className="py-20 relative overflow-hidden">
+        <div className="container mx-auto px-4">
+          <Card className="gradient-primary text-primary-foreground border-0 shadow-[var(--shadow-lg)]">
+            <CardContent className="pt-10 pb-10 text-center">
+              <h2 className="text-3xl md:text-4xl font-bold mb-4" style={{fontFamily: 'var(--font-serif)'}}>
+                Ready to study with intent?
+              </h2>
+              <p className="text-primary-foreground/90 mb-6 max-w-2xl mx-auto">
+                Access structured materials and a calm learning environment designed for confidence and clarity.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                <Button asChild variant="secondary" size="lg">
+                  <Link to="/files">
+                    <BookOpen className="w-5 h-5 mr-2" />
+                    Explore Resources
+                  </Link>
+                </Button>
+                <Button asChild variant="glass" size="lg">
+                  <Link to="/submit">
+                    <Upload className="w-5 h-5 mr-2" />
+                    Contribute a Resource
+                  </Link>
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </section>
     </div>

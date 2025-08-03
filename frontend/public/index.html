@@ -9,10 +9,23 @@
       name="description"
       content="Damesha's Learning Hub - Access study materials and educational resources"
     />
-    <title>Damesha's Learning Hub</title>
+    <title>Damesha's Learning Hub • Private Tuition & Study Resources</title>
+    <!-- Oxford vibe typography: prefer system serif fallback since no external fonts -->
+    <style>
+      :root {
+        --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+        --font-sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      }
+      .oxford-hero-bg {
+        background-image:
+          radial-gradient(1200px 600px at 10% -10%, rgba(49,46,129,0.08), transparent 60%),
+          radial-gradient(800px 400px at 110% 10%, rgba(217,119,6,0.06), transparent 60%),
+          linear-gradient(180deg, rgba(250,245,235,0.9), rgba(245,238,225,0.9));
+      }
+    </style>
   </head>
-  <body>
+  <body class="oxford-hero-bg">
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
   </body>
-</html> 
+</html>
