@@ -5,11 +5,11 @@ import { cn } from "../../lib/utils"
  * Card with variants to support plain, glass, and gradient surfaces.
  */
 const Card = React.forwardRef(({ className, variant = "glass", ...props }, ref) => {
-  const base = "rounded-lg overflow-hidden transition-all"
+  const base = "rounded-lg overflow-hidden transition-all will-change-transform will-change-opacity"
   const variants = {
-    plain: "border bg-card text-card-foreground shadow-sm",
-    glass: "glass glass-hover text-card-foreground",
-    gradient: "gradient-primary text-white shadow-elevated",
+    plain: "border bg-card text-card-foreground shadow-[var(--shadow-sm)]",
+    glass: "glass glass-hover text-card-foreground shadow-[var(--shadow-md)]",
+    gradient: "gradient-primary text-white shadow-[var(--shadow-lg)]",
   }
   return (
     <div
