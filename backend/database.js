@@ -1,16 +1,45 @@
 const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
+const fs = require('fs');
 
 // Use environment-specific database path
 const getDatabasePath = () => {
   if (process.env.NODE_ENV === 'production') {
-    // For Railway, use /tmp directory or memory
-    return process.env.DATABASE_PATH || '/tmp/database.db';
+    // For Railway, try multiple possible paths
+    const possiblePaths = [
+      process.env.DATABASE_PATH,
+      '/tmp/database.db',
+      './database.db',
+      path.join(process.cwd(), 'database.db')
+    ];
+    
+    // Use the first available path or default to current directory
+    for (const dbPath of possiblePaths) {
+      if (dbPath) {
+        try {
+          // Ensure directory exists
+          const dir = path.dirname(dbPath);
+          if (!fs.existsSync(dir)) {
+            fs.mkdirSync(dir, { recursive: true });
+          }
+          return dbPath;
+        } catch (error) {
+          console.log(`Could not use database path: ${dbPath}`);
+          continue;
+        }
+      }
+    }
+    
+    // Fallback to current directory
+    return './database.db';
   }
   return './database.db';
 };
 
-const db = new sqlite3.Database(getDatabasePath());
+const dbPath = getDatabasePath();
+console.log(`Using database path: ${dbPath}`);
+
+const db = new sqlite3.Database(dbPath);
 
 // Initialize database tables
 const initDB = () => {
@@ -64,6 +93,7 @@ const initDB = () => {
         )
       `, (err) => {
         if (err) {
+          console.error('Database initialization error:', err);
           reject(err);
         } else {
           // Add category column to files table if it doesn't exist (migration)
