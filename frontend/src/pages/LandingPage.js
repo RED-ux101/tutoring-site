@@ -12,9 +12,7 @@ import {
   Star,
   Shield,
   ArrowRight,
-  Sparkles,
-  Heart,
-  Zap
+  Heart
 } from 'lucide-react';
 
 const LandingPage = () => {
