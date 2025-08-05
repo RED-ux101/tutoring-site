@@ -3,7 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { Button } from './ui/button';
-import { GraduationCap, BookOpen, Upload, LogOut, Settings, Moon, Sun, Sparkles } from 'lucide-react';
+import { GraduationCap, BookOpen, Upload, LogOut, Settings, Moon, Sun } from 'lucide-react';
 
 const NavLink = ({ to, icon: Icon, children }) => {
   const location = useLocation();
