@@ -103,6 +103,11 @@
     --border: 215 16% 22%;
     --input: 215 16% 22%;
     --ring: 217 91% 60%;
+
+    /* Elevation (subtle) */
+    --shadow-sm: 0 1px 1px rgba(0,0,0,0.25);
+    --shadow-md: 0 6px 12px rgba(0,0,0,0.3);
+    --shadow-lg: 0 14px 28px rgba(0,0,0,0.35);
   }
 }
 /* Minimal tokens for glass/gradients tuned for dark UI */
@@ -250,6 +255,11 @@
   }
   p, li {
     letter-spacing: 0.005em;
+  }
+  
+  /* Light mode background gradient */
+  body:not(.dark) {
+    background: linear-gradient(135deg, #eff6ff 0%, #ffffff 50%, #ecfeff 100%);
   }
 }
 
