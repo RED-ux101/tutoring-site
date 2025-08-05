@@ -21,19 +21,12 @@ import {
   GraduationCap,
   Sparkles,
   Zap,
-  Target,
-  TrendingUp,
   Filter,
-  SortAsc,
   Eye,
-  Heart,
   Share2,
   ArrowRight,
-  ChevronRight,
   Layers,
-  BookMarked,
-  Award,
-  Lightbulb
+  BookMarked
 } from 'lucide-react';
 
 const PublicFilesPage = () => {
@@ -277,10 +270,7 @@ const PublicFilesPage = () => {
     return 'Document';
   };
 
-  const getCategoryColor = (categoryId) => {
-    const category = categories.find(cat => cat.id === categoryId);
-    return category?.color || 'gray';
-  };
+
 
   if (loading) {
     return (
