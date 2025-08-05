@@ -420,7 +420,7 @@ const Dashboard = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-gray-100 dark:from-slate-900 dark:to-slate-800 flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
           <LoadingSpinner size="large" text="Loading your dashboard..." />
           <div className="mt-4 text-sm text-muted-foreground">
@@ -504,35 +504,27 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+    <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8">
-        {/* Enhanced Header with Welcome Message */}
+        {/* Header */}
         <div className="mb-8">
           <div className="flex justify-between items-start mb-6">
-            <div className="space-y-2">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg">
-                  <Sparkles className="w-6 h-6 text-white" />
-                </div>
-                <div>
-                  <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                    {greeting}, {userName}!
-                  </h1>
-                  <p className="text-lg text-muted-foreground">
-                    Here's what's happening with your learning hub today
-                  </p>
-                </div>
-              </div>
+            <div className="space-y-1">
+              <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight">
+                {greeting}, {userName}!
+              </h1>
+              <p className="text-sm text-muted-foreground">
+                Here's what's happening with your learning hub today
+              </p>
             </div>
             
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3">
               <Button
                 variant="outline"
                 size="sm"
                 onClick={loadDashboardData}
-                className="flex items-center gap-2 hover:bg-blue-50 hover:border-blue-300 transition-all duration-200"
               >
-                <RefreshCw className="w-4 h-4" />
+                <RefreshCw className="w-4 h-4 mr-1" />
                 Refresh
               </Button>
               
@@ -541,18 +533,17 @@ const Dashboard = () => {
                   variant="outline"
                   size="sm"
                   onClick={() => setShowNotifications(!showNotifications)}
-                  className="flex items-center gap-2 hover:bg-yellow-50 hover:border-yellow-300 transition-all duration-200"
                 >
-                  <Bell className="w-4 h-4" />
+                  <Bell className="w-4 h-4 mr-1" />
                   {notifications.length > 0 && (
-                    <Badge variant="destructive" className="px-1 py-0 text-xs animate-pulse">
+                    <Badge variant="destructive" className="px-1 py-0 text-xs">
                       {notifications.length}
                     </Badge>
                   )}
                 </Button>
                 
                 {showNotifications && notifications.length > 0 && (
-                  <div className="absolute right-0 top-12 w-80 bg-background border rounded-lg shadow-xl z-50 p-4 animate-in slide-in-from-top-2">
+                  <div className="absolute right-0 top-12 w-80 bg-background border rounded-lg shadow-xl z-50 p-4">
                     <h3 className="font-semibold mb-3 flex items-center gap-2">
                       <Activity className="w-4 h-4" />
                       Recent Activity
@@ -578,53 +569,42 @@ const Dashboard = () => {
 
           {/* Quick Stats Overview */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-            <div className="bg-white/70 backdrop-blur-sm rounded-lg p-4 border border-white/20 shadow-sm">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Today's Activity</p>
-                  <p className="text-2xl font-bold text-gray-900">{stats.approvedToday}</p>
-                </div>
-                <div className="p-2 bg-green-100 rounded-lg">
-                  <Zap className="w-5 h-5 text-green-600" />
-                </div>
-              </div>
-            </div>
-            
-            <div className="bg-white/70 backdrop-blur-sm rounded-lg p-4 border border-white/20 shadow-sm">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Pending Reviews</p>
-                  <p className="text-2xl font-bold text-gray-900">{stats.pendingSubmissions}</p>
-                </div>
-                <div className="p-2 bg-yellow-100 rounded-lg">
-                  <Clock className="w-5 h-5 text-yellow-600" />
-                </div>
-              </div>
-            </div>
-            
-            <div className="bg-white/70 backdrop-blur-sm rounded-lg p-4 border border-white/20 shadow-sm">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Total Files</p>
-                  <p className="text-2xl font-bold text-gray-900">{stats.totalFiles}</p>
-                </div>
-                <div className="p-2 bg-blue-100 rounded-lg">
-                  <FileText className="w-5 h-5 text-blue-600" />
-                </div>
-              </div>
-            </div>
-            
-            <div className="bg-white/70 backdrop-blur-sm rounded-lg p-4 border border-white/20 shadow-sm">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Storage Used</p>
-                  <p className="text-2xl font-bold text-gray-900">{formatStorageUsed(stats.storageUsed)}</p>
-                </div>
-                <div className="p-2 bg-purple-100 rounded-lg">
-                  <BarChart3 className="w-5 h-5 text-purple-600" />
-                </div>
-              </div>
-            </div>
+            <Card variant="plain">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium">Today's Activity</CardTitle>
+              </CardHeader>
+              <CardContent className="flex items-center justify-between">
+                <div className="text-2xl font-bold">{stats.approvedToday}</div>
+                <Zap className="w-5 h-5 text-primary" />
+              </CardContent>
+            </Card>
+            <Card variant="plain">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium">Pending Reviews</CardTitle>
+              </CardHeader>
+              <CardContent className="flex items-center justify-between">
+                <div className="text-2xl font-bold">{stats.pendingSubmissions}</div>
+                <Clock className="w-5 h-5 text-primary" />
+              </CardContent>
+            </Card>
+            <Card variant="plain">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium">Total Files</CardTitle>
+              </CardHeader>
+              <CardContent className="flex items-center justify-between">
+                <div className="text-2xl font-bold">{stats.totalFiles}</div>
+                <FileText className="w-5 h-5 text-primary" />
+              </CardContent>
+            </Card>
+            <Card variant="plain">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium">Storage Used</CardTitle>
+              </CardHeader>
+              <CardContent className="flex items-center justify-between">
+                <div className="text-2xl font-bold">{formatStorageUsed(stats.storageUsed)}</div>
+                <BarChart3 className="w-5 h-5 text-primary" />
+              </CardContent>
+            </Card>
           </div>
         </div>
 
@@ -717,22 +697,22 @@ const Dashboard = () => {
         )}
 
         {/* Enhanced Upload Section */}
-        <Card className="mb-8 shadow-lg border-0 bg-gradient-to-r from-white to-blue-50/30">
-          <CardHeader className="bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-t-lg">
+        <Card className="mb-8" variant="plain">
+          <CardHeader className="pb-2">
             <CardTitle className="flex items-center gap-2">
               <Upload className="h-5 w-5" />
               Upload New Material
             </CardTitle>
-            <CardDescription className="text-blue-100">
+            <CardDescription>
               Add study materials, resources, or educational content for your students
             </CardDescription>
           </CardHeader>
-          <CardContent className="p-6">
+          <CardContent>
             <div
-              className={`border-2 border-dashed rounded-xl p-8 text-center transition-all duration-300 cursor-pointer ${
-                dragActive 
-                  ? 'border-blue-500 bg-blue-50 scale-105' 
-                  : 'border-gray-300 hover:border-blue-400 hover:bg-blue-50/50 hover:scale-[1.02]'
+              className={`border-2 border-dashed rounded-lg p-6 text-center transition-all cursor-pointer ${
+                dragActive
+                  ? 'border-primary/60 bg-primary/5'
+                  : 'border-input hover:bg-muted/40'
               }`}
               onDragEnter={handleDrag}
               onDragLeave={handleDrag}
@@ -750,16 +730,16 @@ const Dashboard = () => {
                 </div>
               ) : (
                 <>
-                  <div className="p-4 bg-blue-100 rounded-full w-20 h-20 mx-auto mb-4 flex items-center justify-center">
-                    <Upload className="w-8 h-8 text-blue-600" />
+                  <div className="p-3 bg-primary/10 rounded-full w-16 h-16 mx-auto mb-3 flex items-center justify-center">
+                    <Upload className="w-7 h-7 text-primary" />
                   </div>
-                  <h3 className="text-xl font-semibold mb-2 text-gray-800">
+                  <h3 className="text-lg font-semibold mb-1">
                     {dragActive ? 'Drop your file here' : 'Upload a file'}
                   </h3>
-                  <p className="text-sm text-gray-600 mb-4">
+                  <p className="text-sm text-muted-foreground mb-4">
                     Drag and drop or click to select • Max 10MB
                   </p>
-                  <div className="flex items-center justify-center gap-4 text-xs text-gray-500">
+                  <div className="flex items-center justify-center gap-4 text-xs text-muted-foreground">
                     <span className="flex items-center gap-1">
                       <FileText className="w-3 h-3" />
                       PDFs
@@ -819,15 +799,15 @@ const Dashboard = () => {
 
         {/* Enhanced Pending Submissions */}
         {submissions.length > 0 && (
-          <Card className="mb-8 shadow-xl border-0 bg-gradient-to-r from-white to-yellow-50/30">
-            <CardHeader className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white rounded-t-lg">
+          <Card className="mb-8" variant="plain">
+            <CardHeader className="pb-2">
               <div className="flex justify-between items-center">
                 <div>
                   <CardTitle className="flex items-center gap-2">
                     <AlertCircle className="h-5 w-5" />
                     Pending Submissions ({filteredSubmissions.length} of {submissions.length})
                   </CardTitle>
-                  <CardDescription className="text-yellow-100">
+                  <CardDescription>
                     Review and approve student-submitted resources
                   </CardDescription>
                 </div>
@@ -835,12 +815,12 @@ const Dashboard = () => {
                 <div className="flex items-center gap-3">
                   {/* Search */}
                   <div className="relative">
-                    <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                    <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                     <Input
                       placeholder="Search submissions..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
-                      className="pl-10 w-64 bg-white/90 border-white/50 text-gray-800 placeholder-gray-500"
+                      className="pl-10 w-64"
                     />
                   </div>
                   
@@ -851,7 +831,6 @@ const Dashboard = () => {
                         variant="outline"
                         size="sm"
                         onClick={handleBulkApprove}
-                        className="text-green-600 hover:text-green-700 bg-white/90 hover:bg-green-50 border-white/50"
                       >
                         <CheckCheck className="w-4 h-4 mr-1" />
                         Approve ({selectedSubmissions.length})
@@ -860,7 +839,6 @@ const Dashboard = () => {
                         variant="outline"
                         size="sm"
                         onClick={handleBulkReject}
-                        className="text-red-600 hover:text-red-700 bg-white/90 hover:bg-red-50 border-white/50"
                       >
                         <X className="w-4 h-4 mr-1" />
                         Reject ({selectedSubmissions.length})
@@ -872,8 +850,8 @@ const Dashboard = () => {
             </CardHeader>
             <CardContent className="p-0">
               <Table>
-                <TableHeader>
-                  <TableRow className="bg-yellow-50/50">
+                <TableHeader sticky>
+                  <TableRow>
                     <TableHead className="w-12">
                       <input
                         type="checkbox"
@@ -985,29 +963,28 @@ const Dashboard = () => {
         )}
 
         {/* Enhanced Files List */}
-        <Card className="shadow-xl border-0 bg-gradient-to-r from-white to-gray-50/30">
-          <CardHeader className="bg-gradient-to-r from-gray-600 to-gray-700 text-white rounded-t-lg">
+        <Card variant="plain">
+          <CardHeader className="pb-2">
             <CardTitle className="flex items-center gap-2">
               <FileText className="h-5 w-5" />
               Your Files ({files ? files.length : 0})
             </CardTitle>
-            <CardDescription className="text-gray-200">
+            <CardDescription>
               Manage all your uploaded study materials and resources
             </CardDescription>
           </CardHeader>
           <CardContent className="p-0">
             {!files || files.length === 0 ? (
               <div className="text-center py-16">
-                <div className="p-4 bg-gray-100 rounded-full w-20 h-20 mx-auto mb-4 flex items-center justify-center">
-                  <FileText className="w-8 h-8 text-gray-400" />
+                <div className="p-3 bg-muted rounded-full w-16 h-16 mx-auto mb-3 flex items-center justify-center">
+                  <FileText className="w-7 h-7 text-muted-foreground" />
                 </div>
-                <h3 className="text-xl font-semibold text-gray-700 mb-2">No files uploaded yet</h3>
-                <p className="text-gray-500 mb-6 max-w-md mx-auto">
+                <h3 className="text-lg font-semibold mb-2">No files uploaded yet</h3>
+                <p className="text-muted-foreground mb-6 max-w-md mx-auto">
                   Upload your first file using the upload area above to get started! Your files will appear here once uploaded.
                 </p>
-                <Button 
+                <Button
                   onClick={() => fileInputRef.current?.click()}
-                  className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
                 >
                   <Plus className="w-4 h-4 mr-2" />
                   Upload Your First File
@@ -1016,7 +993,7 @@ const Dashboard = () => {
             ) : (
               <Table>
                 <TableHeader>
-                  <TableRow className="bg-gray-50/50">
+                  <TableRow>
                     <TableHead>File</TableHead>
                     <TableHead>Size</TableHead>
                     <TableHead>Uploaded</TableHead>
@@ -1025,7 +1002,7 @@ const Dashboard = () => {
                 </TableHeader>
                 <TableBody>
                   {files.map((file) => (
-                    <TableRow key={file.id} className="hover:bg-gray-50/30 transition-colors">
+                    <TableRow key={file.id} className="hover:bg-muted/40 transition-colors">
                       <TableCell>
                         <div className="flex items-center gap-3">
                           {getFileIcon(file.mimeType)}
@@ -1066,7 +1043,7 @@ const Dashboard = () => {
                             variant="outline"
                             size="sm"
                             onClick={() => handleDeleteFile(file.id, file.originalName)}
-                            className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                            className=""
                           >
                             <Trash2 className="w-4 h-4" />
                           </Button>

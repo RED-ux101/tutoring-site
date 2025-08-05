@@ -114,12 +114,16 @@ const LandingPage = () => {
 
 
   return (
-    <div className="min-h-screen bg-background overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-cyan-50 dark:bg-background overflow-hidden">
       {/* Animated Background Elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-blue-500/20 to-cyan-500/20 rounded-full blur-3xl animate-float"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-tr from-purple-500/20 to-pink-500/20 rounded-full blur-3xl animate-float" style={{ animationDelay: '2s' }}></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-r from-green-500/10 to-emerald-500/10 rounded-full blur-3xl animate-float" style={{ animationDelay: '4s' }}></div>
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-blue-400/30 to-cyan-400/30 rounded-full blur-3xl animate-float dark:from-blue-500/20 dark:to-cyan-500/20"></div>
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-tr from-purple-400/30 to-pink-400/30 rounded-full blur-3xl animate-float dark:from-purple-500/20 dark:to-pink-500/20" style={{ animationDelay: '2s' }}></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-r from-emerald-400/20 to-green-400/20 rounded-full blur-3xl animate-float dark:from-green-500/10 dark:to-emerald-500/10" style={{ animationDelay: '4s' }}></div>
+        
+        {/* Light mode specific elements */}
+        <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-gradient-to-br from-yellow-300/20 to-orange-300/20 rounded-full blur-3xl animate-float" style={{ animationDelay: '1s' }}></div>
+        <div className="absolute bottom-1/4 right-1/4 w-48 h-48 bg-gradient-to-tl from-indigo-300/20 to-purple-300/20 rounded-full blur-3xl animate-float" style={{ animationDelay: '3s' }}></div>
       </div>
 
       {/* Hero Section */}
@@ -218,7 +222,7 @@ const LandingPage = () => {
               return (
                 <Card 
                   key={feature.title}
-                  className={`border-0 bg-gradient-to-br from-slate-900/50 to-slate-800/50 backdrop-blur-xl hover:shadow-2xl transition-all duration-500 card-interactive animate-scaleIn`}
+                  className={`border-0 bg-gradient-to-br from-white/70 to-slate-100/70 backdrop-blur-xl hover:shadow-2xl transition-all duration-500 card-interactive animate-scaleIn dark:from-slate-900/50 dark:to-slate-800/50`}
                   style={{ animationDelay: `${index * 0.1}s` }}
                 >
                   <CardHeader className="text-center pb-4">
@@ -242,7 +246,7 @@ const LandingPage = () => {
       </section>
 
       {/* Benefits Section */}
-      <section className="py-24 relative bg-gradient-to-br from-slate-900/50 to-slate-800/50">
+      <section className="py-24 relative bg-gradient-to-br from-slate-100/50 to-blue-50/50 dark:from-slate-900/50 dark:to-slate-800/50">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-6">
@@ -259,7 +263,7 @@ const LandingPage = () => {
               return (
                 <div
                   key={benefit.title}
-                  className="text-center p-8 rounded-2xl bg-gradient-to-br from-slate-800/50 to-slate-700/50 backdrop-blur-xl border border-slate-700/50 hover:border-slate-600/50 transition-all duration-500 hover-lift"
+                  className="text-center p-8 rounded-2xl bg-gradient-to-br from-white/70 to-slate-100/70 backdrop-blur-xl border border-slate-200/50 hover:border-slate-300/50 transition-all duration-500 hover-lift dark:from-slate-800/50 dark:to-slate-700/50 dark:border-slate-700/50 dark:hover:border-slate-600/50"
                 >
                   <div className="w-16 h-16 bg-gradient-to-r from-blue-500/20 to-cyan-500/20 rounded-2xl flex items-center justify-center mx-auto mb-6">
                     <Icon className="w-8 h-8 text-blue-400" />
@@ -291,7 +295,7 @@ const LandingPage = () => {
             {testimonials.map((testimonial, index) => (
               <Card 
                 key={testimonial.name}
-                className="border-0 bg-gradient-to-br from-slate-900/50 to-slate-800/50 backdrop-blur-xl hover:shadow-2xl transition-all duration-500 card-interactive"
+                className="border-0 bg-gradient-to-br from-white/70 to-slate-100/70 backdrop-blur-xl hover:shadow-2xl transition-all duration-500 card-interactive dark:from-slate-900/50 dark:to-slate-800/50"
               >
                 <CardContent className="p-8">
                   <div className="flex items-center mb-4">
@@ -323,8 +327,8 @@ const LandingPage = () => {
       {/* CTA Section */}
       <section className="py-24 relative">
         <div className="container mx-auto px-4">
-          <Card className="border-0 bg-gradient-to-r from-blue-600 to-cyan-600 text-white overflow-hidden relative">
-            <div className="absolute inset-0 bg-gradient-to-r from-blue-600/90 to-cyan-600/90"></div>
+          <Card className="border-0 bg-gradient-to-r from-blue-500 to-cyan-500 text-white overflow-hidden relative dark:from-blue-600 dark:to-cyan-600">
+            <div className="absolute inset-0 bg-gradient-to-r from-blue-500/90 to-cyan-500/90 dark:from-blue-600/90 dark:to-cyan-600/90"></div>
             <div className="relative z-10 p-12 text-center">
               <h2 className="text-4xl md:text-5xl font-bold mb-6">
                 Ready to Transform Your Learning?
@@ -352,7 +356,7 @@ const LandingPage = () => {
       </section>
 
       {/* Footer */}
-      <footer className="py-16 border-t border-slate-800">
+      <footer className="py-16 border-t border-slate-200 dark:border-slate-800">
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-4 gap-8 max-w-6xl mx-auto">
             <div>

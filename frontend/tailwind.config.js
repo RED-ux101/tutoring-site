@@ -62,7 +62,7 @@ module.exports = {
       backgroundImage: {
         "gradient-primary": "linear-gradient(135deg, rgb(var(--gradient-primary-from)) 0%, rgb(var(--gradient-primary-to)) 100%)",
         "gradient-accent": "linear-gradient(135deg, rgb(var(--gradient-accent-from)) 0%, rgb(var(--gradient-accent-to)) 100%)",
-        "gradient-hero": "radial-gradient(1200px 600px at 10% -10%, rgba(99,102,241,0.08), transparent 60%), radial-gradient(800px 400px at 110% 10%, rgba(45,212,191,0.06), transparent 60%)",
+        "gradient-hero": "radial-gradient(900px 420px at 10% -10%, rgba(59,130,246,0.10), transparent 60%), radial-gradient(600px 300px at 110% 10%, rgba(6,182,212,0.08), transparent 60%)",
         "gradient-surface": "linear-gradient(180deg, rgb(var(--gradient-linen-from)) 0%, rgb(var(--gradient-linen-to)) 100%)",
       },
       keyframes: {
