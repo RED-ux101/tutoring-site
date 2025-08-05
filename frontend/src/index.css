@@ -4,43 +4,43 @@
 
 @layer base {
   :root {
-    /* Modern minimal: dark surfaces with subtle color accents */
-    --background: 222 14% 16%;        /* slate-800-ish */
-    --foreground: 210 40% 98%;        /* near-white */
+    /* Modern Minimal: Neutral Dark + Electric Blue */
+    --background: 222 47% 7%;         /* slate-950 */
+    --foreground: 210 40% 96%;
 
-    --card: 223 13% 18%;
+    --card: 222 32% 10%;              /* slate-900 */
     --card-foreground: 210 40% 96%;
 
-    --popover: 223 13% 18%;
+    --popover: 222 32% 10%;
     --popover-foreground: 210 40% 96%;
 
-    /* Accents: teal + violet (complimentary yet restrained) */
-    --primary: 222 70% 55%;           /* modern indigo */
+    /* Primary = Electric Blue (#3B82F6-ish), Accent = Cyan blend */
+    --primary: 217 91% 60%;
     --primary-foreground: 210 40% 98%;
 
-    --secondary: 200 12% 22%;
-    --secondary-foreground: 210 40% 92%;
+    --secondary: 215 16% 18%;         /* slate-800 */
+    --secondary-foreground: 210 40% 96%;
 
-    --muted: 223 10% 24%;
-    --muted-foreground: 220 9% 70%;
+    --muted: 215 16% 22%;             /* slate-700/800 hybrid */
+    --muted-foreground: 215 20% 70%;
 
-    --accent: 174 60% 45%;            /* teal accent */
+    --accent: 199 89% 48%;            /* cyan-500 */
     --accent-foreground: 210 40% 98%;
 
-    --destructive: 0 65% 50%;
+    --destructive: 0 72% 51%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 220 12% 26%;
-    --input: 220 12% 26%;
-    --ring: 174 60% 45%;
+    --border: 215 16% 22%;
+    --input: 215 16% 22%;
+    --ring: 217 91% 60%;
 
     /* Shape */
     --radius: 0.6rem;
 
-    /* Elevation: subtle for minimalism */
-    --shadow-sm: 0 1px 1px rgba(0,0,0,0.2);
-    --shadow-md: 0 6px 12px rgba(0,0,0,0.25);
-    --shadow-lg: 0 14px 28px rgba(0,0,0,0.3);
+    /* Elevation (subtle) */
+    --shadow-sm: 0 1px 1px rgba(0,0,0,0.25);
+    --shadow-md: 0 6px 12px rgba(0,0,0,0.3);
+    --shadow-lg: 0 14px 28px rgba(0,0,0,0.35);
   }
 
   .light, .light-theme {
@@ -51,18 +51,18 @@
 }
 /* Minimal tokens for glass/gradients tuned for dark UI */
 :root {
-  --glass-bg-light: 30 41 59 / 0.5;   /* slate-700 */
+  --glass-bg-light: 15 23 42 / 0.5;   /* slate-900 */
   --glass-border-light: 255 255 255 / 0.06;
-  --glass-bg-dark: 15 23 42 / 0.5;    /* slate-900 */
+  --glass-bg-dark: 2 6 23 / 0.5;      /* slate-950 */
   --glass-border-dark: 255 255 255 / 0.06;
 
-  --gradient-primary-from: 99 102 241;  /* indigo-500 */
-  --gradient-primary-to: 56 189 248;    /* sky-400/teal-ish */
-  --gradient-accent-from: 45 212 191;   /* teal-400 */
-  --gradient-accent-to: 147 51 234;     /* violet-600 */
+  --gradient-primary-from: 59 130 246;  /* blue-500 */
+  --gradient-primary-to: 14 165 233;    /* sky-500 */
+  --gradient-accent-from: 6 182 212;    /* cyan-500 */
+  --gradient-accent-to: 59 130 246;     /* blue-500 */
 
-  --gradient-linen-from: 30 41 59;      /* tone down for dark */
-  --gradient-linen-to: 15 23 42;
+  --gradient-linen-from: 15 23 42;      /* slate-900 */
+  --gradient-linen-to: 2 6 23;          /* slate-950 */
 }
 
 /* Utilities: gradient backgrounds and text */
@@ -169,8 +169,8 @@
   height: 2px;
   width: 0%;
   background-image: linear-gradient(90deg,
-    rgba(45,212,191,0.9) 0%,
-    rgba(99,102,241,0.9) 100%
+    rgba(59,130,246,0.95) 0%,
+    rgba(6,182,212,0.95) 100%
   );
   transition: width 0.25s ease;
 }
@@ -187,10 +187,13 @@
     @apply bg-background text-foreground antialiased;
     font-feature-settings: "liga" 1, "kern" 1;
   }
-  /* Headings use modern geometric sans (we’ll rely on system fonts) */
+  /* Headings: modern, tight, sans */
   h1,h2,h3,h4 {
-    letter-spacing: -0.015em;
+    letter-spacing: -0.02em;
     font-weight: 800;
+  }
+  p, li {
+    letter-spacing: 0.005em;
   }
 }
 
@@ -284,6 +287,10 @@
 
 .animate-slideUp {
   animation: slideUp 0.6s ease-out forwards;
+}
+
+.animate-fade-in-up {
+  animation: fadeIn 0.6s ease-out forwards;
 }
 
 .animate-slideInLeft {
