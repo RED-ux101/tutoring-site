@@ -4,34 +4,34 @@
 
 @layer base {
   :root {
-    /* Modern Minimal: Neutral Dark + Electric Blue */
-    --background: 222 47% 7%;         /* slate-950 */
-    --foreground: 210 40% 96%;
+    /* Light theme as default */
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
 
-    --card: 222 32% 10%;              /* slate-900 */
-    --card-foreground: 210 40% 96%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
 
-    --popover: 222 32% 10%;
-    --popover-foreground: 210 40% 96%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
 
     /* Primary = Electric Blue (#3B82F6-ish), Accent = Cyan blend */
     --primary: 217 91% 60%;
     --primary-foreground: 210 40% 98%;
 
-    --secondary: 215 16% 18%;         /* slate-800 */
-    --secondary-foreground: 210 40% 96%;
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222.2 84% 4.9%;
 
-    --muted: 215 16% 22%;             /* slate-700/800 hybrid */
-    --muted-foreground: 215 20% 70%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215.4 16.3% 46.9%;
 
-    --accent: 199 89% 48%;            /* cyan-500 */
-    --accent-foreground: 210 40% 98%;
+    --accent: 210 40% 96%;
+    --accent-foreground: 222.2 84% 4.9%;
 
-    --destructive: 0 72% 51%;
+    --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 215 16% 22%;
-    --input: 215 16% 22%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
     --ring: 217 91% 60%;
 
     /* Shape */
@@ -44,9 +44,65 @@
   }
 
   .light, .light-theme {
-    /* Optional future light theme hook */
+    /* Light theme variables */
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
+    
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    
+    --primary: 217 91% 60%;
+    --primary-foreground: 210 40% 98%;
+    
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222.2 84% 4.9%;
+    
+    --muted: 210 40% 96%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    
+    --accent: 210 40% 96%;
+    --accent-foreground: 222.2 84% 4.9%;
+    
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 217 91% 60%;
+  }
+
+  .dark {
+    /* Dark theme variables */
+    --background: 222 47% 7%;
+    --foreground: 210 40% 96%;
+
+    --card: 222 32% 10%;
+    --card-foreground: 210 40% 96%;
+
+    --popover: 222 32% 10%;
+    --popover-foreground: 210 40% 96%;
+
+    --primary: 217 91% 60%;
+    --primary-foreground: 210 40% 98%;
+
+    --secondary: 215 16% 18%;
+    --secondary-foreground: 210 40% 96%;
+
+    --muted: 215 16% 22%;
+    --muted-foreground: 215 20% 70%;
+
+    --accent: 199 89% 48%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 215 16% 22%;
+    --input: 215 16% 22%;
+    --ring: 217 91% 60%;
   }
 }
 /* Minimal tokens for glass/gradients tuned for dark UI */

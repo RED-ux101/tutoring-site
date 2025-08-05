@@ -122,8 +122,8 @@ const LandingPage = () => {
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-r from-emerald-400/20 to-green-400/20 rounded-full blur-3xl animate-float dark:from-green-500/10 dark:to-emerald-500/10" style={{ animationDelay: '4s' }}></div>
         
         {/* Light mode specific elements */}
-        <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-gradient-to-br from-yellow-300/20 to-orange-300/20 rounded-full blur-3xl animate-float" style={{ animationDelay: '1s' }}></div>
-        <div className="absolute bottom-1/4 right-1/4 w-48 h-48 bg-gradient-to-tl from-indigo-300/20 to-purple-300/20 rounded-full blur-3xl animate-float" style={{ animationDelay: '3s' }}></div>
+        <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-gradient-to-br from-yellow-300/20 to-orange-300/20 rounded-full blur-3xl animate-float dark:from-yellow-500/10 dark:to-orange-500/10" style={{ animationDelay: '1s' }}></div>
+        <div className="absolute bottom-1/4 right-1/4 w-48 h-48 bg-gradient-to-tl from-indigo-300/20 to-purple-300/20 rounded-full blur-3xl animate-float dark:from-indigo-500/10 dark:to-purple-500/10" style={{ animationDelay: '3s' }}></div>
       </div>
 
       {/* Hero Section */}
@@ -408,7 +408,7 @@ const LandingPage = () => {
              </div>
           </div>
           
-          <div className="border-t border-slate-800 mt-12 pt-8 text-center">
+                     <div className="border-t border-slate-200 dark:border-slate-800 mt-12 pt-8 text-center">
             <p className="text-muted-foreground">
               © 2024 Learning Platform. All rights reserved. Built with ❤️ for students worldwide.
             </p>
