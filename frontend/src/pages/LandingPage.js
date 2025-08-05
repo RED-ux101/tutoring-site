@@ -1,14 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
-import { Badge } from '../components/ui/badge';
 import { 
   BookOpen, 
   Upload, 
   Users, 
-  GraduationCap, 
   Star,
   Shield,
   ArrowRight,
@@ -16,49 +14,23 @@ import {
   Sparkles,
   Zap,
   Target,
-  Award,
-  Clock,
-  CheckCircle,
   TrendingUp,
   Globe,
-  Lightbulb,
   Rocket,
-  Play,
-  ChevronRight,
-  BookMarked,
-  FileText,
-  Download,
-  Eye,
   BarChart3,
   Activity,
-  Bell,
-  Search,
-  Filter,
-  Calendar,
-  UserCheck,
   Lock,
-  Unlock,
-  Settings,
-  HelpCircle,
   MessageCircle,
-  Phone,
-  Mail,
-  MapPin,
-  ExternalLink,
-  Github,
   Twitter,
   Linkedin,
-  Youtube,
-  Instagram,
-  Facebook
+  Youtube
 } from 'lucide-react';
 
 const LandingPage = () => {
   const { isAuthenticated } = useAuth();
-  const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
-    setIsVisible(true);
+    // Component mounted successfully
   }, []);
 
   const features = [
@@ -143,14 +115,7 @@ const LandingPage = () => {
     }
   ];
 
-  const subjects = [
-    { name: "Mathematics", icon: BarChart3, color: "blue" },
-    { name: "Physics", icon: Zap, color: "purple" },
-    { name: "Chemistry", icon: Activity, color: "green" },
-    { name: "Biology", icon: Heart, color: "emerald" },
-    { name: "English", icon: BookOpen, color: "red" },
-    { name: "History", icon: Globe, color: "orange" }
-  ];
+
 
   return (
     <div className="min-h-screen bg-background overflow-hidden">
@@ -399,48 +364,48 @@ const LandingPage = () => {
               <p className="text-muted-foreground mb-4">
                 Empowering students to achieve their academic goals through quality educational resources and collaborative learning.
               </p>
-              <div className="flex space-x-4">
-                <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">
-                  <Twitter className="w-5 h-5" />
-                </a>
-                <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">
-                  <Linkedin className="w-5 h-5" />
-                </a>
-                <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">
-                  <Youtube className="w-5 h-5" />
-                </a>
-              </div>
+                             <div className="flex space-x-4">
+                 <button className="text-muted-foreground hover:text-foreground transition-colors">
+                   <Twitter className="w-5 h-5" />
+                 </button>
+                 <button className="text-muted-foreground hover:text-foreground transition-colors">
+                   <Linkedin className="w-5 h-5" />
+                 </button>
+                 <button className="text-muted-foreground hover:text-foreground transition-colors">
+                   <Youtube className="w-5 h-5" />
+                 </button>
+               </div>
             </div>
             
-            <div>
-              <h4 className="font-semibold text-foreground mb-4">Platform</h4>
-              <ul className="space-y-2">
-                <li><a href="#" className="text-muted-foreground hover:text-foreground transition-colors">Study Materials</a></li>
-                <li><a href="#" className="text-muted-foreground hover:text-foreground transition-colors">Community</a></li>
-                <li><a href="#" className="text-muted-foreground hover:text-foreground transition-colors">Progress Tracking</a></li>
-                <li><a href="#" className="text-muted-foreground hover:text-foreground transition-colors">Resources</a></li>
-              </ul>
-            </div>
+                         <div>
+               <h4 className="font-semibold text-foreground mb-4">Platform</h4>
+               <ul className="space-y-2">
+                 <li><button className="text-muted-foreground hover:text-foreground transition-colors">Study Materials</button></li>
+                 <li><button className="text-muted-foreground hover:text-foreground transition-colors">Community</button></li>
+                 <li><button className="text-muted-foreground hover:text-foreground transition-colors">Progress Tracking</button></li>
+                 <li><button className="text-muted-foreground hover:text-foreground transition-colors">Resources</button></li>
+               </ul>
+             </div>
             
-            <div>
-              <h4 className="font-semibold text-foreground mb-4">Support</h4>
-              <ul className="space-y-2">
-                <li><a href="#" className="text-muted-foreground hover:text-foreground transition-colors">Help Center</a></li>
-                <li><a href="#" className="text-muted-foreground hover:text-foreground transition-colors">Contact Us</a></li>
-                <li><a href="#" className="text-muted-foreground hover:text-foreground transition-colors">FAQ</a></li>
-                <li><a href="#" className="text-muted-foreground hover:text-foreground transition-colors">Tutorials</a></li>
-              </ul>
-            </div>
+                         <div>
+               <h4 className="font-semibold text-foreground mb-4">Support</h4>
+               <ul className="space-y-2">
+                 <li><button className="text-muted-foreground hover:text-foreground transition-colors">Help Center</button></li>
+                 <li><button className="text-muted-foreground hover:text-foreground transition-colors">Contact Us</button></li>
+                 <li><button className="text-muted-foreground hover:text-foreground transition-colors">FAQ</button></li>
+                 <li><button className="text-muted-foreground hover:text-foreground transition-colors">Tutorials</button></li>
+               </ul>
+             </div>
             
-            <div>
-              <h4 className="font-semibold text-foreground mb-4">Legal</h4>
-              <ul className="space-y-2">
-                <li><a href="#" className="text-muted-foreground hover:text-foreground transition-colors">Privacy Policy</a></li>
-                <li><a href="#" className="text-muted-foreground hover:text-foreground transition-colors">Terms of Service</a></li>
-                <li><a href="#" className="text-muted-foreground hover:text-foreground transition-colors">Cookie Policy</a></li>
-                <li><a href="#" className="text-muted-foreground hover:text-foreground transition-colors">GDPR</a></li>
-              </ul>
-            </div>
+                         <div>
+               <h4 className="font-semibold text-foreground mb-4">Legal</h4>
+               <ul className="space-y-2">
+                 <li><button className="text-muted-foreground hover:text-foreground transition-colors">Privacy Policy</button></li>
+                 <li><button className="text-muted-foreground hover:text-foreground transition-colors">Terms of Service</button></li>
+                 <li><button className="text-muted-foreground hover:text-foreground transition-colors">Cookie Policy</button></li>
+                 <li><button className="text-muted-foreground hover:text-foreground transition-colors">GDPR</button></li>
+               </ul>
+             </div>
           </div>
           
           <div className="border-t border-slate-800 mt-12 pt-8 text-center">
