@@ -100,7 +100,7 @@ const LandingPage = () => {
     {
       name: "Michael Chen",
       role: "GCSE Student",
-      content: "Found exactly what I needed for my math revision. The community is incredibly helpful.",
+              content: "Found exactly what I needed for my maths revision. The community is incredibly helpful.",
       rating: 5
     },
     {

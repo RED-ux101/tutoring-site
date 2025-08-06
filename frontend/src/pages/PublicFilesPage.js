@@ -90,81 +90,81 @@ const PublicFilesPage = () => {
     }
   ];
 
-  // Enhanced math subject tabs with better organization
+  // Enhanced maths subject tabs with better organization
   const mathTabs = [
     { 
       id: 'all', 
       label: 'All Subjects', 
       icon: BookOpen, 
       color: 'blue',
-      description: 'Browse all math resources'
+      description: 'Browse all maths resources'
     },
     { 
       id: 'year7', 
-      label: 'Year 7 Math', 
+      label: 'Year 7 Maths', 
       icon: Calculator, 
       color: 'blue',
       description: 'Foundation mathematics for Year 7'
     },
     { 
       id: 'year8', 
-      label: 'Year 8 Math', 
+      label: 'Year 8 Maths', 
       icon: Calculator, 
       color: 'blue',
       description: 'Core mathematics for Year 8'
     },
     { 
       id: 'year9', 
-      label: 'Year 9 Math', 
+      label: 'Year 9 Maths', 
       icon: Calculator, 
       color: 'blue',
       description: 'Pre-GCSE mathematics'
     },
     { 
       id: 'year10', 
-      label: 'Year 10 Math', 
+      label: 'Year 10 Maths', 
       icon: Calculator, 
       color: 'blue',
       description: 'GCSE mathematics preparation'
     },
     { 
       id: 'year11', 
-      label: 'Year 11 Math', 
+      label: 'Year 11 Maths', 
       icon: Calculator, 
       color: 'blue',
       description: 'GCSE mathematics revision'
     },
     { 
       id: 'as-pure', 
-      label: 'AS Pure Math', 
+      label: 'AS Pure Maths', 
       icon: Book, 
       color: 'green',
       description: 'Advanced mathematics concepts'
     },
     { 
       id: 'as-applied', 
-      label: 'AS Applied Math', 
+      label: 'AS Applied Maths', 
       icon: Book, 
       color: 'green',
       description: 'Applied mathematics and statistics'
     },
     { 
       id: 'a2-pure', 
-      label: 'A2 Pure Math', 
+      label: 'A2 Pure Maths', 
       icon: GraduationCap, 
       color: 'purple',
       description: 'Advanced pure mathematics'
     },
     { 
       id: 'a2-applied', 
-      label: 'A2 Applied Math', 
+      label: 'A2 Applied Maths', 
       icon: GraduationCap, 
       color: 'purple',
       description: 'Advanced applied mathematics'
     },
     { 
       id: 'further', 
-      label: 'Further Math', 
+      label: 'Further Maths', 
       icon: Star, 
       color: 'orange',
       description: 'Further mathematics topics'
@@ -552,12 +552,12 @@ const PublicFilesPage = () => {
           </div>
         </div>
 
-        {/* Math Subject Navigation */}
-        <div className="mb-8">
-          <h2 className="text-2xl font-bold text-foreground mb-6 flex items-center gap-2">
-            <Calculator className="w-6 h-6" />
-            Math Subjects
-          </h2>
+                 {/* Maths Subject Navigation */}
+         <div className="mb-8">
+           <h2 className="text-2xl font-bold text-foreground mb-6 flex items-center gap-2">
+             <Calculator className="w-6 h-6" />
+             Maths Subjects
+           </h2>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
             {mathTabs.map((tab) => {
               const IconComponent = tab.icon;

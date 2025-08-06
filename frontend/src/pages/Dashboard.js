@@ -74,49 +74,49 @@ const Dashboard = () => {
     },
     {
       id: 'year7',
-      label: 'Year 7 Math',
+      label: 'Year 7 Maths',
       icon: Calculator,
       color: 'blue',
       description: 'Foundation mathematics'
     },
     {
       id: 'year8',
-      label: 'Year 8 Math',
+      label: 'Year 8 Maths',
       icon: Calculator,
       color: 'blue',
       description: 'Core mathematics'
     },
     {
       id: 'year9',
-      label: 'Year 9 Math',
+      label: 'Year 9 Maths',
       icon: Calculator,
       color: 'blue',
       description: 'Pre-GCSE mathematics'
     },
     {
       id: 'year10',
-      label: 'Year 10 Math',
+      label: 'Year 10 Maths',
       icon: Calculator,
       color: 'blue',
       description: 'GCSE preparation'
     },
     {
       id: 'year11',
-      label: 'Year 11 Math',
+      label: 'Year 11 Maths',
       icon: Calculator,
       color: 'blue',
       description: 'GCSE revision'
     },
     {
       id: 'as-pure',
-      label: 'AS Pure Math',
+      label: 'AS Pure Maths',
       icon: Book,
       color: 'green',
       description: 'Advanced concepts'
     },
     {
       id: 'as-applied',
-      label: 'AS Applied Math',
+      label: 'AS Applied Maths',
       icon: Book,
       color: 'green',
       description: 'Applied mathematics'
@@ -137,17 +137,17 @@ const Dashboard = () => {
     },
     {
       id: 'a2-pure',
-      label: 'A2 Pure Math',
+      label: 'A2 Pure Maths',
       icon: GraduationCap,
       color: 'purple',
-      description: 'Advanced pure math'
+      description: 'Advanced pure mathematics'
     },
     {
       id: 'a2-applied',
-      label: 'A2 Applied Math',
+      label: 'A2 Applied Maths',
       icon: GraduationCap,
       color: 'purple',
-      description: 'Advanced applied math'
+      description: 'Advanced applied mathematics'
     },
     {
       id: 'a2-stats',
@@ -165,7 +165,7 @@ const Dashboard = () => {
     },
     {
       id: 'further',
-      label: 'Further Math',
+      label: 'Further Maths',
       icon: Star,
       color: 'orange',
       description: 'Further mathematics'
