@@ -406,31 +406,56 @@ const PublicFilesPage = () => {
               </div>
               
               {/* Filters */}
-              <div className="flex gap-2">
-                <select
-                  value={selectedCategory}
-                  onChange={(e) => setSelectedCategory(e.target.value)}
-                  className="px-4 py-3 border border-input bg-background rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="all">All Categories</option>
-                  {categories.slice(1).map(category => (
-                    <option key={category.id} value={category.id}>
-                      {category.label}
-                    </option>
-                  ))}
-                </select>
+              <div className="flex flex-col gap-4">
+                {/* Category Filter Buttons */}
+                <div className="flex flex-wrap gap-2">
+                  <span className="text-sm font-medium text-muted-foreground mr-2">Category:</span>
+                  {categories.map((category) => {
+                    const IconComponent = category.icon;
+                    const isActive = selectedCategory === category.id;
+                    const colorVariants = {
+                      blue: 'border-blue-500 bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-300',
+                      red: 'border-red-500 bg-red-50 text-red-700 dark:bg-red-900/20 dark:text-red-300',
+                      green: 'border-green-500 bg-green-50 text-green-700 dark:bg-green-900/20 dark:text-green-300',
+                      orange: 'border-orange-500 bg-orange-50 text-orange-700 dark:bg-orange-900/20 dark:text-orange-300',
+                      purple: 'border-purple-500 bg-purple-50 text-purple-700 dark:bg-purple-900/20 dark:text-purple-300',
+                      gray: 'border-gray-500 bg-gray-50 text-gray-700 dark:bg-gray-900/20 dark:text-gray-300'
+                    };
+                    
+                    return (
+                      <button
+                        key={category.id}
+                        onClick={() => setSelectedCategory(category.id)}
+                        className={`px-3 py-2 rounded-lg border-2 transition-all duration-200 hover:scale-105 text-sm font-medium ${
+                          isActive 
+                            ? colorVariants[category.color]
+                            : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 bg-white dark:bg-slate-800'
+                        }`}
+                      >
+                        <div className="flex items-center gap-2">
+                          <IconComponent className="w-4 h-4" />
+                          {category.label}
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
                 
-                <select
-                  value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value)}
-                  className="px-4 py-3 border border-input bg-background rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="newest">Newest First</option>
-                  <option value="oldest">Oldest First</option>
-                  <option value="name">Name A-Z</option>
-                  <option value="size">Largest First</option>
-                  <option value="downloads">Most Downloaded</option>
-                </select>
+                {/* Sort Dropdown */}
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-medium text-muted-foreground">Sort by:</span>
+                  <select
+                    value={sortBy}
+                    onChange={(e) => setSortBy(e.target.value)}
+                    className="px-3 py-2 border border-input bg-background rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="newest">Newest First</option>
+                    <option value="oldest">Oldest First</option>
+                    <option value="name">Name A-Z</option>
+                    <option value="size">Largest First</option>
+                    <option value="downloads">Most Downloaded</option>
+                  </select>
+                </div>
               </div>
             </div>
             
