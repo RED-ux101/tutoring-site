@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Button } from '../components/ui/button';
@@ -19,11 +19,28 @@ import {
   MessageCircle,
   Twitter,
   Linkedin,
-  Youtube
+  Youtube,
+  Calculator,
+  Atom,
+  Globe,
+  History,
+  Languages,
+  Palette,
+  Music,
+  Code,
+  Brain,
+  Award,
+  Clock,
+  CheckCircle,
+  Play,
+  Download,
+  Eye,
+  Heart
 } from 'lucide-react';
 
 const LandingPage = () => {
   const { isAuthenticated } = useAuth();
+  const [activeSubject, setActiveSubject] = useState('maths');
 
   useEffect(() => {
     // Component mounted successfully
@@ -83,35 +100,116 @@ const LandingPage = () => {
     }
   ];
 
-  const stats = [
-    { number: "10K+", label: "Study Resources", icon: BookOpen },
-    { number: "5K+", label: "Active Students", icon: Users },
-    { number: "99.9%", label: "Uptime", icon: Shield },
-    { number: "24/7", label: "Support", icon: MessageCircle }
-  ];
-
-  const testimonials = [
+  const subjects = [
     {
-      name: "Sarah Johnson",
-      role: "A-Level Student",
-      content: "This platform has completely transformed my study routine. The quality of resources is outstanding!",
-      rating: 5
+      id: 'maths',
+      name: 'Maths',
+      icon: Calculator,
+      description: 'Algebra, Calculus, Statistics, Geometry',
+      color: 'from-blue-500 to-cyan-500',
+      topics: ['Algebra', 'Calculus', 'Statistics', 'Geometry', 'Trigonometry']
     },
     {
-      name: "Michael Chen",
-      role: "GCSE Student",
-              content: "Found exactly what I needed for my maths revision. The community is incredibly helpful.",
-      rating: 5
+      id: 'physics',
+      name: 'Physics',
+      icon: Atom,
+      description: 'Mechanics, Electricity, Waves, Modern Physics',
+      color: 'from-purple-500 to-pink-500',
+      topics: ['Mechanics', 'Electricity', 'Waves', 'Modern Physics', 'Thermodynamics']
     },
     {
-      name: "Emma Davis",
-      role: "Tutor",
-      content: "As an educator, I love how easy it is to share quality materials with my students.",
-      rating: 5
+      id: 'chemistry',
+      name: 'Chemistry',
+      icon: Flask,
+      description: 'Organic, Inorganic, Physical Chemistry',
+      color: 'from-green-500 to-emerald-500',
+      topics: ['Organic Chemistry', 'Inorganic Chemistry', 'Physical Chemistry', 'Analytical Chemistry']
+    },
+    {
+      id: 'biology',
+      name: 'Biology',
+      icon: Brain,
+      description: 'Cell Biology, Genetics, Ecology, Human Biology',
+      color: 'from-emerald-500 to-teal-500',
+      topics: ['Cell Biology', 'Genetics', 'Ecology', 'Human Biology', 'Evolution']
+    },
+    {
+      id: 'english',
+      name: 'English',
+      icon: Languages,
+      description: 'Literature, Language, Creative Writing',
+      color: 'from-red-500 to-pink-500',
+      topics: ['Literature', 'Language', 'Creative Writing', 'Poetry', 'Drama']
+    },
+    {
+      id: 'history',
+      name: 'History',
+      icon: History,
+      description: 'British History, World History, Politics',
+      color: 'from-amber-500 to-orange-500',
+      topics: ['British History', 'World History', 'Politics', 'Economics', 'Geography']
     }
   ];
 
+  const learningPaths = [
+    {
+      title: "GCSE Foundation",
+      description: "Perfect for Year 9-11 students",
+      duration: "2 years",
+      subjects: ["Maths", "English", "Sciences"],
+      icon: BookOpen,
+      color: "from-blue-500 to-cyan-500"
+    },
+    {
+      title: "A-Level Preparation",
+      description: "Advanced studies for Year 12-13",
+      duration: "2 years",
+      subjects: ["Pure Maths", "Physics", "Chemistry"],
+      icon: Award,
+      color: "from-purple-500 to-pink-500"
+    },
+    {
+      title: "University Prep",
+      description: "Get ready for higher education",
+      duration: "1 year",
+      subjects: ["Advanced Topics", "Research Skills"],
+      icon: Rocket,
+      color: "from-green-500 to-emerald-500"
+    }
+  ];
 
+  const recentResources = [
+    {
+      title: "A-Level Pure Maths Formula Sheet",
+      subject: "Maths",
+      downloads: 234,
+      views: 1200,
+      likes: 89,
+      type: "PDF"
+    },
+    {
+      title: "GCSE Physics Revision Notes",
+      subject: "Physics",
+      downloads: 189,
+      views: 890,
+      likes: 67,
+      type: "PDF"
+    },
+    {
+      title: "Chemistry Lab Safety Guide",
+      subject: "Chemistry",
+      downloads: 156,
+      views: 745,
+      likes: 45,
+      type: "PDF"
+    }
+  ];
+
+  const Flask = ({ className }) => (
+    <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+    </svg>
+  );
 
   return (
     <div className="min-h-screen bg-background overflow-hidden">
@@ -133,7 +231,7 @@ const LandingPage = () => {
             {/* Badge */}
             <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-blue-500/10 to-cyan-500/10 border border-blue-500/20 text-blue-400 text-sm font-medium mb-8 animate-fadeIn`}>
               <Sparkles className="w-4 h-4" />
-              Trusted by 10,000+ students worldwide
+              Free access to quality educational resources
             </div>
 
             {/* Main Heading */}
@@ -185,21 +283,147 @@ const LandingPage = () => {
               )}
             </div>
 
-            {/* Stats */}
+            {/* Quick Stats - Real Engagement Metrics */}
             <div className={`grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto animate-slideUp`} style={{ animationDelay: '0.6s' }}>
-              {stats.map((stat, index) => {
-                const Icon = stat.icon;
-                return (
-                  <div key={stat.label} className="text-center">
-                    <div className="flex items-center justify-center w-12 h-12 bg-gradient-to-r from-blue-500/20 to-cyan-500/20 rounded-xl mx-auto mb-3">
-                      <Icon className="w-6 h-6 text-blue-400" />
-                    </div>
-                    <div className="text-2xl md:text-3xl font-bold text-foreground mb-1">{stat.number}</div>
-                    <div className="text-sm text-muted-foreground">{stat.label}</div>
-                  </div>
-                );
-              })}
+              <div className="text-center">
+                <div className="flex items-center justify-center w-12 h-12 bg-gradient-to-r from-blue-500/20 to-cyan-500/20 rounded-xl mx-auto mb-3">
+                  <Download className="w-6 h-6 text-blue-400" />
+                </div>
+                <div className="text-2xl md:text-3xl font-bold text-foreground mb-1">500+</div>
+                <div className="text-sm text-muted-foreground">Resources Downloaded</div>
+              </div>
+              <div className="text-center">
+                <div className="flex items-center justify-center w-12 h-12 bg-gradient-to-r from-green-500/20 to-emerald-500/20 rounded-xl mx-auto mb-3">
+                  <Users className="w-6 h-6 text-green-400" />
+                </div>
+                <div className="text-2xl md:text-3xl font-bold text-foreground mb-1">Active</div>
+                <div className="text-sm text-muted-foreground">Learning Community</div>
+              </div>
+              <div className="text-center">
+                <div className="flex items-center justify-center w-12 h-12 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-xl mx-auto mb-3">
+                  <Shield className="w-6 h-6 text-purple-400" />
+                </div>
+                <div className="text-2xl md:text-3xl font-bold text-foreground mb-1">100%</div>
+                <div className="text-sm text-muted-foreground">Free Access</div>
+              </div>
+              <div className="text-center">
+                <div className="flex items-center justify-center w-12 h-12 bg-gradient-to-r from-orange-500/20 to-red-500/20 rounded-xl mx-auto mb-3">
+                  <Clock className="w-6 h-6 text-orange-400" />
+                </div>
+                <div className="text-2xl md:text-3xl font-bold text-foreground mb-1">24/7</div>
+                <div className="text-sm text-muted-foreground">Available</div>
+              </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Interactive Subject Showcase */}
+      <section className="py-24 relative">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-6">
+              Explore Your Subjects
+            </h2>
+            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+              Discover comprehensive study materials across all major subjects. Click on any subject to explore available resources.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto mb-12">
+            {subjects.map((subject) => {
+              const Icon = subject.icon;
+              const isActive = activeSubject === subject.id;
+              return (
+                <Card 
+                  key={subject.id}
+                  className={`border-2 cursor-pointer transition-all duration-300 hover:shadow-xl transform hover:-translate-y-2 ${
+                    isActive 
+                      ? 'border-blue-500 bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20' 
+                      : 'border-slate-200 hover:border-slate-300 bg-white/70 dark:bg-slate-800/50 dark:border-slate-700'
+                  }`}
+                  onClick={() => setActiveSubject(subject.id)}
+                >
+                  <CardContent className="p-6 text-center">
+                    <div className={`w-16 h-16 bg-gradient-to-r ${subject.color} rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg`}>
+                      <Icon className="w-8 h-8 text-white" />
+                    </div>
+                    <h3 className="text-xl font-semibold mb-2 text-foreground">{subject.name}</h3>
+                    <p className="text-sm text-muted-foreground mb-4">{subject.description}</p>
+                    <div className="flex flex-wrap gap-2 justify-center">
+                      {subject.topics.slice(0, 3).map((topic) => (
+                        <span key={topic} className="px-2 py-1 bg-slate-100 dark:bg-slate-700 rounded-full text-xs text-slate-600 dark:text-slate-300">
+                          {topic}
+                        </span>
+                      ))}
+                      {subject.topics.length > 3 && (
+                        <span className="px-2 py-1 bg-slate-100 dark:bg-slate-700 rounded-full text-xs text-slate-600 dark:text-slate-300">
+                          +{subject.topics.length - 3} more
+                        </span>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
+
+          {/* Active Subject Details */}
+          <div className="max-w-4xl mx-auto">
+            <Card className="border-0 bg-gradient-to-br from-white/70 to-slate-100/70 backdrop-blur-xl dark:from-slate-900/50 dark:to-slate-800/50">
+              <CardContent className="p-8">
+                <div className="text-center mb-6">
+                  <h3 className="text-2xl font-bold text-foreground mb-2">
+                    {subjects.find(s => s.id === activeSubject)?.name} Resources
+                  </h3>
+                  <p className="text-muted-foreground">
+                    Explore comprehensive study materials for {subjects.find(s => s.id === activeSubject)?.name.toLowerCase()}
+                  </p>
+                </div>
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div>
+                    <h4 className="font-semibold text-foreground mb-3">Available Topics:</h4>
+                    <div className="space-y-2">
+                      {subjects.find(s => s.id === activeSubject)?.topics.map((topic) => (
+                        <div key={topic} className="flex items-center gap-2">
+                          <CheckCircle className="w-4 h-4 text-green-500" />
+                          <span className="text-sm text-muted-foreground">{topic}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-foreground mb-3">What you'll find:</h4>
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        <BookOpen className="w-4 h-4 text-blue-500" />
+                        <span className="text-sm text-muted-foreground">Study guides and notes</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Target className="w-4 h-4 text-purple-500" />
+                        <span className="text-sm text-muted-foreground">Practice questions</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Play className="w-4 h-4 text-green-500" />
+                        <span className="text-sm text-muted-foreground">Video explanations</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Award className="w-4 h-4 text-orange-500" />
+                        <span className="text-sm text-muted-foreground">Exam preparation</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="text-center mt-6">
+                  <Button asChild className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700">
+                    <Link to="/files">
+                      Browse {subjects.find(s => s.id === activeSubject)?.name} Resources
+                      <ArrowRight className="w-4 h-4 ml-2" />
+                    </Link>
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </section>
@@ -245,6 +469,122 @@ const LandingPage = () => {
         </div>
       </section>
 
+      {/* Learning Paths Section */}
+      <section className="py-24 relative bg-gradient-to-br from-slate-100/50 to-blue-50/50 dark:from-slate-900/50 dark:to-slate-800/50">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-6">
+              Your Learning Journey
+            </h2>
+            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+              Choose your path and follow structured learning programs designed for your academic level.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            {learningPaths.map((path, index) => {
+              const Icon = path.icon;
+              return (
+                <Card 
+                  key={path.title}
+                  className="border-0 bg-gradient-to-br from-white/70 to-slate-100/70 backdrop-blur-xl hover:shadow-2xl transition-all duration-500 card-interactive dark:from-slate-800/50 dark:to-slate-700/50"
+                >
+                  <CardHeader className="text-center pb-4">
+                    <div className={`w-16 h-16 bg-gradient-to-r ${path.color} rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg`}>
+                      <Icon className="w-8 h-8 text-white" />
+                    </div>
+                    <CardTitle className="text-xl mb-2">{path.title}</CardTitle>
+                    <CardDescription className="text-base">{path.description}</CardDescription>
+                  </CardHeader>
+                  <CardContent className="text-center">
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
+                        <Clock className="w-4 h-4" />
+                        Duration: {path.duration}
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-foreground mb-2">Subjects Covered:</h4>
+                        <div className="flex flex-wrap gap-2 justify-center">
+                          {path.subjects.map((subject) => (
+                            <span key={subject} className="px-3 py-1 bg-slate-100 dark:bg-slate-700 rounded-full text-sm text-slate-600 dark:text-slate-300">
+                              {subject}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                      <Button asChild className="w-full bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700">
+                        <Link to="/files">
+                          Start Learning
+                          <ArrowRight className="w-4 h-4 ml-2" />
+                        </Link>
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* Recent Resources Section */}
+      <section className="py-24 relative">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-6">
+              Recently Added Resources
+            </h2>
+            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+              Check out the latest study materials added by our community of educators and students.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            {recentResources.map((resource) => (
+              <Card 
+                key={resource.title}
+                className="border-0 bg-gradient-to-br from-white/70 to-slate-100/70 backdrop-blur-xl hover:shadow-2xl transition-all duration-500 card-interactive dark:from-slate-900/50 dark:to-slate-800/50"
+              >
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-full text-sm font-medium">
+                      {resource.type}
+                    </span>
+                    <span className="text-sm text-muted-foreground">{resource.subject}</span>
+                  </div>
+                  <h3 className="font-semibold text-foreground mb-4 line-clamp-2">{resource.title}</h3>
+                  <div className="flex items-center justify-between text-sm text-muted-foreground">
+                    <div className="flex items-center gap-4">
+                      <div className="flex items-center gap-1">
+                        <Download className="w-4 h-4" />
+                        {resource.downloads}
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <Eye className="w-4 h-4" />
+                        {resource.views}
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <Heart className="w-4 h-4" />
+                        {resource.likes}
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+          
+          <div className="text-center mt-12">
+            <Button asChild variant="outline" size="lg" className="text-lg px-8 py-6">
+              <Link to="/files">
+                View All Resources
+                <ArrowRight className="w-5 h-5 ml-2" />
+              </Link>
+            </Button>
+          </div>
+        </div>
+      </section>
+
       {/* Benefits Section */}
       <section className="py-24 relative bg-gradient-to-br from-slate-100/50 to-blue-50/50 dark:from-slate-900/50 dark:to-slate-800/50">
         <div className="container mx-auto px-4">
@@ -279,51 +619,6 @@ const LandingPage = () => {
         </div>
       </section>
 
-      {/* Testimonials Section */}
-      <section className="py-24 relative">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-6">
-              What Our Students Say
-            </h2>
-            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-              Join thousands of satisfied students who have transformed their learning experience.
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-            {testimonials.map((testimonial, index) => (
-              <Card 
-                key={testimonial.name}
-                className="border-0 bg-gradient-to-br from-white/70 to-slate-100/70 backdrop-blur-xl hover:shadow-2xl transition-all duration-500 card-interactive dark:from-slate-900/50 dark:to-slate-800/50"
-              >
-                <CardContent className="p-8">
-                  <div className="flex items-center mb-4">
-                    {[...Array(testimonial.rating)].map((_, i) => (
-                      <Star key={i} className="w-5 h-5 text-yellow-400 fill-current" />
-                    ))}
-                  </div>
-                  <p className="text-muted-foreground mb-6 leading-relaxed">
-                    "{testimonial.content}"
-                  </p>
-                  <div className="flex items-center">
-                    <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full flex items-center justify-center mr-4">
-                      <span className="text-white font-semibold">
-                        {testimonial.name.split(' ').map(n => n[0]).join('')}
-                      </span>
-                    </div>
-                    <div>
-                      <div className="font-semibold text-foreground">{testimonial.name}</div>
-                      <div className="text-sm text-muted-foreground">{testimonial.role}</div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* CTA Section */}
       <section className="py-24 relative">
         <div className="container mx-auto px-4">
@@ -334,7 +629,7 @@ const LandingPage = () => {
                 Ready to Transform Your Learning?
               </h2>
               <p className="text-xl mb-8 max-w-2xl mx-auto opacity-90">
-                Join thousands of students who are already achieving their academic goals with our platform.
+                Join our community of learners and start your journey towards academic excellence today.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button asChild size="lg" className="text-lg px-8 py-6 bg-white text-blue-600 hover:bg-gray-100 shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300">
