@@ -19,10 +19,6 @@ import {
   Linkedin,
   Youtube,
   Calculator,
-  Atom,
-  History,
-  Languages,
-  Brain,
   Award,
   Clock,
   CheckCircle,
@@ -34,14 +30,7 @@ import {
 
 const LandingPage = () => {
   const { isAuthenticated } = useAuth();
-  const [activeSubject, setActiveSubject] = useState('maths');
-
-  // Custom Flask icon component
-  const Flask = ({ className }) => (
-    <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
-    </svg>
-  );
+  const [activeSubject, setActiveSubject] = useState('gcse-maths');
 
   useEffect(() => {
     // Component mounted successfully
@@ -103,52 +92,52 @@ const LandingPage = () => {
 
   const subjects = [
     {
-      id: 'maths',
-      name: 'Maths',
+      id: 'gcse-maths',
+      name: 'GCSE Maths',
       icon: Calculator,
-      description: 'Algebra, Calculus, Statistics, Geometry',
+      description: 'Foundation and Higher Tier',
       color: 'from-blue-500 to-cyan-500',
-      topics: ['Algebra', 'Calculus', 'Statistics', 'Geometry', 'Trigonometry']
+      topics: ['Number', 'Algebra', 'Geometry', 'Statistics', 'Probability']
     },
     {
-      id: 'physics',
-      name: 'Physics',
-      icon: Atom,
-      description: 'Mechanics, Electricity, Waves, Modern Physics',
+      id: 'a-level-maths',
+      name: 'A-Level Maths',
+      icon: Calculator,
+      description: 'Pure Mathematics',
       color: 'from-purple-500 to-pink-500',
-      topics: ['Mechanics', 'Electricity', 'Waves', 'Modern Physics', 'Thermodynamics']
+      topics: ['Pure Maths', 'Mechanics', 'Statistics', 'Further Maths']
     },
     {
-      id: 'chemistry',
-      name: 'Chemistry',
-      icon: Flask,
-      description: 'Organic, Inorganic, Physical Chemistry',
+      id: 'further-maths',
+      name: 'Further Maths',
+      icon: Calculator,
+      description: 'Advanced Mathematics',
       color: 'from-green-500 to-emerald-500',
-      topics: ['Organic Chemistry', 'Inorganic Chemistry', 'Physical Chemistry', 'Analytical Chemistry']
+      topics: ['Further Pure', 'Further Mechanics', 'Further Statistics', 'Decision Maths']
     },
     {
-      id: 'biology',
-      name: 'Biology',
-      icon: Brain,
-      description: 'Cell Biology, Genetics, Ecology, Human Biology',
-      color: 'from-emerald-500 to-teal-500',
-      topics: ['Cell Biology', 'Genetics', 'Ecology', 'Human Biology', 'Evolution']
+      id: 'year-7-8',
+      name: 'Year 7-8 Maths',
+      icon: Calculator,
+      description: 'Key Stage 3 Mathematics',
+      color: 'from-orange-500 to-red-500',
+      topics: ['Number', 'Algebra', 'Geometry', 'Statistics', 'Problem Solving']
     },
     {
-      id: 'english',
-      name: 'English',
-      icon: Languages,
-      description: 'Literature, Language, Creative Writing',
-      color: 'from-red-500 to-pink-500',
-      topics: ['Literature', 'Language', 'Creative Writing', 'Poetry', 'Drama']
+      id: 'year-9-11',
+      name: 'Year 9-11 Maths',
+      icon: Calculator,
+      description: 'GCSE Preparation',
+      color: 'from-indigo-500 to-purple-500',
+      topics: ['Number', 'Algebra', 'Geometry', 'Statistics', 'Probability']
     },
     {
-      id: 'history',
-      name: 'History',
-      icon: History,
-      description: 'British History, World History, Politics',
-      color: 'from-amber-500 to-orange-500',
-      topics: ['British History', 'World History', 'Politics', 'Economics', 'Geography']
+      id: 'university-maths',
+      name: 'University Maths',
+      icon: Calculator,
+      description: 'Higher Education Mathematics',
+      color: 'from-teal-500 to-cyan-500',
+      topics: ['Calculus', 'Linear Algebra', 'Analysis', 'Abstract Algebra', 'Topology']
     }
   ];
 
@@ -157,7 +146,7 @@ const LandingPage = () => {
       title: "GCSE Foundation",
       description: "Perfect for Year 9-11 students",
       duration: "2 years",
-      subjects: ["Maths", "English", "Sciences"],
+      subjects: ["Number", "Algebra", "Geometry", "Statistics"],
       icon: BookOpen,
       color: "from-blue-500 to-cyan-500"
     },
@@ -165,15 +154,15 @@ const LandingPage = () => {
       title: "A-Level Preparation",
       description: "Advanced studies for Year 12-13",
       duration: "2 years",
-      subjects: ["Pure Maths", "Physics", "Chemistry"],
+      subjects: ["Pure Maths", "Mechanics", "Statistics"],
       icon: Award,
       color: "from-purple-500 to-pink-500"
     },
     {
-      title: "University Prep",
-      description: "Get ready for higher education",
-      duration: "1 year",
-      subjects: ["Advanced Topics", "Research Skills"],
+      title: "Further Maths",
+      description: "Specialized mathematics pathway",
+      duration: "2 years",
+      subjects: ["Further Pure", "Further Mechanics", "Further Statistics"],
       icon: Rocket,
       color: "from-green-500 to-emerald-500"
     }
@@ -182,23 +171,23 @@ const LandingPage = () => {
   const recentResources = [
     {
       title: "A-Level Pure Maths Formula Sheet",
-      subject: "Maths",
+      subject: "A-Level Maths",
       downloads: 234,
       views: 1200,
       likes: 89,
       type: "PDF"
     },
     {
-      title: "GCSE Physics Revision Notes",
-      subject: "Physics",
+      title: "GCSE Maths Practice Questions",
+      subject: "GCSE Maths",
       downloads: 189,
       views: 890,
       likes: 67,
       type: "PDF"
     },
     {
-      title: "Chemistry Lab Safety Guide",
-      subject: "Chemistry",
+      title: "Further Maths Integration Techniques",
+      subject: "Further Maths",
       downloads: 156,
       views: 745,
       likes: 45,
@@ -238,8 +227,8 @@ const LandingPage = () => {
 
             {/* Subtitle */}
             <p className={`text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto mb-10 leading-relaxed animate-slideUp`} style={{ animationDelay: '0.2s' }}>
-              The ultimate learning platform for GCSE and A-Level students. 
-              Access premium study materials, connect with peers, and achieve your academic goals.
+              The ultimate mathematics learning platform for GCSE and A-Level students. 
+              Access premium maths study materials, practice questions, and achieve your academic goals.
             </p>
 
             {/* CTA Buttons */}
@@ -318,10 +307,10 @@ const LandingPage = () => {
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-6">
-              Explore Your Subjects
+              Explore Mathematics Topics
             </h2>
             <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-              Discover comprehensive study materials across all major subjects. Click on any subject to explore available resources.
+              Discover comprehensive maths study materials across all levels. Click on any topic to explore available resources.
             </p>
           </div>
 
@@ -361,7 +350,7 @@ const LandingPage = () => {
                 </Card>
               );
             })}
-          </div>
+        </div>
 
           {/* Active Subject Details */}
           <div className="max-w-4xl mx-auto">
@@ -469,10 +458,10 @@ const LandingPage = () => {
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-6">
-              Your Learning Journey
+              Your Mathematics Learning Journey
             </h2>
             <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-              Choose your path and follow structured learning programs designed for your academic level.
+              Choose your path and follow structured maths learning programs designed for your academic level.
             </p>
           </div>
 
@@ -527,10 +516,10 @@ const LandingPage = () => {
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-6">
-              Recently Added Resources
+              Recently Added Maths Resources
             </h2>
             <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-              Check out the latest study materials added by our community of educators and students.
+              Check out the latest mathematics study materials added by our community of educators and students.
             </p>
           </div>
 
@@ -602,11 +591,11 @@ const LandingPage = () => {
                 >
                   <div className="w-16 h-16 bg-gradient-to-r from-blue-500/20 to-cyan-500/20 rounded-2xl flex items-center justify-center mx-auto mb-6">
                     <Icon className="w-8 h-8 text-blue-400" />
-                  </div>
+                    </div>
                   <h3 className="text-xl font-semibold mb-4 text-foreground">{benefit.title}</h3>
                   <p className="text-muted-foreground leading-relaxed">
-                    {benefit.description}
-                  </p>
+                      {benefit.description}
+                    </p>
                 </div>
               );
             })}
