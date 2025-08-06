@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
-import { filesAPI } from '../api/filesAPI';
+import { filesAPI } from '../services/api';
 import { 
   BookOpen, 
   Upload, 
@@ -43,7 +43,7 @@ const LandingPage = () => {
   const fetchRecentFiles = async () => {
     try {
       setLoading(true);
-      const response = await filesAPI.getFiles();
+      const response = await filesAPI.getPublicFiles();
       if (response.success) {
         // Get the 3 most recent files
         const recent = response.files
