@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
+import { filesAPI } from '../api/filesAPI';
 import { 
   BookOpen, 
   Upload, 
@@ -31,10 +32,31 @@ import {
 const LandingPage = () => {
   const { isAuthenticated } = useAuth();
   const [activeSubject, setActiveSubject] = useState('gcse-maths');
+  const [recentFiles, setRecentFiles] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Component mounted successfully
+    // Fetch recent files on component mount
+    fetchRecentFiles();
   }, []);
+
+  const fetchRecentFiles = async () => {
+    try {
+      setLoading(true);
+      const response = await filesAPI.getFiles();
+      if (response.success) {
+        // Get the 3 most recent files
+        const recent = response.files
+          .sort((a, b) => new Date(b.uploadDate) - new Date(a.uploadDate))
+          .slice(0, 3);
+        setRecentFiles(recent);
+      }
+    } catch (error) {
+      console.error('Error fetching recent files:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const features = [
     {
@@ -160,7 +182,7 @@ const LandingPage = () => {
     },
     {
       title: "Further Maths",
-      description: "Specialized mathematics pathway",
+      description: "Specialised mathematics pathway",
       duration: "2 years",
       subjects: ["Further Pure", "Further Mechanics", "Further Statistics"],
       icon: Rocket,
@@ -168,32 +190,7 @@ const LandingPage = () => {
     }
   ];
 
-  const recentResources = [
-    {
-      title: "A-Level Pure Maths Formula Sheet",
-      subject: "A-Level Maths",
-      downloads: 234,
-      views: 1200,
-      likes: 89,
-      type: "PDF"
-    },
-    {
-      title: "GCSE Maths Practice Questions",
-      subject: "GCSE Maths",
-      downloads: 189,
-      views: 890,
-      likes: 67,
-      type: "PDF"
-    },
-    {
-      title: "Further Maths Integration Techniques",
-      subject: "Further Maths",
-      downloads: 156,
-      views: 745,
-      likes: 45,
-      type: "PDF"
-    }
-  ];
+
 
   return (
     <div className="min-h-screen bg-background overflow-hidden">
@@ -524,38 +521,73 @@ const LandingPage = () => {
           </div>
 
           <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-            {recentResources.map((resource) => (
-              <Card 
-                key={resource.title}
-                className="border-0 bg-gradient-to-br from-white/70 to-slate-100/70 backdrop-blur-xl hover:shadow-2xl transition-all duration-500 card-interactive dark:from-slate-900/50 dark:to-slate-800/50"
-              >
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <span className="px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-full text-sm font-medium">
-                      {resource.type}
-                    </span>
-                    <span className="text-sm text-muted-foreground">{resource.subject}</span>
-                  </div>
-                  <h3 className="font-semibold text-foreground mb-4 line-clamp-2">{resource.title}</h3>
-                  <div className="flex items-center justify-between text-sm text-muted-foreground">
-                    <div className="flex items-center gap-4">
-                      <div className="flex items-center gap-1">
-                        <Download className="w-4 h-4" />
-                        {resource.downloads}
+            {loading ? (
+              // Loading skeleton
+              Array.from({ length: 3 }).map((_, index) => (
+                <Card 
+                  key={index}
+                  className="border-0 bg-gradient-to-br from-white/70 to-slate-100/70 backdrop-blur-xl dark:from-slate-900/50 dark:to-slate-800/50"
+                >
+                  <CardContent className="p-6">
+                    <div className="animate-pulse">
+                      <div className="flex items-center justify-between mb-4">
+                        <div className="h-6 bg-slate-200 dark:bg-slate-700 rounded w-16"></div>
+                        <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-20"></div>
                       </div>
-                      <div className="flex items-center gap-1">
-                        <Eye className="w-4 h-4" />
-                        {resource.views}
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <Heart className="w-4 h-4" />
-                        {resource.likes}
+                      <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded mb-4"></div>
+                      <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-3/4 mb-4"></div>
+                      <div className="flex items-center gap-4">
+                        <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-8"></div>
+                        <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-8"></div>
+                        <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-8"></div>
                       </div>
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+                  </CardContent>
+                </Card>
+              ))
+            ) : recentFiles.length > 0 ? (
+              recentFiles.map((file) => (
+                <Card 
+                  key={file._id}
+                  className="border-0 bg-gradient-to-br from-white/70 to-slate-100/70 backdrop-blur-xl hover:shadow-2xl transition-all duration-500 card-interactive dark:from-slate-900/50 dark:to-slate-800/50"
+                >
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between mb-4">
+                      <span className="px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-full text-sm font-medium">
+                        {file.fileType?.toUpperCase() || 'PDF'}
+                      </span>
+                      <span className="text-sm text-muted-foreground">{file.category || 'Maths'}</span>
+                    </div>
+                    <h3 className="font-semibold text-foreground mb-4 line-clamp-2">{file.title}</h3>
+                    <div className="flex items-center justify-between text-sm text-muted-foreground">
+                      <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-1">
+                          <Download className="w-4 h-4" />
+                          {file.downloads || 0}
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <Eye className="w-4 h-4" />
+                          {file.views || 0}
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <Heart className="w-4 h-4" />
+                          {file.likes || 0}
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))
+            ) : (
+              // No files available
+              <div className="col-span-3 text-center py-12">
+                <div className="text-muted-foreground">
+                  <BookOpen className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                  <p className="text-lg">No recent files available</p>
+                  <p className="text-sm">Be the first to upload a maths resource!</p>
+                </div>
+              </div>
+            )}
           </div>
           
           <div className="text-center mt-12">
