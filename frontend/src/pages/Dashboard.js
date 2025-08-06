@@ -29,7 +29,12 @@ import {
   Zap,
   Sparkles,
   Edit3,
-  Save
+  Save,
+  Calculator,
+  Book,
+  GraduationCap,
+  Star,
+  Layers
 } from 'lucide-react';
 
 const Dashboard = () => {
@@ -59,6 +64,115 @@ const Dashboard = () => {
   const [showRenameModal, setShowRenameModal] = useState(false);
   const fileInputRef = useRef(null);
   const [selectedCategory, setSelectedCategory] = useState('');
+
+  // Enhanced category configuration with better organization
+  const categories = [
+    {
+      id: '',
+      label: 'No Category',
+      icon: Layers,
+      color: 'gray',
+      description: 'General resources'
+    },
+    {
+      id: 'year7',
+      label: 'Year 7 Math',
+      icon: Calculator,
+      color: 'blue',
+      description: 'Foundation mathematics'
+    },
+    {
+      id: 'year8',
+      label: 'Year 8 Math',
+      icon: Calculator,
+      color: 'blue',
+      description: 'Core mathematics'
+    },
+    {
+      id: 'year9',
+      label: 'Year 9 Math',
+      icon: Calculator,
+      color: 'blue',
+      description: 'Pre-GCSE mathematics'
+    },
+    {
+      id: 'year10',
+      label: 'Year 10 Math',
+      icon: Calculator,
+      color: 'blue',
+      description: 'GCSE preparation'
+    },
+    {
+      id: 'year11',
+      label: 'Year 11 Math',
+      icon: Calculator,
+      color: 'blue',
+      description: 'GCSE revision'
+    },
+    {
+      id: 'as-pure',
+      label: 'AS Pure Math',
+      icon: Book,
+      color: 'green',
+      description: 'Advanced concepts'
+    },
+    {
+      id: 'as-applied',
+      label: 'AS Applied Math',
+      icon: Book,
+      color: 'green',
+      description: 'Applied mathematics'
+    },
+    {
+      id: 'as-stats',
+      label: 'AS Statistics',
+      icon: Book,
+      color: 'green',
+      description: 'Statistical analysis'
+    },
+    {
+      id: 'as-mechanics',
+      label: 'AS Mechanics',
+      icon: Book,
+      color: 'green',
+      description: 'Mechanical systems'
+    },
+    {
+      id: 'a2-pure',
+      label: 'A2 Pure Math',
+      icon: GraduationCap,
+      color: 'purple',
+      description: 'Advanced pure math'
+    },
+    {
+      id: 'a2-applied',
+      label: 'A2 Applied Math',
+      icon: GraduationCap,
+      color: 'purple',
+      description: 'Advanced applied math'
+    },
+    {
+      id: 'a2-stats',
+      label: 'A2 Statistics',
+      icon: GraduationCap,
+      color: 'purple',
+      description: 'Advanced statistics'
+    },
+    {
+      id: 'a2-mechanics',
+      label: 'A2 Mechanics',
+      icon: GraduationCap,
+      color: 'purple',
+      description: 'Advanced mechanics'
+    },
+    {
+      id: 'further',
+      label: 'Further Math',
+      icon: Star,
+      color: 'orange',
+      description: 'Further mathematics'
+    }
+  ];
 
   // Set greeting based on time of day
   useEffect(() => {
@@ -505,15 +619,24 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-8">
-        {/* Header */}
-        <div className="mb-8">
-          <div className="flex justify-between items-start mb-6">
-            <div className="space-y-1">
-              <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight">
-                {greeting}, {userName}!
+      {/* Hero Section */}
+      <div className="relative overflow-hidden bg-gradient-to-br from-blue-50 via-white to-cyan-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-blue-400/20 to-cyan-400/20 rounded-full blur-3xl animate-float"></div>
+          <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-tr from-purple-400/20 to-pink-400/20 rounded-full blur-3xl animate-float" style={{ animationDelay: '2s' }}></div>
+        </div>
+        
+        <div className="relative container mx-auto px-4 py-16">
+          <div className="flex justify-between items-start mb-8">
+            <div className="space-y-2">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-blue-500/10 to-cyan-500/10 border border-blue-500/20 text-blue-600 dark:text-blue-400 text-sm font-medium mb-4 animate-fadeIn">
+                <Sparkles className="w-4 h-4" />
+                Tutor Dashboard
+              </div>
+              <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight">
+                <span className="text-gradient-primary">{greeting}, {userName}!</span>
               </h1>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-xl text-muted-foreground max-w-2xl">
                 Here's what's happening with your learning hub today
               </p>
             </div>
@@ -523,8 +646,9 @@ const Dashboard = () => {
                 variant="outline"
                 size="sm"
                 onClick={loadDashboardData}
+                className="bg-white/70 backdrop-blur-xl hover:bg-white/90 dark:bg-slate-800/70 dark:hover:bg-slate-800/90"
               >
-                <RefreshCw className="w-4 h-4 mr-1" />
+                <RefreshCw className="w-4 h-4 mr-2" />
                 Refresh
               </Button>
               
@@ -533,8 +657,9 @@ const Dashboard = () => {
                   variant="outline"
                   size="sm"
                   onClick={() => setShowNotifications(!showNotifications)}
+                  className="bg-white/70 backdrop-blur-xl hover:bg-white/90 dark:bg-slate-800/70 dark:hover:bg-slate-800/90"
                 >
-                  <Bell className="w-4 h-4 mr-1" />
+                  <Bell className="w-4 h-4 mr-2" />
                   {notifications.length > 0 && (
                     <Badge variant="destructive" className="px-1 py-0 text-xs">
                       {notifications.length}
@@ -543,7 +668,7 @@ const Dashboard = () => {
                 </Button>
                 
                 {showNotifications && notifications.length > 0 && (
-                  <div className="absolute right-0 top-12 w-80 bg-background border rounded-lg shadow-xl z-50 p-4">
+                  <div className="absolute right-0 top-12 w-80 bg-white/90 backdrop-blur-xl border rounded-lg shadow-xl z-50 p-4 dark:bg-slate-800/90">
                     <h3 className="font-semibold mb-3 flex items-center gap-2">
                       <Activity className="w-4 h-4" />
                       Recent Activity
@@ -567,117 +692,60 @@ const Dashboard = () => {
             </div>
           </div>
 
-          {/* Quick Stats Overview */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-            <Card variant="plain">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium">Today's Activity</CardTitle>
-              </CardHeader>
-              <CardContent className="flex items-center justify-between">
-                <div className="text-2xl font-bold">{stats.approvedToday}</div>
-                <Zap className="w-5 h-5 text-primary" />
+          {/* Enhanced Stats */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 max-w-6xl mx-auto animate-slideUp" style={{ animationDelay: '0.4s' }}>
+            <Card className="border-0 bg-white/70 backdrop-blur-xl hover:shadow-xl transition-all duration-300 dark:bg-slate-800/70">
+              <CardContent className="p-6 text-center">
+                <div className="flex items-center justify-center w-12 h-12 bg-gradient-to-r from-blue-500/20 to-cyan-500/20 rounded-xl mx-auto mb-3">
+                  <Zap className="w-6 h-6 text-blue-600" />
+                </div>
+                <div className="text-2xl md:text-3xl font-bold text-foreground mb-1">{stats.approvedToday}</div>
+                <div className="text-sm text-muted-foreground">Today's Activity</div>
               </CardContent>
             </Card>
-            <Card variant="plain">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium">Pending Reviews</CardTitle>
-              </CardHeader>
-              <CardContent className="flex items-center justify-between">
-                <div className="text-2xl font-bold">{stats.pendingSubmissions}</div>
-                <Clock className="w-5 h-5 text-primary" />
+            
+            <Card className="border-0 bg-white/70 backdrop-blur-xl hover:shadow-xl transition-all duration-300 dark:bg-slate-800/70">
+              <CardContent className="p-6 text-center">
+                <div className="flex items-center justify-center w-12 h-12 bg-gradient-to-r from-yellow-500/20 to-orange-500/20 rounded-xl mx-auto mb-3">
+                  <Clock className="w-6 h-6 text-yellow-600" />
+                </div>
+                <div className="text-2xl md:text-3xl font-bold text-foreground mb-1">{stats.pendingSubmissions}</div>
+                <div className="text-sm text-muted-foreground">Pending Reviews</div>
               </CardContent>
             </Card>
-            <Card variant="plain">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium">Total Files</CardTitle>
-              </CardHeader>
-              <CardContent className="flex items-center justify-between">
-                <div className="text-2xl font-bold">{stats.totalFiles}</div>
-                <FileText className="w-5 h-5 text-primary" />
+            
+            <Card className="border-0 bg-white/70 backdrop-blur-xl hover:shadow-xl transition-all duration-300 dark:bg-slate-800/70">
+              <CardContent className="p-6 text-center">
+                <div className="flex items-center justify-center w-12 h-12 bg-gradient-to-r from-green-500/20 to-emerald-500/20 rounded-xl mx-auto mb-3">
+                  <FileText className="w-6 h-6 text-green-600" />
+                </div>
+                <div className="text-2xl md:text-3xl font-bold text-foreground mb-1">{stats.totalFiles}</div>
+                <div className="text-sm text-muted-foreground">Total Files</div>
               </CardContent>
             </Card>
-            <Card variant="plain">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium">Storage Used</CardTitle>
-              </CardHeader>
-              <CardContent className="flex items-center justify-between">
-                <div className="text-2xl font-bold">{formatStorageUsed(stats.storageUsed)}</div>
-                <BarChart3 className="w-5 h-5 text-primary" />
+            
+            <Card className="border-0 bg-white/70 backdrop-blur-xl hover:shadow-xl transition-all duration-300 dark:bg-slate-800/70">
+              <CardContent className="p-6 text-center">
+                <div className="flex items-center justify-center w-12 h-12 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-xl mx-auto mb-3">
+                  <BarChart3 className="w-6 h-6 text-purple-600" />
+                </div>
+                <div className="text-2xl md:text-3xl font-bold text-foreground mb-1">{formatStorageUsed(stats.storageUsed)}</div>
+                <div className="text-sm text-muted-foreground">Storage Used</div>
               </CardContent>
             </Card>
           </div>
         </div>
+      </div>
 
-        {/* Enhanced Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <Card className="hover:shadow-xl transition-all duration-300 border-l-4 border-l-blue-500 bg-gradient-to-br from-blue-50 to-blue-100/50">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-blue-700">Total Files</CardTitle>
-              <div className="p-2 bg-blue-500 rounded-lg">
-                <FileText className="h-4 w-4 text-white" />
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold text-blue-600">{stats.totalFiles}</div>
-              <p className="text-xs text-blue-600 flex items-center gap-1 mt-1">
-                <ArrowUpRight className="w-3 h-3" />
-                Available for students
-              </p>
-            </CardContent>
-          </Card>
+      <div className="container mx-auto px-4 py-12">
 
-          <Card className="hover:shadow-xl transition-all duration-300 border-l-4 border-l-yellow-500 bg-gradient-to-br from-yellow-50 to-yellow-100/50">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-yellow-700">Pending Reviews</CardTitle>
-              <div className="p-2 bg-yellow-500 rounded-lg">
-                <Clock className="h-4 w-4 text-white" />
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold text-yellow-600">{stats.pendingSubmissions}</div>
-              <p className="text-xs text-yellow-600">
-                Awaiting review
-              </p>
-            </CardContent>
-          </Card>
 
-          <Card className="hover:shadow-xl transition-all duration-300 border-l-4 border-l-green-500 bg-gradient-to-br from-green-50 to-green-100/50">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-green-700">Total Downloads</CardTitle>
-              <div className="p-2 bg-green-500 rounded-lg">
-                <Download className="h-4 w-4 text-white" />
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold text-green-600">{stats.totalDownloads}</div>
-              <p className="text-xs text-green-600 flex items-center gap-1 mt-1">
-                <TrendingUp className="w-3 h-3" />
-                All time
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card className="hover:shadow-xl transition-all duration-300 border-l-4 border-l-purple-500 bg-gradient-to-br from-purple-50 to-purple-100/50">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-purple-700">Storage Used</CardTitle>
-              <div className="p-2 bg-purple-500 rounded-lg">
-                <BarChart3 className="h-4 w-4 text-white" />
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold text-purple-600">{formatStorageUsed(stats.storageUsed)}</div>
-              <p className="text-xs text-purple-600">
-                Approved today: {stats.approvedToday}
-              </p>
-            </CardContent>
-          </Card>
-        </div>
 
         {/* Messages */}
         {error && (
-          <Card className="mb-6 border-destructive bg-red-50">
+          <Card className="mb-6 border-0 bg-red-50/80 backdrop-blur-xl dark:bg-red-900/20">
             <CardContent className="pt-6">
-              <div className="flex items-center gap-2 text-destructive">
+              <div className="flex items-center gap-2 text-red-600 dark:text-red-400">
                 <AlertCircle className="h-4 w-4" />
                 {error}
               </div>
@@ -686,9 +754,9 @@ const Dashboard = () => {
         )}
 
         {success && (
-          <Card className="mb-6 border-green-500 bg-green-50">
+          <Card className="mb-6 border-0 bg-green-50/80 backdrop-blur-xl dark:bg-green-900/20">
             <CardContent className="pt-6">
-              <div className="flex items-center gap-2 text-green-600">
+              <div className="flex items-center gap-2 text-green-600 dark:text-green-400">
                 <CheckCircle className="h-4 w-4" />
                 {success}
               </div>
@@ -697,22 +765,22 @@ const Dashboard = () => {
         )}
 
         {/* Enhanced Upload Section */}
-        <Card className="mb-8" variant="plain">
+        <Card className="mb-8 border-0 bg-white/70 backdrop-blur-xl shadow-xl dark:bg-slate-800/70">
           <CardHeader className="pb-2">
-            <CardTitle className="flex items-center gap-2">
+            <CardTitle className="flex items-center gap-2 text-xl">
               <Upload className="h-5 w-5" />
               Upload New Material
             </CardTitle>
-            <CardDescription>
+            <CardDescription className="text-base">
               Add study materials, resources, or educational content for your students
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div
-              className={`border-2 border-dashed rounded-lg p-6 text-center transition-all cursor-pointer ${
+              className={`border-2 border-dashed rounded-lg p-8 text-center transition-all cursor-pointer ${
                 dragActive
-                  ? 'border-primary/60 bg-primary/5'
-                  : 'border-input hover:bg-muted/40'
+                  ? 'border-blue-500/60 bg-blue-500/5'
+                  : 'border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800/40'
               }`}
               onDragEnter={handleDrag}
               onDragLeave={handleDrag}
@@ -730,16 +798,16 @@ const Dashboard = () => {
                 </div>
               ) : (
                 <>
-                  <div className="p-3 bg-primary/10 rounded-full w-16 h-16 mx-auto mb-3 flex items-center justify-center">
-                    <Upload className="w-7 h-7 text-primary" />
+                  <div className="p-4 bg-gradient-to-r from-blue-500/10 to-cyan-500/10 rounded-full w-20 h-20 mx-auto mb-4 flex items-center justify-center">
+                    <Upload className="w-8 h-8 text-blue-600" />
                   </div>
-                  <h3 className="text-lg font-semibold mb-1">
+                  <h3 className="text-xl font-semibold mb-2">
                     {dragActive ? 'Drop your file here' : 'Upload a file'}
                   </h3>
-                  <p className="text-sm text-muted-foreground mb-4">
+                  <p className="text-sm text-muted-foreground mb-6">
                     Drag and drop or click to select • Max 10MB
                   </p>
-                  <div className="flex items-center justify-center gap-4 text-xs text-muted-foreground">
+                  <div className="flex items-center justify-center gap-6 text-xs text-muted-foreground">
                     <span className="flex items-center gap-1">
                       <FileText className="w-3 h-3" />
                       PDFs
@@ -765,49 +833,68 @@ const Dashboard = () => {
             </div>
             
             {/* Category Selector */}
-            <div className="mt-6">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Category (Optional)
-              </label>
-              <select
-                className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                onChange={(e) => setSelectedCategory(e.target.value)}
-                value={selectedCategory}
-              >
-                <option value="">No Category</option>
-                <option value="year7">Year 7 Math</option>
-                <option value="year8">Year 8 Math</option>
-                <option value="year9">Year 9 Math</option>
-                <option value="year10">Year 10 Math</option>
-                <option value="year11">Year 11 Math</option>
-                <option value="as-pure">AS Pure Math</option>
-                <option value="as-applied">AS Applied Math</option>
-                <option value="as-stats">AS Statistics</option>
-                <option value="as-mechanics">AS Mechanics</option>
-                <option value="a2-pure">A2 Pure Math</option>
-                <option value="a2-applied">A2 Applied Math</option>
-                <option value="a2-stats">A2 Statistics</option>
-                <option value="a2-mechanics">A2 Mechanics</option>
-                <option value="further">Further Math</option>
-              </select>
-              <p className="text-xs text-gray-500 mt-1">
+            <div className="mt-8">
+              <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                <Layers className="w-5 h-5" />
+                Select Category (Optional)
+              </h3>
+              <p className="text-sm text-muted-foreground mb-4">
                 Categorizing files helps students find specific topics more easily
               </p>
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
+                {categories.map((category) => {
+                  const IconComponent = category.icon;
+                  const isActive = selectedCategory === category.id;
+                  const colorVariants = {
+                    blue: 'border-blue-500 bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-300',
+                    green: 'border-green-500 bg-green-50 text-green-700 dark:bg-green-900/20 dark:text-green-300',
+                    purple: 'border-purple-500 bg-purple-50 text-purple-700 dark:bg-purple-900/20 dark:text-purple-300',
+                    orange: 'border-orange-500 bg-orange-50 text-orange-700 dark:bg-orange-900/20 dark:text-orange-300',
+                    gray: 'border-gray-500 bg-gray-50 text-gray-700 dark:bg-gray-900/20 dark:text-gray-300'
+                  };
+                  
+                  return (
+                    <Card
+                      key={category.id}
+                      className={`cursor-pointer transition-all duration-300 hover:shadow-lg hover:-translate-y-1 border-2 ${
+                        isActive 
+                          ? colorVariants[category.color]
+                          : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
+                      }`}
+                      onClick={() => setSelectedCategory(category.id)}
+                    >
+                      <CardContent className="p-3 text-center">
+                        <div className={`w-10 h-10 mx-auto mb-2 rounded-lg flex items-center justify-center ${
+                          isActive 
+                            ? 'bg-white/80 dark:bg-slate-800/80' 
+                            : 'bg-gray-50 dark:bg-slate-800'
+                        }`}>
+                          <IconComponent className={`w-5 h-5 ${
+                            isActive ? `text-${category.color}-600` : 'text-gray-500'
+                          }`} />
+                        </div>
+                        <h4 className="font-semibold text-xs mb-1">{category.label}</h4>
+                        <p className="text-xs text-muted-foreground">{category.description}</p>
+                      </CardContent>
+                    </Card>
+                  );
+                })}
+              </div>
             </div>
           </CardContent>
         </Card>
 
         {/* Enhanced Pending Submissions */}
         {submissions.length > 0 && (
-          <Card className="mb-8" variant="plain">
+          <Card className="mb-8 border-0 bg-white/70 backdrop-blur-xl shadow-xl dark:bg-slate-800/70">
             <CardHeader className="pb-2">
               <div className="flex justify-between items-center">
                 <div>
-                  <CardTitle className="flex items-center gap-2">
+                  <CardTitle className="flex items-center gap-2 text-xl">
                     <AlertCircle className="h-5 w-5" />
                     Pending Submissions ({filteredSubmissions.length} of {submissions.length})
                   </CardTitle>
-                  <CardDescription>
+                  <CardDescription className="text-base">
                     Review and approve student-submitted resources
                   </CardDescription>
                 </div>
@@ -831,6 +918,7 @@ const Dashboard = () => {
                         variant="outline"
                         size="sm"
                         onClick={handleBulkApprove}
+                        className="bg-green-50 text-green-700 border-green-200 hover:bg-green-100"
                       >
                         <CheckCheck className="w-4 h-4 mr-1" />
                         Approve ({selectedSubmissions.length})
@@ -839,6 +927,7 @@ const Dashboard = () => {
                         variant="outline"
                         size="sm"
                         onClick={handleBulkReject}
+                        className="bg-red-50 text-red-700 border-red-200 hover:bg-red-100"
                       >
                         <X className="w-4 h-4 mr-1" />
                         Reject ({selectedSubmissions.length})
@@ -963,28 +1052,29 @@ const Dashboard = () => {
         )}
 
         {/* Enhanced Files List */}
-        <Card variant="plain">
+        <Card className="border-0 bg-white/70 backdrop-blur-xl shadow-xl dark:bg-slate-800/70">
           <CardHeader className="pb-2">
-            <CardTitle className="flex items-center gap-2">
+            <CardTitle className="flex items-center gap-2 text-xl">
               <FileText className="h-5 w-5" />
               Your Files ({files ? files.length : 0})
             </CardTitle>
-            <CardDescription>
+            <CardDescription className="text-base">
               Manage all your uploaded study materials and resources
             </CardDescription>
           </CardHeader>
           <CardContent className="p-0">
             {!files || files.length === 0 ? (
               <div className="text-center py-16">
-                <div className="p-3 bg-muted rounded-full w-16 h-16 mx-auto mb-3 flex items-center justify-center">
-                  <FileText className="w-7 h-7 text-muted-foreground" />
+                <div className="p-4 bg-gradient-to-r from-blue-500/10 to-cyan-500/10 rounded-full w-20 h-20 mx-auto mb-4 flex items-center justify-center">
+                  <FileText className="w-8 h-8 text-blue-600" />
                 </div>
-                <h3 className="text-lg font-semibold mb-2">No files uploaded yet</h3>
+                <h3 className="text-xl font-semibold mb-2">No files uploaded yet</h3>
                 <p className="text-muted-foreground mb-6 max-w-md mx-auto">
                   Upload your first file using the upload area above to get started! Your files will appear here once uploaded.
                 </p>
                 <Button
                   onClick={() => fileInputRef.current?.click()}
+                  className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700"
                 >
                   <Plus className="w-4 h-4 mr-2" />
                   Upload Your First File
